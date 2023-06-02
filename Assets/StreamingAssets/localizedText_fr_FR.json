@@ -1,0 +1,16 @@
+{
+	"items": [
+		{
+			"key": "language_button_fr_FR",
+			"value": "FR"
+		},
+		{
+			"key": "language_button_en_EN",
+			"value": "EN"
+		},
+		{
+			"key": "back_button",
+			"value": "retour"
+		}
+	]
+}

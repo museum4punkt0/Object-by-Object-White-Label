@@ -1,0 +1,56 @@
+{
+	"app": {
+		"versionId": "Mazedia - v.0.1",
+		"bundleId": "com.mazedia.unity.app_name",
+		"defaultLanguage": "de",
+		"standByDelay": 180,
+		"standByDelaySettingKey": "global.config.standByDelay",
+		"showVersionSettingKey": "global.config.showVersion",
+		"cursorVisible": true,
+		"devMode": false,
+		"loadWezit": true,
+		"backgroundColor": "#000000",
+		"screenFadeTime": 0.5,
+		"languageSelecterInteractive": true,
+		"languageSelecterVisible": true,
+		"targetFrameRate": 30,
+		"homeView_diapoShowingTime": 5,
+		"homeView_diapoAnimZoomScale": 1.1,
+		"homeView_diapoAnimZoomMoveOnX": 50,
+		"homeView_diapoAnimZoomMoveOnY": 20,
+		"resolutionSettings": {
+			"force": false,
+			"targetWidth": 1920,
+			"targetHeight": 1080,
+			"fullscreen": true,
+			"checkChanges": true
+		},
+		"analyticsMatomoSettings": {
+			"enabled": false,
+			"matomoUrl": "https://matomo1.wezit.io/",
+			"websiteUrl": "",
+			"websiteId": ""
+		}
+	},
+	"unityFileDebugConfig": {
+		"writeInFile": false,
+		"useAbsolutePath": false,
+		"absolutePath": "",
+		"fileName": "",
+		"fileType": "TXT",
+		"showUI": false,
+		"maxLogsDisplayed": 30,
+		"addType": false,
+		"addTime": true,
+		"addLog": true,
+		"addStack": false
+	},
+	"wezit": {
+		"manifestUrl": "https://static.wezit.io/005064/appdata/wzobj_application_72a51f17-3709-4077-bfa9-692ebd2ff70c/manifest.json",
+		"version": "cdn-v3",
+		"online": true,
+		"loadImages": true,
+		"downloadImagesOnStartup": true,
+		"downloadTransformation": "default",
+	}
+}
