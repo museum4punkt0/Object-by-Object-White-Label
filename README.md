@@ -1,4 +1,4 @@
-# SPK Museum 4punkt0
+# Smuseum4punkt0
 Android and iOS project allowing German museums to create new apps using Wezit
 
 ## Wezit Entity:
@@ -11,6 +11,14 @@ Android and iOS project allowing German museums to create new apps using Wezit
 
 * Unity app built on iOS and Android
 * Version Unity : 2021.3.25f1
+
+## Förderhinweis
+This application was developed in the joint project museum4punkt0 - Digital Strategies for the Museum of the Future,
+Subproject "Zentrale wissenschaftliche Projektsteuerung". The project museum4punkt0 is funded by the German Federal Government Commissioner for Culture
+and Media based on a decision of the German Bundestag. Further information:
+www.museum4punkt0.de
+
+![alt text](https://github.com/museum4punkt0/media_storage/blob/2c46af6cb625a2560f39b01ecb8c4c360733811c/BKM_Fz_2017_Web_de.gif) ![alt text](https://github.com/museum4punkt0/media_storage/blob/e87f37973c3d91e2762d74d51bed81de5026e06e/BKM_Neustart_Kultur_Wortmarke_pos_RGB_RZ_web.jpg)
 
 ## Build
 
