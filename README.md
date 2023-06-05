@@ -10,13 +10,19 @@ Android and iOS project allowing German museums to create new apps using Wezit
 ## About
 
 * Unity app built on iOS and Android
-* Version Unity : 2021.3.24f1
+* Version Unity : 2021.3.25f1
 
 ## Build
 
-Pour lancer une build en ligne de commande :
-`[Path de Unity Editor] -projectPath [Path du projet Unity] -batchmode -buildTarget Standalone -executeMethod AutomaticBuild.Perform [Path de la scene à intégrer à la build] -quit`
-`[Path de Unity Editor] -projectPath [Path du projet Unity] -batchmode -buildTarget WebGL -executeMethod AutomaticBuild.Perform [Path de la scene à intégrer à la build] -quit`
+To build the app, first [install Unity 2021.3.25f1](https://unity.com/releases/editor/whats-new/2021.3.25). You will need a Unity account, a pro one is not necessary as long as you are building a test app.
+
+To build through command lines:
+
+`[Unity Editor Path] -projectPath [Unity project Path] -batchmode -buildTarget [Android or iOS] -executeMethod AutomaticBuild.Perform [Main scene Path] -quit`
 
 Scene path to add to the build:
 `Assets/Scenes/Main.unity
+
+When building for Android, you will get an .apk file that can be directly installed on phones (if you want to do it from a computer, look a [this tutorial](https://www.makeuseof.com/install-apps-via-adb-android/).
+
+When building for iOS, you will get an Xcode project that will have to be compiled in Xcode > 12.
