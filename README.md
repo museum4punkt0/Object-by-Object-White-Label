@@ -12,7 +12,7 @@ Android and iOS project allowing German museums to create new apps using Wezit
 * Unity app built on iOS and Android
 * Version Unity : 2021.3.25f1
 
-## Förderhinweis
+## Funding notice
 This application was developed in the joint project museum4punkt0 - Digital Strategies for the Museum of the Future,
 Subproject "Zentrale wissenschaftliche Projektsteuerung". The project museum4punkt0 is funded by the German Federal Government Commissioner for Culture
 and Media based on a decision of the German Bundestag. Further information:
