@@ -1,4 +1,4 @@
-# Smuseum4punkt0
+# museum4punkt0
 Android and iOS project allowing German museums to create new apps using Wezit
 
 ## Wezit Entity:
