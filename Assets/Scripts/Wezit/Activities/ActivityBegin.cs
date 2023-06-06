@@ -15,8 +15,8 @@ namespace Wezit
         [SerializeField] private RawImage _beginImage = null;
         [SerializeField] private TextMeshProUGUI _beginTitle = null;
         [SerializeField] private TextMeshProUGUI _beginDescription = null;
-        [SerializeField] private VideoPlayer _beginVideoPlayer = null;
-        [SerializeField] private AudioSource _beginAudioPlayer = null;
+        [SerializeField] private VideoPlayer _beginVideoPlayer;
+        [SerializeField] private AudioSource _beginAudioPlayer;
         #endregion
         #region Private
         private JSONNode m_ActivityNode;

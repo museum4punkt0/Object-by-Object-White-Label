@@ -9,7 +9,6 @@ namespace Unity
 		/*********************** PROPERTIES **************************/
 		/*************************************************************/
 
-		private static string TAG = "<color=red>[UnityFileDebugConfig]</color>";
 
 		private FileDebugConfigModel fileDebugConfig;
 		private FileDebug fileDebugObject;

@@ -65,6 +65,19 @@ namespace Wezit
 
             StartCoroutine(Scratch());
         }
+
+        public string GetBackgroundImagePath(Language language)
+        {
+            string path = "";
+            string imageName = StringUtils.CleanFromWezit(GetKeyNodeForLanguage(language, "template.activity.scratch.background.image"));
+            if (!string.IsNullOrEmpty(imageName))
+            {
+                imageName = imageName.Replace("wzasset://", "");
+                WezitAssets.Asset asset = AssetsLoader.GetAssetById(imageName);
+                path = asset.GetAssetSourceByTransformation(WezitSourceTransformation.original);
+            }
+            return path;
+        }
         #endregion
         #region Internal
         #endregion

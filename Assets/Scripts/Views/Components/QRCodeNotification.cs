@@ -12,7 +12,6 @@ public class QRCodeNotification : MonoBehaviour
     [SerializeField] private Popin _popin;
     #endregion
     #region Private
-    private string m_IconSettingKey = "";
     private string m_TitleSettingKey = "template.spk.tours.map.popups.QRCode.title.text";
     private string m_DescriptionSettingKey = "template.spk.tours.map.popups.QRCode.description.text";
     private string m_StartSettingKey = "template.spk.tours.map.popups.QRCode.button.text";

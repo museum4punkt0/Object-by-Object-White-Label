@@ -12,7 +12,6 @@ public class ARView : BaseView
 {
 	#region Fields
 	#region Serialize Fields
-	[SerializeField] private RawImage _colorBackground = null;
 	[SerializeField] private RawImage _background = null;
 	[SerializeField] private ARManager _arManager = null;
 	[SerializeField] private ARSession _aRSession = null;

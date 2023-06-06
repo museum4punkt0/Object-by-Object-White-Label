@@ -29,7 +29,7 @@ public class MenuLink : MonoBehaviour
     public void Inflate(string label, KioskState state, bool enableSeparator)
     {
         m_KioskState = state;
-        _label.text = label;
+        name = _label.text = label;
         _separatorRoot.SetActive(enableSeparator);
 
         _button.onClick.RemoveAllListeners();

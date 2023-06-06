@@ -25,8 +25,8 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	private RectTransform _rectTransform = null;
 	private Canvas _rootCanvas = null;
 	private Camera _uiCamera = null;
-	private bool _isDragging = false;
-	private bool _isDropped = false;
+	private bool _isDragging;
+	private bool _isDropped;
 	private bool _isDraggable = true;
 	private bool _dragFromCenter = true;
 	private Vector3 _originalScale = Vector3.one;

@@ -16,8 +16,6 @@ public class CountdownComponent : MonoBehaviour
 	/*********************** PROPERTIES **************************/
 	/*************************************************************/
 
-	private static string TAG = "[CountdownComponent]";
-
 	public int countdownDelay;
 	public TextMeshProUGUI countdownText = null;
 	public UnityEventCountdownComponent onCountdownComplete;

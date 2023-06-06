@@ -10,8 +10,6 @@ public class StandByComponent : MonoBehaviour
 	/*********************** PROPERTIES **************************/
 	/*************************************************************/
 
-	private static string TAG = "[StandByComponent]";
-
 	private Vector3 lastMousePosition;
 	public float standByDelay;          // seconds
 	public float repeatRate = 0.2f;     // seconds

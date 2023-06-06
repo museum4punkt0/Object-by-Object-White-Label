@@ -11,7 +11,6 @@ public class StandByManager : MonoBehaviour
 	/*********************** PROPERTIES **************************/
 	/*************************************************************/
 
-	private static string TAG = "[StandByManager]";
 	public static StandByManager instance;
 
 	private Vector3 lastMousePosition;

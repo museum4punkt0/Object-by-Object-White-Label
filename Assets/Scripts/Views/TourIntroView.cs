@@ -13,7 +13,6 @@ public class TourIntroView : BaseView
 	#region Serialize Fields
 	[SerializeField] private RawImage _colorBackground = null;
 	[SerializeField] private RawImage _background = null;
-	[SerializeField] private string _backgroundSettingKey = "";
 	[Header("Explanation")]
 	[SerializeField] private ExplanationWindow _explanationWindow = null;
 	[SerializeField] private TextMeshProUGUI _title = null;

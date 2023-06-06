@@ -20,8 +20,10 @@ public class InventoryItemTour : MonoBehaviour
     [SerializeField] private GameObject _bonusRoot;
     [SerializeField] private RawImage _bonusImage;
     [SerializeField] private Image _bonusImageBG;
+    [SerializeField] private Button _pictureButton;
     [SerializeField] private RawImage _pictureImage;
     [SerializeField] private Image _pictureImageBG;
+    [SerializeField] private Button _cameraButton;
     [SerializeField] private Image _cameraButtonBG;
     #endregion
     #region Private
@@ -55,7 +57,11 @@ public class InventoryItemTour : MonoBehaviour
             _score.text = tourProgressionData.GetTourScore() + "pts";
         }
 
+        StartCoroutine(ImageUtils.SetImage(_bonusImage, tourProgressionData.TourScratchImagePath));
+        StartCoroutine(ImageUtils.SetImage(_pictureImage, tourProgressionData.TourSelfiePath));
+
         _tourButton.onClick.AddListener(OnTourButtonClicked);
+        _cameraButton.onClick.AddListener(OnCameraButtonClicked);
     }
     #endregion
     #region Private
@@ -63,6 +69,20 @@ public class InventoryItemTour : MonoBehaviour
     {
         StoreAccessor.State.SelectedTour = m_Tour;
         AppManager.Instance.GoToState(KioskState.INVENTORY_POI);
+    }
+
+    private void OnCameraButtonClicked()
+    {
+        StoreAccessor.State.SelectedTour = m_Tour;
+        foreach (Poi poi in m_Tour.childs)
+        {
+            if(poi.type == "secret")
+            {
+                StoreAccessor.State.SelectedPoi = poi;
+                break;
+            }
+        }
+        AppManager.Instance.GoToState(KioskState.SELFIE);
     }
 
     private void ResetComponent()

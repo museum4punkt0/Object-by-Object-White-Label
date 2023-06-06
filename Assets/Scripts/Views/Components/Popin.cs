@@ -30,6 +30,7 @@ public class Popin : MonoBehaviour
     #region Public
     public void Inflate(string title, string description, string buttonText, string settingKey = "", string iconTag = "")
     {
+        gameObject.SetActive(true);
         MenuManager.Instance.SetMenuStatus(MenuManager.MenuStatus.Darken);
 
         if (!string.IsNullOrEmpty(Wezit.Settings.Instance.GetSetting(settingKey)))
@@ -55,20 +56,20 @@ public class Popin : MonoBehaviour
         _contrastButton.Inflate(title, paragraphs, _contrastPanelRoot);
 
         _closeButton.onClick.RemoveAllListeners();
-        _closeButton.onClick.AddListener(OnCloseButton);
+        _closeButton.onClick.AddListener(Close);
 
         _popinButton.onClick.RemoveAllListeners();
         _popinButton.onClick.AddListener(OnPopinButton);
     }
-    #endregion
 
-    #region Private
-    private void OnCloseButton()
+    public void Close()
     {
         gameObject.SetActive(false);
         MenuManager.Instance.SetPreviousStatus();
     }
+    #endregion
 
+    #region Private
     private void OnPopinButton()
     {
         PopinButtonClicked?.Invoke();

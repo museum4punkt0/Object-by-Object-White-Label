@@ -31,7 +31,7 @@ public class SecretPoiView : BaseView
 	private Wezit.Poi m_PoiData;
 	private Language m_Language;
 	
-	private string m_ScanButtonTextSettingKey = "template.spk.tours.map.popups.QRCode.button.text";
+	private string m_ContinueButtonTextSettingKey = "template.spk.pois.content.button.continue.text";
 	#endregion Private m_Variables
 	#endregion Fields
 
@@ -98,7 +98,7 @@ public class SecretPoiView : BaseView
 		m_Language = language;
 
 		_bonusButtonBG.color = _title.color = GlobalSettingsManager.Instance.AppColor;
-		_bonusButtonText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_ScanButtonTextSettingKey, language);
+		_bonusButtonText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_ContinueButtonTextSettingKey, language);
 		_bonusButton.gameObject.SetActive(tourProgressionData.HasBeenCompleted);
 
 		ImageUtils.LoadImage(_background, this, m_PoiData);

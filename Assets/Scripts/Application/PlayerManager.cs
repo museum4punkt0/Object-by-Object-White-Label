@@ -18,12 +18,43 @@ public class PlayerManager : Singleton<PlayerManager>
         get
         {
             return Application.persistentDataPath;
-            //return Path.Combine(Application.persistentDataPath, "playerData");
+        }
+    }
+
+    public static string SelfiesPath
+    {
+        get
+        {
+#if UNITY_EDITOR
+            return Path.Combine(Application.persistentDataPath, "selfies");
+#else
+            return "file://" + Path.Combine(Application.persistentDataPath, "selfies");
+#endif
+        }
+    }
+
+    public static string SelfiesScreenshotPath
+    {
+        get
+        {
+#if UNITY_EDITOR
+            return Path.Combine(Application.persistentDataPath, "selfies");
+#else
+            return "selfies";
+#endif
         }
     }
 
     public void Init()
     {
         Player = new PlayerData();
+        if(!Directory.Exists(SelfiesPath))
+        {
+#if UNITY_EDITOR
+            Directory.CreateDirectory(SelfiesPath);
+#else
+            Directory.CreateDirectory(Path.Combine(Application.persistentDataPath, SelfiesPath));
+#endif
+        }
     }
 }

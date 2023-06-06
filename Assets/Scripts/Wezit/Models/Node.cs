@@ -43,8 +43,6 @@ namespace Wezit
 		private async UniTask InitRelations(Node node)
 		{
 			node.Relations = new List<Relation>();
-			// Get asset list only if there is some assets to initialize
-			//if ((Config.Instance.ConfigModel.studioVersion == WezitStudioVersion.v2 ? node.relation_list : node.relationList).Find(r => r.IsAsset()) != null) 
 			node.Relations = await Initializer.GetAssetList("poi", node);
 
 			relationsSetted = true;

@@ -48,8 +48,9 @@ public class MenuManager : Singleton<MenuManager>
 
 	#region Methods
 	#region MonoBehaviour
-	private void Awake()
+	private new void Awake()
 	{
+		base.Awake();
 		SetMenuStatus(MenuStatus.Hidden);
 		if (AppManager.Instance.loadingOver)
 		{

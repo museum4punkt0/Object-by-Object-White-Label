@@ -29,6 +29,8 @@ public class ExplanationWindow : MonoBehaviour
         _openToggle.onValueChanged.AddListener(OnOpenButton);
         _contrastButton.Inflate(contrastTitle, contrastParagraphs, contrastPanelRoot);
         StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_explanationContent.gameObject));
+        StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_explanationContent.gameObject));
+        StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_explanationPanel.gameObject));
         StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_explanationPanel.gameObject));
     }
     #endregion

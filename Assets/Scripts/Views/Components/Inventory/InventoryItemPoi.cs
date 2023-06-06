@@ -51,6 +51,7 @@ public class InventoryItemPoi : MonoBehaviour
             }
         }
         StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_inventoryItemContentRoot.gameObject));
+        StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_inventoryItemContentRoot.gameObject));
     }
     #endregion
     #region Private

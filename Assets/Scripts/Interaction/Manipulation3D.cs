@@ -8,13 +8,12 @@ public class Manipulation3D : MonoBehaviour
 {
     #region Fields
     public bool smooth;
-    [SerializeField] private float _maxZoom = 0.25f;
-    [SerializeField] private float _zoomSpeed = 0.1f;
     [SerializeField] private float _minDistanceDelta = 1f; //Minimum finger movement to cause a zoom out/in
     [SerializeField] private float _rotationSpeed = 5f;
     [SerializeField] private float _verticalAngle = 30f; //The maximum vertical angle
 
     [Space]
+    [SerializeField] private float _zoomSpeed = 0.1f;
     [SerializeField] private float _zoomMin = -10;
     [SerializeField] private float _zoomMax = -1;
 
@@ -116,7 +115,6 @@ public class Manipulation3D : MonoBehaviour
             Vector2 firstTouch = Input.GetTouch(0).position;
             Vector2 secondTouch = Input.GetTouch(1).position;
             float touchDelta = Vector2.Distance(firstTouch, secondTouch);
-            Vector2 zoomTarget = (firstTouch + secondTouch)/2;
 
             if(!_isZooming)
             {

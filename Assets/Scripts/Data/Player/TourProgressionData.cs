@@ -33,9 +33,12 @@ public class TourProgressionData
     [FormerlySerializedAs("TourScore")]
     [SerializeField]
     private int m_TourScore = 0;
-    [FormerlySerializedAs("TourPicturePath")]
+    [FormerlySerializedAs("TourScratchImagePath")]
     [SerializeField]
-    private string m_TourPicturePath = "";
+    private string m_TourScratchImagePath = "";
+    [FormerlySerializedAs("TourSelfiePath")]
+    [SerializeField]
+    private string m_TourSelfiePath = "";
 
     #region Public API
     public bool HasBeenVisited
@@ -87,18 +90,33 @@ public class TourProgressionData
         {
             m_TourScore = value;
             ScoreDisplay.Instance.SetScore(m_TourScore);
+            PlayerManager.Instance.Player.Save();
         }
     }
 
-    public string TourPicturePath
+    public string TourScratchImagePath
     {
         get
         {
-            return m_TourPicturePath;
+            return m_TourScratchImagePath;
         }
         set
         {
-            m_TourPicturePath = value;
+            m_TourScratchImagePath = value;
+            PlayerManager.Instance.Player.Save();
+        }
+    }
+
+    public string TourSelfiePath
+    {
+        get
+        {
+            return m_TourSelfiePath;
+        }
+        set
+        {
+            m_TourSelfiePath = value;
+            PlayerManager.Instance.Player.Save();
         }
     }
 
