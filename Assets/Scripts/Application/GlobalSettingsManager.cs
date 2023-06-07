@@ -24,11 +24,11 @@ public class GlobalSettingsManager : Singleton<GlobalSettingsManager>
     private Sprite m_TourPinSpriteHighlighted;
 
     //Content Settings
-    private string m_ContentAudioSpriteSettingKey = "template.spk.pois.AR.screen.content.audio.image";
+    private string m_ContentAudioSpriteSettingKey = "template.spk.pois.AR.content.audio.image";
     private Sprite m_ContentAudioSprite;
-    private string m_ContentImageSpriteSettingKey = "template.spk.pois.AR.screen.content.image.image";
+    private string m_ContentImageSpriteSettingKey = "template.spk.pois.AR.content.image.image";
     private Sprite m_ContentImageSprite;
-    private string m_ContentVideoSpriteSettingKey = "template.spk.pois.AR.screen.content.video.image";
+    private string m_ContentVideoSpriteSettingKey = "template.spk.pois.AR.content.video.image";
     private Sprite m_ContentVideoSprite;
     private string m_PointsEarnedContentSettingKey = "template.spk.pois.content.points.earned.content";
     private int m_PointsEarnedContent;
@@ -190,6 +190,7 @@ public class GlobalSettingsManager : Singleton<GlobalSettingsManager>
     // Content icons
     private void OnContentAudioSpriteDownloaded(Sprite sprite)
     {
+        Debug.LogError(sprite == null);
         m_ContentAudioSprite = sprite;
     }
 
