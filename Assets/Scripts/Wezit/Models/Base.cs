@@ -22,6 +22,7 @@ namespace Wezit
 		public string source;
 		public string spatial;
 		public string location;
+		public string extent;
 
 		// Wezit V3 info. ////////////////////
 		// =>=>=>=> missing fields in Wezit V3 :
@@ -49,8 +50,9 @@ namespace Wezit
 				"Date: {12}\n" +
 				"Source: {13}\n" +
 				"spatial: {14}\n" +
-                "location: {15}\n",
-				pid, language, title, subject, description, tags, identifier, format, contributor, author, creator, rights, type, date, source, spatial, location
+                "location: {15}\n" +
+                "extent: {16}\n",
+				pid, language, title, subject, description, tags, identifier, format, contributor, author, creator, rights, type, date, source, spatial, location, extent
 			);
 		}
 	}

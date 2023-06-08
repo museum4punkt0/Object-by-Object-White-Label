@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using Wezit;
 
 public class ARItemSprite : ARItemBase
@@ -24,10 +25,7 @@ public class ARItemSprite : ARItemBase
     #region Monobehaviour
     private void OnMouseDown()
     {
-        ARItemClicked?.Invoke(m_Poi);
-        if (!ClickManager.Instance.ClickingOnUI)
-        {
-        }
+        StartCoroutine(CheckIfClickingOnUI());
     }
     #endregion
     #region Public
@@ -55,6 +53,15 @@ public class ARItemSprite : ARItemBase
     }
     #endregion
     #region Private
+    private IEnumerator CheckIfClickingOnUI()
+    {
+        yield return null;
+        Debug.LogError(ClickManager.ClickingOnUI);
+        if (!ClickManager.ClickingOnUI)
+        {
+            ARItemClicked?.Invoke(m_Poi);
+        }
+    }
     #endregion
     #endregion
 }

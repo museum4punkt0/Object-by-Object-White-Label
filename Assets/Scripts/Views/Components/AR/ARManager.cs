@@ -17,6 +17,8 @@ public class ARManager : MonoBehaviour
     #region Private
     private Poi m_PoiData;
     private ARItemRoot m_ItemRootInstance;
+
+    private float m_QRCodeAngle;
     #endregion
     #endregion
 
@@ -69,6 +71,7 @@ public class ARManager : MonoBehaviour
         {
             ImageFound?.Invoke();
             m_ItemRootInstance = Instantiate(_arRootPrefab, trackedImage.transform);
+            m_ItemRootInstance.transform.Rotate(m_QRCodeAngle, 0, 0);
             m_ItemRootInstance.Inflate(m_PoiData, _arCamera);
             m_ItemRootInstance.ARItemClicked.AddListener(OnARItemClicked);
         }
@@ -76,11 +79,15 @@ public class ARManager : MonoBehaviour
 
     private void OnQRCodeDownloaded(Texture2D texture2D)
     {
-        float.TryParse(m_PoiData.spatial,
+        float.TryParse(m_PoiData.extent,
                        System.Globalization.NumberStyles.AllowDecimalPoint,
                        new System.Globalization.CultureInfo("en-US"),
-                       out float output);
-        StartCoroutine(AddImage(texture2D, m_PoiData.title, output));
+                       out float size);
+        float.TryParse(m_PoiData.spatial,
+                           System.Globalization.NumberStyles.AllowDecimalPoint,
+                           new System.Globalization.CultureInfo("en-US"),
+                           out m_QRCodeAngle);
+        StartCoroutine(AddImage(texture2D, m_PoiData.title, size));
     }
 
     private IEnumerator AddImage(Texture2D imageToAdd, string title, float size)

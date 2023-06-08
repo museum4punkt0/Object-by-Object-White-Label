@@ -38,6 +38,8 @@ namespace Wezit
 
 		public string GetSetting(string key, Language language = Language.none)
 		{
+			if (string.IsNullOrEmpty(key)) return null;
+
 			language = language == Language.none ? StoreAccessor.State.Language : language;
 
 			var value = settingsNode[language.ToString()][key];

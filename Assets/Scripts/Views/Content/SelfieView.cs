@@ -168,11 +168,15 @@ public class SelfieView : BaseView
 	{
 		_UIRoot.SetActive(false);
 		MenuManager.Instance.SetMenuStatus(MenuManager.MenuStatus.Hidden);
-		yield return null;
+		yield return new WaitForEndOfFrame();
 		ScreenCapture.CaptureScreenshot(System.IO.Path.Combine(PlayerManager.SelfiesScreenshotPath, StoreAccessor.State.SelectedTour.title + ".png"));
+		Texture2D screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+		screenshot.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+		screenshot.Apply();
 		yield return null;
 		m_TourProgressionData.TourSelfiePath = System.IO.Path.Combine(PlayerManager.SelfiesPath, StoreAccessor.State.SelectedTour.title + ".png");
-		MenuManager.Instance.SetPreviousStatus();
+        NativeGallery.SaveImageToGallery(screenshot, "spk", StoreAccessor.State.SelectedTour.title + ".png");
+        MenuManager.Instance.SetPreviousStatus();
 		_UIRoot.SetActive(true);
 
 		_cameraButton.gameObject.SetActive(false);

@@ -137,6 +137,10 @@ public class TourMapView : BaseView
             {
 				_secretPoiButton.Inflate(poi);
             }
+			else if(poi.type == "bank")
+            {
+				StoreAccessor.State.SelectedTourBank = poi;
+            }
         }
         _mapListVertical.Inflate(locatedPois, this);
         _mapListHorizontal.Inflate(locatedPois, this);

@@ -83,7 +83,7 @@ public class InventoryPoiView : BaseView
 		_title.text = StringUtils.CleanFromWezit(m_Tour.title);
 		foreach (Poi poi in m_Tour.childs)
 		{
-			if (poi.type == "secret")
+			if (poi.type == "secret" || poi.type == "bank")
 			{
 				continue;
 			}

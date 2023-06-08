@@ -24,8 +24,8 @@ public class PopinPoints : MonoBehaviour
     [SerializeField] private Transform _contrastPanelRoot;
     #endregion
     #region Private
-    private string m_PointsTitleSettingKey = "points.earned.title.text";
-    private string m_PointsDescriptionSettingKey = "points.earned.title.description";
+    private string m_PointsEarnedSettingKey = "template.spk.pois.content.points.earned.description.text";
+    private string m_PointsDescriptionSettingKey = "template.spk.pois.content.points.earned.description.text";
     #endregion
     #endregion
 
@@ -56,8 +56,7 @@ public class PopinPoints : MonoBehaviour
                 break;
         }
 
-        string pointsEarned = Wezit.Settings.Instance.GetSettingAsCleanedText(m_PointsTitleSettingKey, StoreAccessor.State.Language);
-        pointsEarned = "{0} points earned";
+        string pointsEarned = Wezit.Settings.Instance.GetSettingAsCleanedText(m_PointsEarnedSettingKey, StoreAccessor.State.Language);
         _title.text = string.Format(pointsEarned, GlobalSettingsManager.Instance.PointsEarnedContent);
         _poiName.text = StringUtils.CleanFromWezit(poi.title);
         _description.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_PointsDescriptionSettingKey, StoreAccessor.State.Language); ;

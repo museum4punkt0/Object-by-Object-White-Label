@@ -20,6 +20,7 @@ public class ContrastButton : MonoBehaviour
 	internal void Awake()
 	{
 		m_Button = GetComponent<Button>();
+		SetBackgroundColor();
 		AddListeners();
 	}
 	#endregion MonoBehaviour

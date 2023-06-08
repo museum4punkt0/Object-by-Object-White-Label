@@ -24,11 +24,11 @@ namespace Wezit
         private ActivityBegin m_Begin = null;
         private ActivityEnd m_End = null;
 
-        private Language m_Language;
         #endregion
         #region Internal
         internal string m_Type = ActivityType.DEFAULT;
         internal JSONNode m_ActivityNode;
+        internal Language m_Language;
         internal bool m_HasChrono = false;
         internal string m_BeginPrefabName = "Prefabs/ActivityPrefabs/Begin";
         internal string m_EndPrefabName = "Prefabs/ActivityPrefabs/End";
@@ -48,11 +48,11 @@ namespace Wezit
         {
             m_ActivityNode = activityNode;
             m_Language = language;
-            m_HasBegin = m_ActivityNode["default"]["template.activity.begin.activation"];
-            m_HasEnd = m_ActivityNode["default"]["template.activity.end.activation"];
-            m_Type = activityNode["default"]["template.app.common.type"];
-            m_HasChrono = m_ActivityNode["default"]["template.activity.chrono.activation"];
-            if(m_HasChrono) m_ChronoValue = m_ActivityNode["default"]["template.activity.chrono.value"];
+            m_HasBegin = GetKeyNodeForLanguage(language, "template.activity.begin.activation");
+            m_HasEnd = GetKeyNodeForLanguage(language, "template.activity.end.activation");
+            m_Type = GetKeyNodeForLanguage(language, "template.app.common.type");
+            m_HasChrono = GetKeyNodeForLanguage(language, "template.activity.chrono.activation");
+            if(m_HasChrono) m_ChronoValue = GetKeyNodeForLanguage(language, "template.activity.chrono.value");
 
             InitContent();
         }
@@ -76,6 +76,19 @@ namespace Wezit
         internal async Task LoadImage(Language language, string key, RawImage imageComponent)
         {
             string imageName = StringUtils.CleanFromWezit(GetKeyNodeForLanguage(language, key));
+            if (!string.IsNullOrEmpty(imageName))
+            {
+                imageName = imageName.Replace("wzasset://", "");
+                WezitAssets.Asset asset = AssetsLoader.GetAssetById(imageName);
+                await StartCoroutine(Utils.ImageUtils.SetImage(imageComponent,
+                                                         asset.GetAssetSourceByTransformation(WezitSourceTransformation.original),
+                                                         asset.GetAssetMimeTypeByTransformation(WezitSourceTransformation.original),
+                                                         true));
+            }
+        }
+
+        internal async Task LoadImage(string imageName, RawImage imageComponent)
+        {
             if (!string.IsNullOrEmpty(imageName))
             {
                 imageName = imageName.Replace("wzasset://", "");

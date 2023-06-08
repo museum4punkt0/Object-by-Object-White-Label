@@ -17,7 +17,7 @@ public enum KioskState
 	SECRET_POI,
 	SCRATCH,
 	SELFIE,
-	MCQ,
+	QUIZ,
 
 	INVENTORY,
 	INVENTORY_POI,

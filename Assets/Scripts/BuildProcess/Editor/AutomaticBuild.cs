@@ -91,5 +91,11 @@ static class AutomaticBuild
 
 		return dataPath;
 	}
+	
+	private static void DownloadIconsAndSplash()
+    {
+
+    }
 }
+
 #endif

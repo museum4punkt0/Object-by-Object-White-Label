@@ -3,23 +3,33 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class DetectUIClick : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class DetectUIClick : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
 {
     private bool quitting;
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (ClickManager.Instance) ClickManager.Instance.ClickingOnUI = true;
+        ClickManager.ClickingOnUI = true;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if(ClickManager.Instance) ClickManager.Instance.ClickingOnUI = false;
+        ClickManager.ClickingOnUI = false;
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        ClickManager.ClickingOnUI = true;
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        ClickManager.ClickingOnUI = false;
     }
 
     private void OnDisable()
     {
-        if(!quitting) ClickManager.Instance.ClickingOnUI = false;
+        if(!quitting) ClickManager.ClickingOnUI = false;
     }
 
     private void OnApplicationQuit()

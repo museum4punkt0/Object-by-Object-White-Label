@@ -9,7 +9,7 @@ public class ColliderClicked : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (!ClickManager.Instance.ClickingOnUI)
+        if (!ClickManager.ClickingOnUI)
         {
             Clicked?.Invoke();
         }

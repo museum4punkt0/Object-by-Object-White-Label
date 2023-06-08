@@ -20,7 +20,7 @@ public class ARItem3D : ARItemBase
     #region Monobehaviour
     private void OnMouseDown()
     {
-        if(!ClickManager.Instance.ClickingOnUI)
+        if(!ClickManager.ClickingOnUI)
         {
             ARItemClicked?.Invoke(m_Poi);
         }

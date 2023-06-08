@@ -49,7 +49,7 @@ namespace Wezit
             Activity instance = type switch
             {
                 ActivityType.SCRATCH => Instantiate(Resources.Load<ScratchAndReveal>(PREFABS_PATH + "ScratchAndReveal"), activityRoot),
-                //ActivityType.QUIZ => Instantiate(Resources.Load<Quiz>(PREFABS_PATH + "Quiz")),
+                ActivityType.QUIZ => Instantiate(Resources.Load<Quiz>(PREFABS_PATH + "Quiz"), activityRoot),
                 _ => Instantiate(Resources.Load<Activity>(PREFABS_PATH + "Default"), activityRoot),
             };
 			instance.Inflate(activitySettings, language);

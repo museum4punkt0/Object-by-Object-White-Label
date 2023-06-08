@@ -16,10 +16,11 @@ public class ARView : BaseView
 	[SerializeField] private ARManager _arManager = null;
 	[SerializeField] private ARSession _aRSession = null;
 	[SerializeField] private GameObject _qRCodeScannerRoot = null;
-	#endregion Serialize Fields
 	[SerializeField] private ARItemRoot _arRootPrefab = null;
 	[SerializeField] private Transform _itemsRoot;
 	[SerializeField] private Camera _arCamera;
+	[SerializeField] private QuizManager _quizManager;
+	#endregion Serialize Fields
 
 	#region Public Variables
 	#endregion Public Variables
@@ -82,18 +83,24 @@ public class ARView : BaseView
 	private void InitViewContentByLang(Language language)
 	{
 		ResetViewContent();
+		
+		m_PoiData = StoreAccessor.State.SelectedPoi;
 
-		bool isChallenge = PlayerManager.Instance.Player.GetTourProgression(StoreAccessor.State.SelectedTour.pid).IsChallengeMode;
+		TourProgressionData tourProgressionData = PlayerManager.Instance.Player.GetTourProgression(StoreAccessor.State.SelectedTour.pid);
+		bool isChallenge = tourProgressionData.IsChallengeMode;
 		MenuManager.MenuStatus status = isChallenge ? MenuManager.MenuStatus.BackButtonInventory : MenuManager.MenuStatus.BackButton;
 		MenuManager.Instance.SetMenuStatus(status);
 		MenuManager.Instance.SetBackButtonState(KioskState.TOUR_MAP);
 
-		if (ViewManager.Instance.PreviousKioskState == KioskState.CONTENT)
+		_quizManager.Inflate(isChallenge);// && !tourProgressionData.GetPoiProgression(m_PoiData.pid).QuizCompleted);
+
+		// Keep AR session going while the user did not go back to the map
+		KioskState previousKioskState = ViewManager.Instance.PreviousKioskState;
+		if (previousKioskState == KioskState.CONTENT || previousKioskState == KioskState.QUIZ)
 		{
 			return;
 		}
 		_aRSession.enabled = true;
-		m_PoiData = StoreAccessor.State.SelectedPoi;
 		_arManager.Inflate(m_PoiData);
 
 		// Spawn AR items when on PC for testing purpose
@@ -108,7 +115,8 @@ public class ARView : BaseView
 	private void ResetViewContent()
 	{
 		if (_background != null) ImageUtils.ResetImage(_background);
-		if(ViewManager.Instance.PreviousKioskState == KioskState.CONTENT)
+		KioskState previousKioskState = ViewManager.Instance.PreviousKioskState;
+		if (previousKioskState == KioskState.CONTENT || previousKioskState == KioskState.QUIZ)
         {
 			return;
         }

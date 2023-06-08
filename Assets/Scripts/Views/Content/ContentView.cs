@@ -114,7 +114,6 @@ public class ContentView : BaseView
 		int progress = m_PoiProgressionData.GetPoiCurrentProgression();
 		string remainingText = progress > 1 ? Wezit.Settings.Instance.GetSettingAsCleanedText(m_RemainingItemsPluralTextSettingKey) :
 			Wezit.Settings.Instance.GetSettingAsCleanedText(m_RemainingItemsSingularTextSettingKey);
-		remainingText = "{0} remaining items";
 		_remainingItems.text = string.Format(remainingText, m_PoiProgressionData.GetPoiMaxProgression() - progress);
 
 		_3DManipulationInstruction.color = _continueButtonBG.color = _title.color = GlobalSettingsManager.Instance.AppColor;
@@ -186,7 +185,7 @@ public class ContentView : BaseView
 
 	private void OnContinueButton()
     {
-		AppManager.Instance.GoToState(KioskState.AR);
+		AppManager.Instance.GoToState(ViewManager.Instance.PreviousKioskState);
     }
 
 	private void OnVideoPlayerToggle(bool isOpen)

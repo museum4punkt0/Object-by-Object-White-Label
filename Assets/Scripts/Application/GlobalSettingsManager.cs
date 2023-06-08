@@ -190,7 +190,6 @@ public class GlobalSettingsManager : Singleton<GlobalSettingsManager>
     // Content icons
     private void OnContentAudioSpriteDownloaded(Sprite sprite)
     {
-        Debug.LogError(sprite == null);
         m_ContentAudioSprite = sprite;
     }
 
