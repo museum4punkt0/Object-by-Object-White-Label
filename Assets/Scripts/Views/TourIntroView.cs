@@ -108,6 +108,14 @@ public class TourIntroView : BaseView
 		MenuManager.Instance.SetBackButtonState(KioskState.GLOBAL_MAP);
 		MenuManager.Instance.SetTitle(StringUtils.CleanFromWezit(m_TourData.title));
 
+        foreach (Wezit.Poi child in m_TourData.childs)
+        {
+			if(child.type == "bank")
+            {
+				StoreAccessor.State.SelectedTourBank = child;
+            }
+        }
+
 		_colorBackground.color = _startButtonBG.color = _challengeButtonBG.color = _normalButtonBG.color = _title.color = GlobalSettingsManager.Instance.AppColor;
 
 		ImageUtils.LoadImage(_background, this, m_TourData);

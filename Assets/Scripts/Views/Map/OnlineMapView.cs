@@ -90,6 +90,8 @@ public class OnlineMapView : BaseView
 		ResetViewContent();
 		MenuManager.Instance.SetMenuStatus(MenuManager.MenuStatus.RightImage);
 
+		StoreAccessor.State.SelectedTourBank = null;
+
 		m_Tours = WezitDataUtils.GetWezitToursByLang(language);
 		OnlineMapsMarker3DManager onlineMapsMarker3Ds = _map.GetComponent<OnlineMapsMarker3DManager>();
 		m_LocationService = _map.GetComponent<OnlineMapsLocationService>();

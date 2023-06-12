@@ -23,6 +23,7 @@ public class TourMapView : BaseView
 	[SerializeField] private Button _zoomOutButton = null;
 	[SerializeField] private QRCodeNotification _QRCodeNotification;
 	[SerializeField] private SecretPoiButton _secretPoiButton;
+	[SerializeField] private SecretPoiNotification _secretPoiNotification;
 	#endregion Serialize Fields
 
 	#region Public Variables
@@ -116,6 +117,7 @@ public class TourMapView : BaseView
 		List<Vector2> poiLocations = new List<Vector2>();
 		List<Wezit.Poi> locatedPois = new List<Wezit.Poi>();
 
+		// Instantiate map markers
 		foreach(Wezit.Poi poi in m_Tour.childs)
         {
 			Wezit.PoiLocation poiLocation = PoiLocationStore.GetPoiLocationById(poi.pid);
@@ -136,10 +138,6 @@ public class TourMapView : BaseView
 			else if(poi.type == "secret")
             {
 				_secretPoiButton.Inflate(poi);
-            }
-			else if(poi.type == "bank")
-            {
-				StoreAccessor.State.SelectedTourBank = poi;
             }
         }
         _mapListVertical.Inflate(locatedPois, this);
@@ -175,8 +173,6 @@ public class TourMapView : BaseView
 		_zoomInButton.onClick.AddListener(OnZoomIn);
 		_zoomOutButton.onClick.AddListener(OnZoomOut);
 
-		_QRCodeNotification.StartButtonClicked.AddListener(OnQRCodeStart);
-
 		_mapListVertical.ItemClickedPoi.AddListener(OnPoiClicked);
 		_mapListHorizontal.ItemSelectedPoi.AddListener(OnItemSelected);
 		_mapListHorizontal.ItemClickedPoi.AddListener(OnPoiClicked);
@@ -192,6 +188,7 @@ public class TourMapView : BaseView
 		_zoomOutButton.onClick.RemoveAllListeners();
 
 		_QRCodeNotification.StartButtonClicked.RemoveAllListeners();
+		_secretPoiNotification.StartButtonClicked.RemoveAllListeners();
 
 		_mapListVertical.ItemClickedPoi.RemoveAllListeners();
 		_mapListHorizontal.ItemSelectedPoi.RemoveAllListeners();
@@ -204,7 +201,9 @@ public class TourMapView : BaseView
     {
 		Wezit.Poi poiInRange = CheckPoisInRange(location);
 		if(m_LastPoiInrange != poiInRange)
-        {
+		{
+			_QRCodeNotification.StartButtonClicked.RemoveAllListeners();
+			_QRCodeNotification.StartButtonClicked.AddListener(OnQRCodeStart);
 			_QRCodeNotification.Inflate();
 			m_LastPoiInrange = poiInRange;
         }
@@ -297,10 +296,17 @@ public class TourMapView : BaseView
 	}
 
 	private void OnSecretPoiClicked(Wezit.Poi poi)
-    {
+	{
+		_secretPoiNotification.StartButtonClicked.RemoveAllListeners();
+		_secretPoiNotification.StartButtonClicked.AddListener(OnSecretPoiPopinClicked);
+		_secretPoiNotification.Inflate(poi);
+    }
+
+	private void OnSecretPoiPopinClicked(Wezit.Poi poi)
+	{
 		AppManager.Instance.SelectPoi(poi);
 		AppManager.Instance.GoToState(KioskState.SECRET_POI);
-    }
+	}
 	#endregion Private
 
 	#region Internals

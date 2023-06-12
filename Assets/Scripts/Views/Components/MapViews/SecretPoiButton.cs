@@ -17,7 +17,7 @@ public class SecretPoiButton : MonoBehaviour
     private Poi m_Poi;
 
     private string m_SecretLockedImageSettingKey = "template.spk.maps.tour.secret.locked.image";
-    private string m_SecretLockedColorSettingKey = "template.spk.maps.tour.secret.locked.color";
+    private string m_SecretLockedColorSettingKey = "template.spk.maps.tour.secret.background.color";
     private string m_SecretUnlockedImageSettingKey = "template.spk.maps.tour.secret.unlocked.image";
     #endregion
     #endregion

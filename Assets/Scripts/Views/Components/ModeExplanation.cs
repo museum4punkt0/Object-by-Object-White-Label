@@ -37,7 +37,7 @@ public class ModeExplanation : MonoBehaviour
                                         Wezit.Settings.Instance.GetSettingAsCleanedText(m_NormalDescriptionSettingKey, language);
         string buttonText = Wezit.Settings.Instance.GetSettingAsCleanedText(m_StartSettingKey, language);
 
-        _popin.Inflate(title, description, buttonText);
+        _popin.Inflate(title, description, buttonText, "", "main");
         _popin.PopinButtonClicked.RemoveAllListeners();
         _popin.PopinButtonClicked.AddListener(OnStartButton);
     }

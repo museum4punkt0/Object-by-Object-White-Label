@@ -12,6 +12,7 @@ public class ContentView : BaseView
 	#region Fields
 	#region Serialize Fields
 	[SerializeField] private RawImage _background = null;
+	[SerializeField] private PinchableScrollRect _pinchableScrollRect = null;
 	[SerializeField] private Image _uIBackground = null;
 	[Header("Explanation")]
 	[SerializeField] private ExplanationWindow _explanationWindow = null;
@@ -116,21 +117,22 @@ public class ContentView : BaseView
 			Wezit.Settings.Instance.GetSettingAsCleanedText(m_RemainingItemsSingularTextSettingKey);
 		_remainingItems.text = string.Format(remainingText, m_PoiProgressionData.GetPoiMaxProgression() - progress);
 
-		_3DManipulationInstruction.color = _continueButtonBG.color = _title.color = GlobalSettingsManager.Instance.AppColor;
+		_uIBackground.color = _3DManipulationInstruction.color = _continueButtonBG.color = _title.color = GlobalSettingsManager.Instance.AppColor;
 
-		switch(m_PoiData.type)
+		_pinchableScrollRect.Init(true);
+		switch (m_PoiData.type)
         {
 			case ARItemTypes.image:
-				ImageUtils.LoadImage(_background, this, m_PoiData);
+				ImageUtils.LoadImage(_background, this, m_PoiData, Wezit.RelationName.SHOW_PICTURE, WezitSourceTransformation.original, false);
 				OnItemCompleted();
 				break;
 			case ARItemTypes.video:
-				ImageUtils.LoadCover(_background, this, m_PoiData, Wezit.RelationName.PLAY_VIDEO);
+				ImageUtils.LoadCover(_background, this, m_PoiData, Wezit.RelationName.PLAY_VIDEO, WezitSourceTransformation.original, false);
 				_videoManager.gameObject.SetActive(true);
 				_videoManager.Inflate(await VideoUtils.GetVideoSourceByTransformation(m_PoiData), m_PoiData.title);
 				break;
 			case ARItemTypes.audio:
-				ImageUtils.LoadCover(_background, this, m_PoiData, Wezit.RelationName.PLAY_TRACK);
+				ImageUtils.LoadCover(_background, this, m_PoiData, Wezit.RelationName.PLAY_TRACK, WezitSourceTransformation.original, false);
 				_audioManager.gameObject.SetActive(true);
 				_audioManager.Inflate(await AudioUtils.GetAudioClip(m_PoiData));
 				break;

@@ -26,16 +26,12 @@ public class AppStartUp : Singleton<AppStartUp>
 		if (AppConfig.Instance.ConfigModel.loadWezit)
 		{
 			Wezit.ConfigModel wezitConfigModel = Wezit.Config.Instance.ConfigModel;
-			AppConfigModel appConfigModel = AppConfig.Instance.ConfigModel;
 			await Wezit.DataInitializer.Init(wezitConfigModel.manifestUrl,
 											 wezitConfigModel.online,
 										     wezitConfigModel.loadImages,
 										     wezitConfigModel.downloadImagesOnStartup,
 										     wezitConfigModel.downloadTransformation);
-			// Wezit.AnalyticsService.Instance.Init();
 		}
-		// Init Matomo
-		if (AppConfig.Instance.ConfigModel.analyticsMatomoSettings.enabled) MatomoAnalyticsManager.Instance.Init();
 
 		// Init app
 		AppManager.Instance.Init();

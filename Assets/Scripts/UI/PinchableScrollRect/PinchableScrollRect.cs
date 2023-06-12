@@ -53,6 +53,25 @@ public class PinchableScrollRect : ScrollRect
 
 	#region Methods
 	#region Public
+	public void Init(bool fitInParent)
+	{
+		_thisRect = GetComponent<RectTransform>().rect;
+
+		_contentRect = content.rect;
+
+		float targetScaleX = (float)Math.Round(_thisRect.width / _contentRect.width, 4);
+		float targetScaleY = (float)Math.Round(_thisRect.height / _contentRect.height, 4);
+		float targetScale = fitInParent ? Mathf.Min(targetScaleX, targetScaleY) : Mathf.Max(targetScaleX, targetScaleY);
+
+		_currentZoom = targetScale;
+		_minZoom = targetScale;
+		if (_maxZoom < _minZoom) _maxZoom = _minZoom;
+		SetContentScale(new Vector3(_currentZoom, _currentZoom, _currentZoom));
+
+		SetPivotOnCenter();
+		content.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+	}
+
 	public override void OnScroll(PointerEventData data)
 	{
 		if (Mathf.Abs(data.scrollDelta.y) > float.Epsilon)

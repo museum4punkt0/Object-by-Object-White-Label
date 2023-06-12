@@ -15,6 +15,7 @@ public class VideoManager : MonoBehaviour
 	[SerializeField] private Slider _slider;
     [Space]
 	[SerializeField] private Button _playButton = null;
+	[SerializeField] private Button _screenPlayButton = null;
 	[SerializeField] private Image _playButtonImage = null;
 	[SerializeField] private Sprite _pauseIcon = null;
 	[SerializeField] private Sprite _playIcon = null;
@@ -62,6 +63,8 @@ public class VideoManager : MonoBehaviour
 
 		_playButton.onClick.RemoveAllListeners();
 		_playButton.onClick.AddListener(OnPlayButton);
+		_screenPlayButton.onClick.RemoveAllListeners();
+		_screenPlayButton.onClick.AddListener(OnPlayButton);
 
 		_openButton.onClick.RemoveAllListeners();
 		_closeButton.onClick.RemoveAllListeners();

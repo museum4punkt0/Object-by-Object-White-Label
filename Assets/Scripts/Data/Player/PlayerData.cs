@@ -60,13 +60,13 @@ public class PlayerData
 
     #region Fields
     [NonSerialized]
-    private string m_FileContent;
+    private string m_fileContent;
     [NonSerialized]
-    private string m_FilePath;
+    private string m_filePath;
     [NonSerialized]
-    private Thread m_SavingThread;
+    private Thread m_savingThread;
     [NonSerialized]
-    private bool m_Saving;
+    private bool m_saving;
     #endregion
 
     private string FilePath
@@ -101,30 +101,39 @@ public class PlayerData
 
     public void Save()
     {
-        m_FileContent = JsonUtility.ToJson(this, false);
-        m_SavingThread = new Thread(SaveData);
-        m_FilePath = FilePath;
-        if(!m_Saving) m_SavingThread.Start();
+        m_fileContent = JsonUtility.ToJson(this, false);
+        m_savingThread = new Thread(SaveData);
+        m_filePath = FilePath;
+        if(!m_saving) m_savingThread.Start();
     }
 
     private void SaveData()
     {
-        m_Saving = true;
+        m_saving = true;
         FileStream file;
 
-        if (File.Exists(m_FilePath))
+        if (File.Exists(m_filePath))
         {
-            File.WriteAllText(m_FilePath, String.Empty);
-            file = File.OpenWrite(m_FilePath);
+            File.WriteAllText(m_filePath, string.Empty);
+            file = File.OpenWrite(m_filePath);
         }
-        else file = File.Create(m_FilePath);
+        else file = File.Create(m_filePath);
 
         BinaryFormatter bf = new BinaryFormatter();
-        bf.Serialize(file, m_FileContent);
+        bf.Serialize(file, m_fileContent);
         file.Close();
 
-        m_Saving = false;
-        m_SavingThread.Abort();
+        m_saving = false;
+        m_savingThread.Abort();
+    }
+
+    public void Delete()
+    {
+        Debug.LogError(FilePath);
+        if(File.Exists(FilePath))
+        {
+            File.Delete(FilePath);
+        }
     }
     #endregion
 }

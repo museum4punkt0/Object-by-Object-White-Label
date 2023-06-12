@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using TMPro;
+using UniRx;
 
 [System.Serializable]
 public class UnityEventMenu : UnityEvent { };
@@ -25,6 +26,7 @@ public class MenuManager : Singleton<MenuManager>
 
 	[SerializeField] private Button _menuButton = null;
 	[SerializeField] private OpenMenu _openMenu = null;
+	[SerializeField] private GameObject _openMenuUIRoot = null;
 	[SerializeField] private Button _inventoryButton = null;
 	[SerializeField] private Button _backButton = null;
 	[SerializeField] private TextMeshProUGUI _titleText = null;
@@ -42,6 +44,9 @@ public class MenuManager : Singleton<MenuManager>
 	private string m_LogoSettingKey = "template.spk.header.logo.image";
 	private string m_AppNameSettingKey = "template.spk.header.name.text";
 	private string m_RightImageSettingKey = "template.spk.header.rightImage";
+
+	private IDisposable m_storeSubscription;
+	private Language m_currentLanguage = Language.none;
 
 	private bool m_IsLogo = false;
 	#endregion Fields
@@ -70,6 +75,17 @@ public class MenuManager : Singleton<MenuManager>
 		_menuButton.onClick.AddListener(OnOpenMenu);
 		_backButton.onClick.AddListener(OnBackButton);
 		_inventoryButton.onClick.AddListener(OnInventoryButton);
+
+		m_currentLanguage = StoreAccessor.State.Language;
+
+		if (m_storeSubscription != null)
+		{
+			m_storeSubscription.Dispose();
+		}
+		m_storeSubscription = StoreAccessor.Subject.Subscribe((state) =>
+		{
+			OnStoreStateChanged(state);
+		});
 	}
 
 	public void RemoveListeners()
@@ -125,6 +141,11 @@ public class MenuManager : Singleton<MenuManager>
     {
 		_titleText.text = title;
     }
+
+	public void Init(Language language)
+    {
+		InitViewContentByLang(language);
+    }
 	#endregion Public
 
 	#region Private
@@ -133,7 +154,7 @@ public class MenuManager : Singleton<MenuManager>
 		ResetViewContent();
 		if(!string.IsNullOrEmpty(Wezit.Settings.Instance.GetSetting(m_LogoSettingKey, language)))
         {
-			Wezit.Settings.Instance.SetImageFromSetting(_logo, m_LogoSettingKey, language);
+			Wezit.Settings.Instance.SetImageFromSetting(_logo, m_LogoSettingKey, language, WezitSourceTransformation.original, false);
 			m_IsLogo = true;
         }
 		else
@@ -147,13 +168,23 @@ public class MenuManager : Singleton<MenuManager>
 
 	private void ResetViewContent()
 	{
-		_openMenu.gameObject.SetActive(false);
+		_openMenuUIRoot.SetActive(false);
+		_openMenu.gameObject.SetActive(true);
 	}
 
 	private void OnLoadingOver()
 	{
 		InitViewContentByLang(StoreAccessor.State.Language);
 		AddListeners();
+	}
+
+	private void OnStoreStateChanged(State state)
+	{
+		if (state.Language != m_currentLanguage)
+		{
+			m_currentLanguage = state.Language;
+			InitViewContentByLang(state.Language);
+		}
 	}
 
 	private void OnBackButton()
@@ -163,7 +194,6 @@ public class MenuManager : Singleton<MenuManager>
 
 	private void OnOpenMenu()
     {
-		_openMenu.gameObject.SetActive(true);
 		_openMenu.Open();
     }
 

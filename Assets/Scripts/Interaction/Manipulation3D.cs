@@ -69,8 +69,13 @@ public class Manipulation3D : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(_focusObject == null)
+        {
+            return;
+        }
+
         #region MouseControl
-        if(_useMouseControl && Input.touchCount == 0)
+        if (_useMouseControl && Input.touchCount == 0)
         {
             if (Input.GetAxis("Mouse ScrollWheel") != 0)
             {
@@ -130,7 +135,7 @@ public class Manipulation3D : MonoBehaviour
     }
     private void Rotation (Vector2 position)
     {
-        if(_isFirstManipulation)
+        if (_isFirstManipulation)
         {
             FirstManipulated?.Invoke();
             _isFirstManipulation = false;

@@ -49,7 +49,7 @@ public class InventoryItemContent : MonoBehaviour
             case "video":
                 _icon.sprite = _videoSprite;
                 break;
-            case "_3D":
+            case "3D":
                 _icon.sprite = _3DSprite;
                 break;
         }

@@ -153,7 +153,8 @@ public class SelfieView : BaseView
 		m_WebCamTexture.Pause();
 		_popin.Inflate(Wezit.Settings.Instance.GetSettingAsCleanedText(m_PicturePopinTitleSettingKey),
 					   Wezit.Settings.Instance.GetSettingAsCleanedText(m_PicturePopinDescriptionSettingKey),
-					   Wezit.Settings.Instance.GetSettingAsCleanedText(m_PicturePopinButtonTextSettingKey));
+					   Wezit.Settings.Instance.GetSettingAsCleanedText(m_PicturePopinButtonTextSettingKey),
+					   "", "main");
 		_popin.PopinButtonClicked.RemoveAllListeners();
 		_popin.PopinButtonClicked.AddListener(OnCameraPopinOkayButton);
     }
@@ -194,7 +195,8 @@ public class SelfieView : BaseView
 	{
 		_popin.Inflate(Wezit.Settings.Instance.GetSettingAsCleanedText(m_SharePopinTitleSettingKey),
 					   Wezit.Settings.Instance.GetSettingAsCleanedText(m_SharePopinDescriptionSettingKey),
-					   Wezit.Settings.Instance.GetSettingAsCleanedText(m_SharePopinButtonTextSettingKey));
+					   Wezit.Settings.Instance.GetSettingAsCleanedText(m_SharePopinButtonTextSettingKey),
+					   "", "main");
 		_popin.PopinButtonClicked.RemoveAllListeners();
 		_popin.PopinButtonClicked.AddListener(OnSharePopinConfirm);
 	}

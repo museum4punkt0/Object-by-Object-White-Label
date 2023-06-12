@@ -53,8 +53,19 @@ public class PlayerManager : Singleton<PlayerManager>
 #if UNITY_EDITOR
             Directory.CreateDirectory(SelfiesPath);
 #else
-            Directory.CreateDirectory(Path.Combine(Application.persistentDataPath, SelfiesPath));
+            Directory.CreateDirectory(Path.Combine(Application.persistentDataPath, SelfiesScreenshotPath));
 #endif
         }
+    }
+
+    public void DeleteSave()
+    {
+        if(Directory.Exists(SelfiesPath))
+        {
+            Directory.Delete(SelfiesPath, true);
+        }
+
+        Player.Delete();
+        Player = new PlayerData();
     }
 }

@@ -31,7 +31,7 @@ public class QRCodeNotification : MonoBehaviour
         string description = Wezit.Settings.Instance.GetSettingAsCleanedText(m_DescriptionSettingKey);
         string buttonText = Wezit.Settings.Instance.GetSettingAsCleanedText(m_StartSettingKey);
 
-        _popin.Inflate(title, description, buttonText);
+        _popin.Inflate(title, description, buttonText, "", "QRCode");
         _popin.PopinButtonClicked.AddListener(OnStartButton);
     }
     #endregion

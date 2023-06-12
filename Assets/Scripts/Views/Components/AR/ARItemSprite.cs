@@ -56,7 +56,6 @@ public class ARItemSprite : ARItemBase
     private IEnumerator CheckIfClickingOnUI()
     {
         yield return null;
-        Debug.LogError(ClickManager.ClickingOnUI);
         if (!ClickManager.ClickingOnUI)
         {
             ARItemClicked?.Invoke(m_Poi);

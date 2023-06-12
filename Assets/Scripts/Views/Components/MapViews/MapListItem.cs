@@ -112,7 +112,7 @@ public class MapListItem : MonoBehaviour
     {
         if(tourProgressionData.MaxProgression == 0)
         {
-            tourProgressionData.SetTourMaxProgression(tour.childs.Count - 1);
+            tourProgressionData.SetTourMaxProgression(tour.childs.Count - 2);
         }
         _completion.Inflate(tourProgressionData.MaxProgression, tourProgressionData.GetTourCurrentProgression());
     }

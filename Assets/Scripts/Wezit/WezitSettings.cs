@@ -110,9 +110,9 @@ namespace Wezit
 			return source;
         }
 
-		public void SetImageFromSetting(RawImage rawImage, string key, Language language = Language.none, string transformation = "original")
+		public void SetImageFromSetting(RawImage rawImage, string key, Language language = Language.none, string transformation = "original", bool envelopeParent = true)
         {
-			StartCoroutine(Utils.ImageUtils.SetImage(rawImage, GetSettingAsAssetSourceByTransformation(key, language, transformation)));
+			StartCoroutine(Utils.ImageUtils.SetImage(rawImage, GetSettingAsAssetSourceByTransformation(key, language, transformation), "", envelopeParent));
         }
 
 		/*************************************************************/

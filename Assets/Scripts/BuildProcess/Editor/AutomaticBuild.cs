@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 static class AutomaticBuild
@@ -92,9 +93,9 @@ static class AutomaticBuild
 		return dataPath;
 	}
 	
-	private static void DownloadIconsAndSplash()
+	private static async void DownloadIconsAndSplash()
     {
-
+		await SpriteUtils.SaveTextureFromSource("", Path.Combine(Application.streamingAssetsPath, "appImages"), "splash");
     }
 }
 

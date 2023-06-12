@@ -14,6 +14,7 @@ public class Popin : MonoBehaviour
     [SerializeField] private TMPro.TextMeshProUGUI _popinButtonText;
     [SerializeField] private TMPro.TextMeshProUGUI _title;
     [SerializeField] private TMPro.TextMeshProUGUI _description;
+    [SerializeField] private GameObject _iconRoot;
     [SerializeField] private RawImage _icon;
     [SerializeField] private ContrastButton _contrastButton;
     [SerializeField] private Transform _contrastPanelRoot;
@@ -28,23 +29,25 @@ public class Popin : MonoBehaviour
 
     #region Methods
     #region Public
-    public void Inflate(string title, string description, string buttonText, string settingKey = "", string iconTag = "")
+    public void Inflate(string title, string description, string buttonText, string settingKey = "", string iconType = "")
     {
         gameObject.SetActive(true);
         MenuManager.Instance.SetMenuStatus(MenuManager.MenuStatus.Darken);
 
         if (!string.IsNullOrEmpty(Wezit.Settings.Instance.GetSetting(settingKey)))
         {
-            _icon.transform.parent.gameObject.SetActive(true);
+            _iconRoot.SetActive(true);
             Wezit.Settings.Instance.SetImageFromSetting(_icon, settingKey);
         }
-        else if(!string.IsNullOrEmpty(iconTag))
+        else if (!string.IsNullOrEmpty(iconType) && StoreAccessor.State.SelectedTourBank != null)
         {
-
+            _iconRoot.SetActive(true);
+            Wezit.Poi bank = StoreAccessor.State.SelectedTourBank;
+            Utils.ImageUtils.LoadImage(_icon, this, bank, Wezit.RelationName.SHOW_PICTURE, WezitSourceTransformation.original, false, 0.1f, iconType);
         }
         else
         {
-            _icon.transform.parent.gameObject.SetActive(false);
+            _iconRoot.SetActive(false);
         }
 
         _title.text = title;
@@ -66,6 +69,12 @@ public class Popin : MonoBehaviour
     {
         gameObject.SetActive(false);
         MenuManager.Instance.SetPreviousStatus();
+    }
+
+    public void Open()
+    {
+        gameObject.SetActive(true);
+        MenuManager.Instance.SetMenuStatus(MenuManager.MenuStatus.Darken);
     }
     #endregion
 

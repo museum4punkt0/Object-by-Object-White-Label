@@ -322,7 +322,7 @@ namespace Utils
 			}
 		}
 
-		public async static void LoadImage(RawImage imageComponent, MonoBehaviour monoBehaviourInstance, Wezit.Node wzData, string targetRelation = "relationForShowPicture", string targetWzSourceTransformation = "original", bool envelopeParent = true, float crossFadeAlphaDuration = 0.25f)
+		public async static void LoadImage(RawImage imageComponent, MonoBehaviour monoBehaviourInstance, Wezit.Node wzData, string targetRelation = "relationForShowPicture", string targetWzSourceTransformation = "original", bool envelopeParent = true, float crossFadeAlphaDuration = 0.25f, string type = "")
 		{
 			if (imageComponent != null)
 			{
@@ -334,15 +334,18 @@ namespace Utils
 					{
 						if (relation.relation == targetRelation)
 						{
-							hasImage = true;
-							monoBehaviourInstance.StartCoroutine(SetImage(
-								imageComponent,
-								relation.GetAssetSourceByTransformation(targetWzSourceTransformation),
-								relation.GetAssetMimeTypeByTransformation(targetWzSourceTransformation),
-								envelopeParent,
-								null,
-								crossFadeAlphaDuration));
-							break;
+							if (string.IsNullOrEmpty(type) || (!string.IsNullOrEmpty(type) && relation.type == type))
+                            {
+								hasImage = true;
+								monoBehaviourInstance.StartCoroutine(SetImage(
+									imageComponent,
+									relation.GetAssetSourceByTransformation(targetWzSourceTransformation),
+									relation.GetAssetMimeTypeByTransformation(targetWzSourceTransformation),
+									envelopeParent,
+									null,
+									crossFadeAlphaDuration));
+								break;
+                            }
 						}
 					}
 					if (!hasImage) ResetImage(imageComponent);

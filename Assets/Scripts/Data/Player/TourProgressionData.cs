@@ -141,7 +141,7 @@ public class TourProgressionData
 
         for(int i = 0; i < PoisProgression.Count; i++)
         {
-            value += PoisProgression[i].GetPoiCurrentProgression();
+            value += PoisProgression[i].HasBeenVisited ? 1 : 0;
         }
 
         return value;

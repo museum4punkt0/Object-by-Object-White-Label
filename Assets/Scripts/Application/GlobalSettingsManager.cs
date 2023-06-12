@@ -91,12 +91,12 @@ public class GlobalSettingsManager : Singleton<GlobalSettingsManager>
 
     public int PointsEarnedContent
     {
-        get => m_PointsEarnedContent + 3;
+        get => m_PointsEarnedContent;
     }
 
     public int PointsEarnedSecret
     {
-        get => m_PointsEarnedSecret + 1;
+        get => m_PointsEarnedSecret;
     }
     #endregion
 
