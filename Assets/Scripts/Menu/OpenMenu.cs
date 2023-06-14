@@ -30,10 +30,10 @@ public class OpenMenu : MonoBehaviour
 	private string m_appNameSettingKey = "template.spk.header.name.text";
 	private string m_menuLinksArraySettingKey = "template.spk.menu.links";
 
-	private string m_resetPopinTitleSettingKey = "template.spk.reset.title";
-	private string m_resetPopinDescriptionSettingKey = "template.spk.reset.description";
-	private string m_resetPopinCancelSettingKey = "template.spk.reset.button.cancel.text";
-	private string m_resetPopinConfirmSettingKey = "template.spk.reset.button.confirm.text";
+	private string m_resetPopinTitleSettingKey = "template.spk.menu.reset.title";
+	private string m_resetPopinDescriptionSettingKey = "template.spk.menu.reset.description";
+	private string m_resetPopinCancelSettingKey = "template.spk.menu.reset.button.cancel.text";
+	private string m_resetPopinConfirmSettingKey = "template.spk.menu.reset.button.confirm.text";
 	private RectTransform m_MenuRecttransform;
 	#endregion
 	#endregion Fields
@@ -85,6 +85,7 @@ public class OpenMenu : MonoBehaviour
             }
         }
 
+		Debug.LogError(Wezit.Settings.Instance.GetSettingAsCleanedText(m_resetPopinTitleSettingKey) + ", " + lang.ToString());
 		_resetPopin.Inflate(Wezit.Settings.Instance.GetSettingAsCleanedText(m_resetPopinTitleSettingKey),
 							Wezit.Settings.Instance.GetSettingAsCleanedText(m_resetPopinDescriptionSettingKey),
 							Wezit.Settings.Instance.GetSettingAsCleanedText(m_resetPopinCancelSettingKey));

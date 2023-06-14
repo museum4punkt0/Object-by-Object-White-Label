@@ -129,7 +129,6 @@ public class PlayerData
 
     public void Delete()
     {
-        Debug.LogError(FilePath);
         if(File.Exists(FilePath))
         {
             File.Delete(FilePath);
