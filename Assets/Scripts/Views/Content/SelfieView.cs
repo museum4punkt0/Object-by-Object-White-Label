@@ -157,6 +157,8 @@ public class SelfieView : BaseView
 					   "", "main");
 		_popin.PopinButtonClicked.RemoveAllListeners();
 		_popin.PopinButtonClicked.AddListener(OnCameraPopinOkayButton);
+		_popin.PopinClosed.RemoveAllListeners();
+		_popin.PopinClosed.AddListener(OnCameraPopinClosed);
     }
 
 	private void OnCameraPopinOkayButton()
@@ -183,6 +185,11 @@ public class SelfieView : BaseView
 		_cameraButton.gameObject.SetActive(false);
 		_buttonsRoot.SetActive(true);
 	}
+
+	private void OnCameraPopinClosed()
+    {
+		m_WebCamTexture.Play();
+    }
 
 	private void OnRestart()
 	{

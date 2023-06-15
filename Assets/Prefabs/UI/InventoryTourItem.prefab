@@ -380,11 +380,12 @@ MonoBehaviour:
   _score: {fileID: 8036987043733614180}
   _completionBars: {fileID: 309377845051290026}
   _bonusRoot: {fileID: 5069161791284833335}
+  _bonusButton: {fileID: 1569879980500721531}
   _bonusImage: {fileID: 6956488716298626526}
   _bonusImageBG: {fileID: 4132659055659376855}
-  _pictureButton: {fileID: 0}
-  _pictureImage: {fileID: 2366459009157541677}
-  _pictureImageBG: {fileID: 1232594838911071071}
+  _selfieButton: {fileID: 1131705773069756026}
+  _selfieImage: {fileID: 2366459009157541677}
+  _selfieImageBG: {fileID: 5069161792419005885}
   _cameraButton: {fileID: 6783484704894318976}
   _cameraButtonBG: {fileID: 5069161792076898802}
 --- !u!1 &2920868019391596757
@@ -1587,7 +1588,7 @@ GameObject:
   - component: {fileID: 273374447821258536}
   - component: {fileID: 1131705773069756026}
   m_Layer: 0
-  m_Name: PhotoBG
+  m_Name: SelfieBG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1724,7 +1725,7 @@ GameObject:
   - component: {fileID: 3444075609585774804}
   - component: {fileID: 5615101619797145014}
   m_Layer: 0
-  m_Name: Photo
+  m_Name: Selfie
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

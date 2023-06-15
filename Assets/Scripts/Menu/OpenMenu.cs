@@ -85,7 +85,6 @@ public class OpenMenu : MonoBehaviour
             }
         }
 
-		Debug.LogError(Wezit.Settings.Instance.GetSettingAsCleanedText(m_resetPopinTitleSettingKey) + ", " + lang.ToString());
 		_resetPopin.Inflate(Wezit.Settings.Instance.GetSettingAsCleanedText(m_resetPopinTitleSettingKey),
 							Wezit.Settings.Instance.GetSettingAsCleanedText(m_resetPopinDescriptionSettingKey),
 							Wezit.Settings.Instance.GetSettingAsCleanedText(m_resetPopinCancelSettingKey));

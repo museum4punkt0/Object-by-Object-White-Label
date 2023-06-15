@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class LanguageButton : MonoBehaviour
 {
 	#region Fields
-	public UnityEvent<Language> LanguageButtonClicked = new();
+	public UnityEvent<Language, bool> LanguageButtonClicked = new();
 
 	internal Button m_Button;
 	[SerializeField] private TextMeshProUGUI _labelTitle;
@@ -61,7 +61,7 @@ public class LanguageButton : MonoBehaviour
 	#region Private
 	private void OnButtonClick()
 	{
-		LanguageButtonClicked?.Invoke(m_Language);
+		LanguageButtonClicked?.Invoke(m_Language, true);
 	}
 	#endregion Private
 	#endregion Methods

@@ -18,16 +18,18 @@ public class InventoryItemTour : MonoBehaviour
     [SerializeField] private CompletionBars _completionBars;
     [Space]
     [SerializeField] private GameObject _bonusRoot;
+    [SerializeField] private Button _bonusButton;
     [SerializeField] private RawImage _bonusImage;
     [SerializeField] private Image _bonusImageBG;
-    [SerializeField] private Button _pictureButton;
-    [SerializeField] private RawImage _pictureImage;
-    [SerializeField] private Image _pictureImageBG;
+    [SerializeField] private Button _selfieButton;
+    [SerializeField] private RawImage _selfieImage;
+    [SerializeField] private Image _selfieImageBG;
     [SerializeField] private Button _cameraButton;
     [SerializeField] private Image _cameraButtonBG;
     #endregion
     #region Private
     private Tour m_Tour;
+    private TourProgressionData m_tourProgressionData;
     #endregion
     #endregion
 
@@ -45,35 +47,52 @@ public class InventoryItemTour : MonoBehaviour
         m_Tour = tour;
 
         ImageUtils.LoadImage(_image, this, m_Tour);
-        _title.color = _score.color = _bonusImageBG.color = _cameraButtonBG.color = _pictureImageBG.color = GlobalSettingsManager.Instance.AppColor;
+        _title.color = _score.color = _bonusImageBG.color = _cameraButtonBG.color = _selfieImageBG.color = GlobalSettingsManager.Instance.AppColor;
         _title.text = StringUtils.CleanFromWezit(m_Tour.title);
 
-        TourProgressionData tourProgressionData = PlayerManager.Instance.Player.GetTourProgression(m_Tour.pid);
-        _completionBars.Inflate(tourProgressionData.GetTourMaxProgression(), tourProgressionData.GetTourCurrentProgression());
-        _bonusRoot.SetActive(tourProgressionData.HasBeenCompleted);
-        if (tourProgressionData.IsChallengeMode)
+        m_tourProgressionData = PlayerManager.Instance.Player.GetTourProgression(m_Tour.pid);
+        _completionBars.Inflate(m_tourProgressionData.GetTourMaxProgression(), m_tourProgressionData.GetTourCurrentProgression());
+        _bonusRoot.SetActive(m_tourProgressionData.HasBeenCompleted);
+        if (m_tourProgressionData.IsChallengeMode)
         {
             _score.gameObject.SetActive(true);
-            _score.text = tourProgressionData.GetTourScore() + "pts";
+            _score.text = m_tourProgressionData.GetTourScore() + "pts";
         }
 
-        StartCoroutine(ImageUtils.SetImage(_bonusImage, tourProgressionData.TourScratchImagePath));
-        StartCoroutine(ImageUtils.SetImage(_pictureImage, tourProgressionData.TourSelfiePath));
+        StartCoroutine(ImageUtils.SetImage(_bonusImage, m_tourProgressionData.TourScratchImagePath));
+        StartCoroutine(ImageUtils.SetImage(_selfieImage, m_tourProgressionData.TourSelfiePath));
 
-        _tourButton.onClick.AddListener(OnTourButtonClicked);
-        _cameraButton.onClick.AddListener(OnCameraButtonClicked);
+        AddListeners();
     }
     #endregion
     #region Private
+    private void AddListeners()
+    {
+        RemoveListeners();
+
+        _tourButton.onClick.AddListener(OnTourButtonClicked);
+        _cameraButton.onClick.AddListener(OnCameraButtonClicked);
+        _selfieButton.onClick.AddListener(OnSelfieButtonClicked);
+        _bonusButton.onClick.AddListener(OnBonusButtonClicked);
+    }
+
+    private void RemoveListeners()
+    {
+        _tourButton.onClick.RemoveAllListeners();
+        _cameraButton.onClick.RemoveAllListeners();
+        _selfieButton.onClick.RemoveAllListeners();
+        _bonusButton.onClick.RemoveAllListeners();
+    }
+
     private void OnTourButtonClicked()
     {
-        StoreAccessor.State.SelectedTour = m_Tour;
+        SelectTourAndChangeTitle();
         AppManager.Instance.GoToState(KioskState.INVENTORY_POI);
     }
 
     private void OnCameraButtonClicked()
     {
-        StoreAccessor.State.SelectedTour = m_Tour;
+        SelectTourAndChangeTitle();
         foreach (Poi poi in m_Tour.childs)
         {
             if(poi.type == "secret")
@@ -83,6 +102,26 @@ public class InventoryItemTour : MonoBehaviour
             }
         }
         AppManager.Instance.GoToState(KioskState.SELFIE);
+    }
+
+    private void OnSelfieButtonClicked()
+    {
+        SelectTourAndChangeTitle();
+        AppManager.Instance.GoToState(KioskState.IMAGE_VIEWER);
+        StoreAccessor.State.ImageViewerImageSource = m_tourProgressionData.TourSelfiePath;
+    }
+
+    private void OnBonusButtonClicked()
+    {
+        SelectTourAndChangeTitle();
+        AppManager.Instance.GoToState(KioskState.IMAGE_VIEWER);
+        StoreAccessor.State.ImageViewerImageSource = m_tourProgressionData.TourScratchImagePath;
+    }
+
+    private void SelectTourAndChangeTitle()
+    {
+        StoreAccessor.State.SelectedTour = m_Tour;
+        MenuManager.Instance.SetTitle(m_Tour.title);
     }
 
     private void ResetComponent()

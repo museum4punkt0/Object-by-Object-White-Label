@@ -197,13 +197,16 @@ public class ContentView : BaseView
 
 	private void OnItemCompleted()
     {
-		ContentProgressionData contentProgressionData = m_PoiProgressionData.GetContentProgression(m_PoiData.pid);
-		if(contentProgressionData.State != EContentProgressionState.Complete)
+		if(m_TourProgressionData.IsChallengeMode)
         {
-			contentProgressionData.SetCompleted();
-			m_TourProgressionData.TourScore = m_TourProgressionData.TourScore + GlobalSettingsManager.Instance.PointsEarnedContent;
-			PlayerManager.Instance.Player.Save();
-			_popinPoints.Inflate(m_PoiData);
+			ContentProgressionData contentProgressionData = m_PoiProgressionData.GetContentProgression(m_PoiData.pid);
+			if(contentProgressionData.State != EContentProgressionState.Complete)
+			{
+				contentProgressionData.SetCompleted();
+				m_TourProgressionData.TourScore = m_TourProgressionData.TourScore + GlobalSettingsManager.Instance.PointsEarnedContent;
+				PlayerManager.Instance.Player.Save();
+				_popinPoints.Inflate(m_PoiData);
+			}
         }
 	}
 	#endregion Private

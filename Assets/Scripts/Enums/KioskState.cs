@@ -21,6 +21,7 @@ public enum KioskState
 
 	INVENTORY,
 	INVENTORY_POI,
+	IMAGE_VIEWER,
 	LINKS,
 	CREDITS,
 	RGPD,

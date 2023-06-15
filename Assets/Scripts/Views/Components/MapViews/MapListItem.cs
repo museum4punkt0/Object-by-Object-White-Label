@@ -87,7 +87,7 @@ public class MapListItem : MonoBehaviour
         _title.text = poi.title;
         _description.text = poi.subject;
         if (_textContainer) activeMonobehavour.StartCoroutine(RebuildContainer());
-        Utils.ImageUtils.LoadImage(_image, activeMonobehavour, poi);
+        Utils.ImageUtils.LoadImage(_image, activeMonobehavour, poi, RelationName.SHOW_PICTURE, WezitSourceTransformation.original, false);
 
         m_Poi = poi;
         Wezit.PoiLocation poiLocation = PoiLocationStore.GetPoiLocationById(poi.pid);

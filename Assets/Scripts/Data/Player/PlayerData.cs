@@ -53,6 +53,12 @@ public class PlayerData
         GetTourProgression(a_tourId).GetPoiProgression(a_poiId).HasBeenVisited = true;
         Save();
     }
+
+    public void SetLanguage(Language language)
+    {
+        Language = language.ToString();
+        Save();
+    }
     #endregion
 
     #region Save/Load behavior

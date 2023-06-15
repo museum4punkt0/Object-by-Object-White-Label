@@ -21,4 +21,5 @@ public class State : StateBase
 	public Poi SelectedPoi = null;
 	public Tour SelectedTour = null;
 	public Poi SelectedTourBank = null;
+	public string ImageViewerImageSource = "";
 }

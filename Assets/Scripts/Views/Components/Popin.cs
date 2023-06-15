@@ -25,6 +25,7 @@ public class Popin : MonoBehaviour
 
     #region Properties
     public UnityEvent PopinButtonClicked = new UnityEvent();
+    public UnityEvent PopinClosed = new UnityEvent();
     #endregion
 
     #region Methods
@@ -67,6 +68,7 @@ public class Popin : MonoBehaviour
 
     public void Close()
     {
+        PopinClosed?.Invoke();
         gameObject.SetActive(false);
         MenuManager.Instance.SetPreviousStatus();
     }

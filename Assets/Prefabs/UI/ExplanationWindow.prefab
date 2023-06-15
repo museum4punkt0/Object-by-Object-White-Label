@@ -68,6 +68,7 @@ MonoBehaviour:
   _transparentFiller: {fileID: 7654115309596767761}
   _explanationPanel: {fileID: 7654115309782896645}
   _contrastButton: {fileID: 720329963872209055}
+  _scrollRect: {fileID: 7654115309131987241}
 --- !u!114 &7654115309131987242
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -333,8 +334,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 540, y: 0}
-  m_SizeDelta: {x: 1080, y: 0}
+  m_AnchoredPosition: {x: 80, y: 0}
+  m_SizeDelta: {x: 160, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7654115309782896647
 CanvasRenderer:

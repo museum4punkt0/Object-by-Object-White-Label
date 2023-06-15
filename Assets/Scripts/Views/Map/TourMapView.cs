@@ -163,6 +163,11 @@ public class TourMapView : BaseView
 		m_Pins.Clear();
 		m_PoisAndLocations.Clear();
 		m_PoisAndPins.Clear();
+
+		if(ViewManager.Instance.PreviousKioskState != KioskState.AR)
+        {
+			m_LastPoiInrange = null;
+        }
 	}
 
 	private void AddListeners()
