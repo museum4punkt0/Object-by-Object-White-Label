@@ -107,13 +107,17 @@ public class SpriteUtils
 	public static async UniTask<Texture2D> GetTextureFromSource(string source)
 	{
 		Texture2D texture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-		Debug.Log(" SpriteUtils - GetTextureFromSource - uri : " + source);
+		Debug.Log(" SpriteUtils - GetTextureFromSourceAsync - uri : " + source);
 		using (UnityWebRequest webRequest = UnityWebRequest.Get(source))
 		{
 			await webRequest.SendWebRequest();
 
 			if (string.IsNullOrEmpty(webRequest.error))
 			{
+				if(texture == null)
+                {
+					texture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+				}
 				if (texture != null && webRequest.downloadHandler.data != null)
 				{
 					texture.LoadImage(webRequest.downloadHandler.data);
@@ -122,7 +126,7 @@ public class SpriteUtils
 				}
 				else
 				{
-					Debug.Log("SpriteUtils - GetTextureFromSource - File does not exist: " + source);
+					Debug.LogWarning("SpriteUtils - GetTextureFromSource - File does not exist: " + source + "\ntexture is null: " + (texture == null).ToString() + "\ndata is null: " + (webRequest.downloadHandler.data == null).ToString());
 					return(Resources.Load<Texture2D>("Images/DefaultImage/default"));
 				}
 
@@ -144,6 +148,6 @@ public class SpriteUtils
 		{
 			Directory.CreateDirectory(path);
 		}
-		File.WriteAllBytes(path + fileName + ".png", bytes);
+		File.WriteAllBytes(Path.Combine(path, fileName + ".png"), bytes);
 	}
 }

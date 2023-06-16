@@ -39,6 +39,7 @@ public class ExplanationWindow : MonoBehaviour, IBeginDragHandler
         StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_explanationPanel.gameObject));
 
         m_TopPos = Mathf.Min(_transparentFiller.sizeDelta.y, _transparentFiller.sizeDelta.y + _explanationPanel.sizeDelta.y - 2200);
+        _openArrow.localEulerAngles = Vector3.zero;
 
         _scrollRect.onValueChanged.AddListener(OnScrollRectValueChanged);
     }

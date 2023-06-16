@@ -16,11 +16,11 @@ public class AppStartUp : Singleton<AppStartUp>
 	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
 	static async void OnBeforeSceneLoadRuntimeMethod()
 	{
-		ShowLoader(true);
+        ShowLoader(true);
 
-		// ORDER IS IMPORTANT
-		// Get app config
-		await AppConfig.Instance.Init();
+        // ORDER IS IMPORTANT
+        // Get app config
+        await AppConfig.Instance.Init();
 
 		// Init Wezit using the app config parameters
 		if (AppConfig.Instance.ConfigModel.loadWezit)
@@ -39,8 +39,9 @@ public class AppStartUp : Singleton<AppStartUp>
         PlayerManager.Instance.Init();
         PlayerManager.Instance.Player.Load();
 
+		SplashView.Instance.Hide();
         ShowLoader(false);
-	}
+    }
 
 	/*************************************************************/
 	/***************** PUBLIC STATIC METHODS *********************/

@@ -64,7 +64,7 @@ public class TourMapPin : MonoBehaviour
     {
         yield return null;
         Vector3 localScale = transform.localScale;
-        transform.localScale = new Vector3(localScale.x, 0.1f, localScale.z);
+        transform.localScale = new Vector3(localScale.x, 1f, localScale.z);
     }
     #endregion
     #endregion

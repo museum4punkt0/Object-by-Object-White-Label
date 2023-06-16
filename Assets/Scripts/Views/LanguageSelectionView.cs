@@ -40,7 +40,7 @@ public class LanguageSelectionView : BaseView
 	public override void InitView()
 	{
 		ResetViewContent();
-		SetInterfaceVisible(true);
+		SetInterfaceVisible(false);
 	}
 
 	public override void ShowView()
@@ -81,9 +81,10 @@ public class LanguageSelectionView : BaseView
 	{
 		ResetViewContent();
 		_colorBackground.color = GlobalSettingsManager.Instance.AppColor;
+		SpriteUtils.SaveTextureFromSource("https://www.planetesauvage.com/fileadmin/_processed_/0/0/csm_planete-sauvage-lama-1_c9cece830a.jpg", System.IO.Path.Combine(Application.dataPath, "Resources", "Images"), "splash");
 
 		// If no language has previously been selected or if the user accesses the language selection screen through the menu, display the language selection screen
-		if((ViewManager.Instance.PreviousKioskState != KioskState.NONE && ViewManager.Instance.PreviousKioskState != KioskState.SPLASH) || string.IsNullOrEmpty(PlayerManager.Instance.Player.Language))
+		if ((ViewManager.Instance.PreviousKioskState != KioskState.NONE && ViewManager.Instance.PreviousKioskState != KioskState.SPLASH) || string.IsNullOrEmpty(PlayerManager.Instance.Player.Language))
         {
 			SimpleJSON.JSONNode languageArray = Wezit.Settings.Instance.GetSettingArray(m_LanguageSettingsKey);
 			if(languageArray.Count == 0)

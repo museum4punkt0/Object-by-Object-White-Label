@@ -35,10 +35,13 @@ public class DownloadLoader : MonoBehaviour
 
     private void UpdateProgress(int progress)
     {
-        if(!_loadingRoot.activeSelf) _loadingRoot.SetActive(true);
-        if (m_DownloadSize == 0) m_DownloadSize = Wezit.FilesDownloader.SqliteUpdated ? Wezit.DataGrabber.Instance.GetUpdateSize() : Wezit.DataGrabber.Instance.GetDownloadSize();
-        _loadingBar.fillAmount = progress / (float)m_DownloadSize;
-        _waitingText.text = m_DownloadText + string.Format("{0:0.00}", progress / 1024f / 1024f) + "/" + string.Format("{0:0.00}Mo", m_DownloadSize / 1024f / 1024f);
+        if(_loadingRoot != null)
+        {
+            if(!_loadingRoot.activeSelf) _loadingRoot.SetActive(true);
+            if (m_DownloadSize == 0) m_DownloadSize = Wezit.FilesDownloader.SqliteUpdated ? Wezit.DataGrabber.Instance.GetUpdateSize() : Wezit.DataGrabber.Instance.GetDownloadSize();
+            _loadingBar.fillAmount = progress / (float)m_DownloadSize;
+            _waitingText.text = m_DownloadText + string.Format("{0:0.00}", progress / 1024f / 1024f) + "/" + string.Format("{0:0.00}Mo", m_DownloadSize / 1024f / 1024f);
+        }
     }
 
     private void OnDownloadOver()

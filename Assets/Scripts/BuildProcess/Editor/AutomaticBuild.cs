@@ -2,11 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 static class AutomaticBuild
 {
-	public static void Perform()
+	public static async void Perform()
 	{
 		List<string> scenes = new List<string>();
 
@@ -33,6 +34,11 @@ static class AutomaticBuild
 
 				break;
 			}
+
+            if (commandLineArgs[i] == "DownloadIconAndSplashFromSettings")
+            {
+				await DownloadIconsAndSplash();
+            }
 		}
 
 		if (scenes.Count == 0)
@@ -93,9 +99,11 @@ static class AutomaticBuild
 		return dataPath;
 	}
 	
-	private static async void DownloadIconsAndSplash()
+	private static async Task DownloadIconsAndSplash()
     {
-		await SpriteUtils.SaveTextureFromSource("", Path.Combine(Application.streamingAssetsPath, "appImages"), "splash");
+		await SpriteUtils.SaveTextureFromSource("", Path.Combine(Application.dataPath, "Resources", "Images"), "splash");
+		Texture2D icon = await SpriteUtils.GetTextureFromSource("");
+		return;
     }
 }
 
