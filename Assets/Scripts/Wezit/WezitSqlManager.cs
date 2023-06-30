@@ -26,7 +26,7 @@ namespace Wezit
 		/*************************************************************/
 		public bool connectionOpen = false;
 
-
+		private bool online = false;
 		private string identification;
 		private string apiBaseUrl;
 		//private IDbConnection db_connection;
@@ -48,6 +48,7 @@ namespace Wezit
 			headers.Add("Authorization", "Basic " + btoa("wsqlwezitio:r6U8Avd8"));
 
 			// Create identification
+			online = Config.Instance.ConfigModel.online;
 			string version = Config.Instance.ConfigModel.version;
 			string entityId = ManifestLoader.EntityId;
 			string inventoryId = Wezit.ManifestLoader.InventoryId;
@@ -64,30 +65,38 @@ namespace Wezit
 		public IObservable<string> GetInventoryList()
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText =
-				"SELECT " + " n.pid, " + " dc_language AS language, " +
-				" (CASE WHEN n.rte_title IS NULL OR n.rte_title = '' " +
-				"THEN n.dc_title " +
-				"ELSE n.rte_title END) AS title, " +
-				" (CASE WHEN rte_subject IS NULL OR rte_subject = '' " +
-				"THEN dc_subject " +
-				"ELSE rte_subject END) AS subject, " +
-				" (CASE WHEN rte_desc IS NULL OR rte_desc = '' " +
-				"THEN dc_description " +
-				"ELSE rte_desc END) AS description, " +
-				"n.aspects, " +
-				"n.tags " +
-				" FROM OBJECT o " +
-				" INNER JOIN NODE n ON n.pid = o.pid " +
-				" LEFT JOIN RELATION r ON r.pid_src = n.pid " +
-				"LEFT JOIN OBJECT_SOURCE os ON os.pid = r.pid_dest " +
-				" WHERE o.type = 'WzNodeInventory' " +
-				" GROUP BY n.pid, dc_language";
+			if (!online)
+			{
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText =
+					"SELECT " + " n.pid, " + " dc_language AS language, " +
+					" (CASE WHEN n.rte_title IS NULL OR n.rte_title = '' " +
+					"THEN n.dc_title " +
+					"ELSE n.rte_title END) AS title, " +
+					" (CASE WHEN rte_subject IS NULL OR rte_subject = '' " +
+					"THEN dc_subject " +
+					"ELSE rte_subject END) AS subject, " +
+					" (CASE WHEN rte_desc IS NULL OR rte_desc = '' " +
+					"THEN dc_description " +
+					"ELSE rte_desc END) AS description, " +
+					"n.aspects, " +
+					"n.tags " +
+					" FROM OBJECT o " +
+					" INNER JOIN NODE n ON n.pid = o.pid " +
+					" LEFT JOIN RELATION r ON r.pid_src = n.pid " +
+					"LEFT JOIN OBJECT_SOURCE os ON os.pid = r.pid_dest " +
+					" WHERE o.type = 'WzNodeInventory' " +
+					" GROUP BY n.pid, dc_language";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+			}
+			else
+			{
+				string urlApi = "inventory/list";
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = "inventory/list";
 			return this.apiCall(urlApi);
@@ -97,42 +106,50 @@ namespace Wezit
 			public IObservable<string> GetInventoryById(string id)
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText =
-				"SELECT " +
-				"NODE.pid, " +
-				"(CASE WHEN rte_title IS NULL OR rte_title = '' " +
-				"THEN dc_title " +
-				"ELSE rte_title END) AS title, " +
-				" (CASE WHEN rte_subject IS NULL OR rte_subject = '' " +
-				"THEN dc_subject " +
-				"ELSE rte_subject END) AS subject, " +
-				"(CASE WHEN rte_desc IS NULL OR rte_desc = '' " +
-				"THEN dc_description " +
-				"ELSE rte_desc END) AS description, " +
-				"aspects, " +
-				"tags, " +
-				"identifier, " +
-				"dc_contributor as contributor, " +
-				"dc_author as author, " +
-				"dc_creator as creator, " +
-				"dc_rights as rights, " +
-				"dc_format AS format, " +
-				"dc_publisher AS publisher, " +
-				"dc_type AS type, " +
-				"dc_language AS language, " +
-				"dc_date AS date, " +
-				"dc_source AS source, " +
-				"dc_location AS location, " +
-				"dc_spatial AS spatial " +
-                "dc_location AS location " +
-				"FROM NODE " +
-				"JOIN IDENTIFIER " +
-				"WHERE NODE.pid = \"" + id + "\"AND IDENTIFIER.pid = \"" + id + "\"";
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText =
+					"SELECT " +
+					"NODE.pid, " +
+					"(CASE WHEN rte_title IS NULL OR rte_title = '' " +
+					"THEN dc_title " +
+					"ELSE rte_title END) AS title, " +
+					" (CASE WHEN rte_subject IS NULL OR rte_subject = '' " +
+					"THEN dc_subject " +
+					"ELSE rte_subject END) AS subject, " +
+					"(CASE WHEN rte_desc IS NULL OR rte_desc = '' " +
+					"THEN dc_description " +
+					"ELSE rte_desc END) AS description, " +
+					"aspects, " +
+					"tags, " +
+					"identifier, " +
+					"dc_contributor as contributor, " +
+					"dc_author as author, " +
+					"dc_creator as creator, " +
+					"dc_rights as rights, " +
+					"dc_format AS format, " +
+					"dc_publisher AS publisher, " +
+					"dc_type AS type, " +
+					"dc_language AS language, " +
+					"dc_date AS date, " +
+					"dc_source AS source, " +
+					"dc_location AS location, " +
+					"dc_spatial AS spatial " +
+					"dc_location AS location " +
+					"FROM NODE " +
+					"JOIN IDENTIFIER " +
+					"WHERE NODE.pid = \"" + id + "\"AND IDENTIFIER.pid = \"" + id + "\"";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+            }
+			else
+			{
+				string urlApi = "inventory/" + id;
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = "inventory/" + id;
 			return this.apiCall(urlApi);
@@ -142,31 +159,39 @@ namespace Wezit
 			public IObservable<string> GetTourList()
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText =
-				"SELECT DISTINCT " +
-				"n.pid, " +
-				"language, " +
-				" (CASE WHEN n.rte_title IS NULL OR n.rte_title = '' " +
-				"THEN n.dc_title " +
-				"ELSE n.rte_title END) AS title, " +
-				"(CASE WHEN rte_subject IS NULL OR rte_subject = '' " +
-				"THEN dc_subject " +
-				"ELSE rte_subject END) AS subject, " +
-				" (CASE WHEN rte_desc IS NULL OR rte_desc = '' " +
-				"THEN dc_description " +
-				"ELSE rte_desc END) AS description, " +
-				"n.aspects, " +
-				"n.tags, " +
-				"n.dc_format AS format, " +
-				"n.dc_type AS type " +
-				"FROM VIEW_TOUR_ID vt " +
-				"INNER JOIN NODE n ON n.pid = vt.node_pid " +
-				"LEFT JOIN RELATION r ON r.pid_src = n.pid";
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText =
+					"SELECT DISTINCT " +
+					"n.pid, " +
+					"language, " +
+					" (CASE WHEN n.rte_title IS NULL OR n.rte_title = '' " +
+					"THEN n.dc_title " +
+					"ELSE n.rte_title END) AS title, " +
+					"(CASE WHEN rte_subject IS NULL OR rte_subject = '' " +
+					"THEN dc_subject " +
+					"ELSE rte_subject END) AS subject, " +
+					" (CASE WHEN rte_desc IS NULL OR rte_desc = '' " +
+					"THEN dc_description " +
+					"ELSE rte_desc END) AS description, " +
+					"n.aspects, " +
+					"n.tags, " +
+					"n.dc_format AS format, " +
+					"n.dc_type AS type " +
+					"FROM VIEW_TOUR_ID vt " +
+					"INNER JOIN NODE n ON n.pid = vt.node_pid " +
+					"LEFT JOIN RELATION r ON r.pid_src = n.pid";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+			}
+			else
+			{
+				string urlApi = "tour/list";
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = "tour/list";
 			return this.apiCall(urlApi);
@@ -181,85 +206,101 @@ namespace Wezit
 		public IObservable<string> GetPoiList()
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText =
-				"SELECT DISTINCT " +
-				"NODE.pid, " +
-				"(CASE WHEN rte_title IS NULL OR rte_title = '' " +
-				"THEN dc_title " +
-				"ELSE rte_title END) AS title, " +
-				" (CASE WHEN rte_subject IS NULL OR rte_subject = '' " +
-				"THEN dc_subject " +
-				"ELSE rte_subject END) AS subject, " +
-				" (CASE WHEN rte_desc IS NULL OR rte_desc = '' " +
-				"THEN dc_description " +
-				"ELSE rte_desc END) AS description, " +
-				"aspects, " +
-				"tags, " +
-				"   '[' || group_concat('{ \"pid\" : \"' || coalesce( relation.pid, \"\" ) || '\", \"relationName\": \"' || coalesce( relation.relationName, \"\" ) || '\", \"order\": ' || coalesce(relation.ord, 0) || ' }') || ']' as relationList, " +
-				"dc_identifier AS identifier, " +
-				"dc_format AS format, " +
-				"dc_publisher AS publisher, " +
-				"dc_contributor as contributor, " +
-				"dc_author as author, " +
-				"dc_creator as creator, " +
-				"dc_rights as rights, " +
-				"dc_type AS type, " +
-				"dc_language AS language, " +
-				"dc_date AS date, " +
-				"dc_source AS source, " +
-				"dc_spatial AS spatial, " +
-				"dc_location AS location, " +
-				"dc_extent AS extent " +
-				"FROM " +
-				"( " +
-				"SELECT pid_src, pid_dest as pid, relation_name as relationName, ord " +
-				"FROM RELATION " +
-				"ORDER BY ord  " +
-				") as relation " +
-				"NATURAL JOIN IDENTIFIER " +
-				"JOIN NODE ON relation.pid_src = NODE.pid " +
-				"WHERE (NODE.pid LIKE \"%wzobj:scenode%\" OR NODE.pid LIKE \"%wzobj:poi%\") " +
-				"GROUP BY NODE.pid";
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText =
+					"SELECT DISTINCT " +
+					"NODE.pid, " +
+					"(CASE WHEN rte_title IS NULL OR rte_title = '' " +
+					"THEN dc_title " +
+					"ELSE rte_title END) AS title, " +
+					" (CASE WHEN rte_subject IS NULL OR rte_subject = '' " +
+					"THEN dc_subject " +
+					"ELSE rte_subject END) AS subject, " +
+					" (CASE WHEN rte_desc IS NULL OR rte_desc = '' " +
+					"THEN dc_description " +
+					"ELSE rte_desc END) AS description, " +
+					"aspects, " +
+					"tags, " +
+					"   '[' || group_concat('{ \"pid\" : \"' || coalesce( relation.pid, \"\" ) || '\", \"relationName\": \"' || coalesce( relation.relationName, \"\" ) || '\", \"order\": ' || coalesce(relation.ord, 0) || ' }') || ']' as relationList, " +
+					"dc_identifier AS identifier, " +
+					"dc_format AS format, " +
+					"dc_publisher AS publisher, " +
+					"dc_contributor as contributor, " +
+					"dc_author as author, " +
+					"dc_creator as creator, " +
+					"dc_rights as rights, " +
+					"dc_type AS type, " +
+					"dc_language AS language, " +
+					"dc_date AS date, " +
+					"dc_source AS source, " +
+					"dc_spatial AS spatial, " +
+					"dc_location AS location, " +
+					"dc_extent AS extent " +
+					"FROM " +
+					"( " +
+					"SELECT pid_src, pid_dest as pid, relation_name as relationName, ord " +
+					"FROM RELATION " +
+					"ORDER BY ord  " +
+					") as relation " +
+					"NATURAL JOIN IDENTIFIER " +
+					"JOIN NODE ON relation.pid_src = NODE.pid " +
+					"WHERE (NODE.pid LIKE \"%wzobj:scenode%\" OR NODE.pid LIKE \"%wzobj:poi%\") " +
+					"GROUP BY NODE.pid";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+            }
+			else
+			{
+				string urlApi = "poi/list";
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = "poi/list";
 			return this.apiCall(urlApi);
 #endif
 		}
 
-			public IObservable<string> GetPoiListByTourId(string id)
+		public IObservable<string> GetPoiListByTourId(string id)
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText =
-				"SELECT " +
-				"n.pid, " +
-				"dc.type, " +
-				"dc.language, " +
-				"dc.identifier, " +
-				" (CASE WHEN n.rte_title IS NULL OR n.rte_title = '' " +
-				"THEN n.dc_title " +
-				"ELSE n.rte_title END) AS title, " +
-				" (CASE WHEN rte_subject IS NULL OR rte_subject = '' " +
-				"THEN dc_subject " +
-				"ELSE rte_subject END) AS subject, " +
-				" (CASE WHEN rte_desc IS NULL OR rte_desc = '' " +
-				"THEN dc_description " +
-				"ELSE rte_desc END) AS description, " +
-				"n.aspects, " +
-				"n.tags " +
-				"FROM RELATION r " +
-				"JOIN NODE n ON n.pid = r.pid_dest " +
-				"JOIN DUBLIN_CORE dc on dc.pid = r.pid_dest " +
-				"WHERE r.pid_src = \"" + id + "\" AND relation_name = \"hasNode\"";
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText =
+					"SELECT " +
+					"n.pid, " +
+					"dc.type, " +
+					"dc.language, " +
+					"dc.identifier, " +
+					" (CASE WHEN n.rte_title IS NULL OR n.rte_title = '' " +
+					"THEN n.dc_title " +
+					"ELSE n.rte_title END) AS title, " +
+					" (CASE WHEN rte_subject IS NULL OR rte_subject = '' " +
+					"THEN dc_subject " +
+					"ELSE rte_subject END) AS subject, " +
+					" (CASE WHEN rte_desc IS NULL OR rte_desc = '' " +
+					"THEN dc_description " +
+					"ELSE rte_desc END) AS description, " +
+					"n.aspects, " +
+					"n.tags " +
+					"FROM RELATION r " +
+					"JOIN NODE n ON n.pid = r.pid_dest " +
+					"JOIN DUBLIN_CORE dc on dc.pid = r.pid_dest " +
+					"WHERE r.pid_src = \"" + id + "\" AND relation_name = \"hasNode\"";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+			}
+			else
+			{
+				string urlApi = "tour/" + id + "/poi/list/noimages";
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = "tour/" + id + "/poi/list/noimages";
 			return this.apiCall(urlApi);
@@ -274,15 +315,23 @@ namespace Wezit
 		public IObservable<string> GetPoiDublinCoreById(string id)
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText =
-				"SELECT dc.pid, dc.contributor, dc.creator, dc.date, dc.description, dc.format, dc.publisher, dc.rights, dc.source, dc.subject, dc.title, dc.type, dc.identifier, dc.language, dc.author " +
-				"FROM DUBLIN_CORE as dc " +
-				"WHERE dc.pid = \"" + id + "\"";
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText =
+					"SELECT dc.pid, dc.contributor, dc.creator, dc.date, dc.description, dc.format, dc.publisher, dc.rights, dc.source, dc.subject, dc.title, dc.type, dc.identifier, dc.language, dc.author " +
+					"FROM DUBLIN_CORE as dc " +
+					"WHERE dc.pid = \"" + id + "\"";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+			}
+			else
+			{
+				string urlApi = "poi/" + id + "/dublin-core";
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = "poi/" + id + "/dublin-core";
 			return this.apiCall(urlApi);
@@ -292,16 +341,24 @@ namespace Wezit
 		public IObservable<string> GetRelationListByPoiId(string language, string id)
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText =
-				"SELECT node_pid as pid, name as relationName, aspects, is_subject, language " +
-				"FROM VIEW_RELATIONS " +
-				"WHERE (language like \"" + language + "\" OR language IS NULL) AND parent_pid = \"" + id + "\" AND is_subject = 0 " +
-				"ORDER BY relationName;";
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText =
+					"SELECT node_pid as pid, name as relationName, aspects, is_subject, language " +
+					"FROM VIEW_RELATIONS " +
+					"WHERE (language like \"" + language + "\" OR language IS NULL) AND parent_pid = \"" + id + "\" AND is_subject = 0 " +
+					"ORDER BY relationName;";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+			}
+			else
+			{
+				string urlApi = language + "/poi/" + id + "/relation/list";
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = language + "/poi/" + id + "/relation/list";
 			return this.apiCall(urlApi);
@@ -311,16 +368,24 @@ namespace Wezit
 			public IObservable<string> GetArtworkByPoiId(string id)
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText =
-				"SELECT pid, title, type, date_creation, domain, subdomain, dimensions, inventory_reference, " +
-				"acquisition, bibliography, graphic_description, historic_description, society_description, usage_description, author " +
-				"FROM ARTWORK " +
-				" WHERE pid = \"" + id + "\";";
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText =
+					"SELECT pid, title, type, date_creation, domain, subdomain, dimensions, inventory_reference, " +
+					"acquisition, bibliography, graphic_description, historic_description, society_description, usage_description, author " +
+					"FROM ARTWORK " +
+					" WHERE pid = \"" + id + "\";";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+			}
+			else
+			{
+				string urlApi = "poi/" + id + "/artwork";
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = "poi/" + id + "/artwork";
 			return this.apiCall(urlApi);
@@ -330,25 +395,34 @@ namespace Wezit
 		public IObservable<string> GetAssetListByNodeId(string nodeType, string id)
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText =
-				 "SELECT ra.pid, ra.title, ra.subject, ra.description, ra.relation, ra.ord, " +
-				 "'[' || GROUP_CONCAT('{ " +
-				 "\"label\" : \"' || label || '\", " +
-				 "\"url\" : \"' || coalesce( url, \"\" ) || '\", " +
-				 "\"path\": \"' || coalesce( os.path, \"\" ) || '\", " +
-				 "\"pid\": \"' || os.pid || '\", " +
-				 "\"metadata\": \"' || coalesce( os.metadata, \"\" ) || '\", " +
-                 "\"mimeType\": \"' || os.mimeType || '\"' || ' }') || ']' " +
-				 "as assets, ra.usage, ra.language, dc.type as type, dc.rights as rights, dc.source as source " +
-				 "FROM VIEW_RELATED_ASSET ra " +
-				 "JOIN DUBLIN_CORE dc ON ra.pid = dc.pid " +
-				 "INNER JOIN OBJECT_SOURCE os ON os.pid = ra.pid " +
-				 "WHERE related_pid = \"" + id + "\" GROUP BY ra.usage, relation;";
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText =
+					 "SELECT ra.pid, ra.title, ra.subject, ra.description, ra.relation, ra.ord, " +
+					 "'[' || GROUP_CONCAT('{ " +
+					 "\"label\" : \"' || label || '\", " +
+					 "\"url\" : \"' || coalesce( url, \"\" ) || '\", " +
+					 "\"path\": \"' || coalesce( os.path, \"\" ) || '\", " +
+					 "\"pid\": \"' || os.pid || '\", " +
+					 "\"metadata\": \"' || coalesce( os.metadata, \"\" ) || '\", " +
+					 "\"mimeType\": \"' || os.mimeType || '\"' || ' }') || ']' " +
+					 "as assets, ra.usage, ra.language, dc.type as type, dc.rights as rights, dc.source as source " +
+					 "FROM VIEW_RELATED_ASSET ra " +
+					 "JOIN DUBLIN_CORE dc ON ra.pid = dc.pid " +
+					 "INNER JOIN OBJECT_SOURCE os ON os.pid = ra.pid " +
+					 "WHERE related_pid = \"" + id + "\" GROUP BY ra.usage, relation;";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+
+			}
+			else
+			{
+				string urlApi = nodeType + "/" + id + "/asset/list";
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = nodeType + "/" + id + "/asset/list";
 			return this.apiCall(urlApi);
@@ -358,22 +432,30 @@ namespace Wezit
 		public IObservable<string> GetLocationList()
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText =
-				"SELECT relation.pid_src AS tour_pid, node.pid, node.dc_language as language, po.x as x, po.y as y, " +
-				"geo.latitude as lat, geo.longitude as lng, po.relX as relX, po.relY as relY, geo.radius as radius, coalesce(vta.title, geo.map) as map_name, vta.subject as subject, vta.description as description, " +
-				"'[' || GROUP_CONCAT('{\"pid\" : \"' || vta.pid || '\", \"metadata\" : \"' || coalesce(vta.metadata, \"\") || '\", \"label\" : \"' || vta.transformation || '\", \"url\" : \"' || coalesce(vta.uri, \"\") || '\", \"path\": \"' || vta.path || '\"}') || ']' as maps " +
-				"FROM RELATION relation " +
-				"INNER JOIN NODE AS node ON relation.pid_dest = node.pid AND relation.relation_name = \"hasNode\" " +
-				"LEFT JOIN POSITION po ON po.pid = node.pid " +
-				"LEFT JOIN(SELECT* FROM VIEW_GEODATA UNION SELECT* FROM VIEW_TRANSFORMED_GEODATA) as geo ON node.pid = geo.pid " +
-				"LEFT JOIN VIEW_TRANSFORMED_ASSET vta ON(vta.pid = po.map_name OR vta.pid = geo.map) " +
-				"where po.x is not null and po.y is not null OR geo.latitude and geo.longitude is not null " +
-				"GROUP BY tour_pid, node.pid, po.map_name;";
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText =
+					"SELECT relation.pid_src AS tour_pid, node.pid, node.dc_language as language, po.x as x, po.y as y, " +
+					"geo.latitude as lat, geo.longitude as lng, po.relX as relX, po.relY as relY, geo.radius as radius, coalesce(vta.title, geo.map) as map_name, vta.subject as subject, vta.description as description, " +
+					"'[' || GROUP_CONCAT('{\"pid\" : \"' || vta.pid || '\", \"metadata\" : \"' || coalesce(vta.metadata, \"\") || '\", \"label\" : \"' || vta.transformation || '\", \"url\" : \"' || coalesce(vta.uri, \"\") || '\", \"path\": \"' || vta.path || '\"}') || ']' as maps " +
+					"FROM RELATION relation " +
+					"INNER JOIN NODE AS node ON relation.pid_dest = node.pid AND relation.relation_name = \"hasNode\" " +
+					"LEFT JOIN POSITION po ON po.pid = node.pid " +
+					"LEFT JOIN(SELECT* FROM VIEW_GEODATA UNION SELECT* FROM VIEW_TRANSFORMED_GEODATA) as geo ON node.pid = geo.pid " +
+					"LEFT JOIN VIEW_TRANSFORMED_ASSET vta ON(vta.pid = po.map_name OR vta.pid = geo.map) " +
+					"where po.x is not null and po.y is not null OR geo.latitude and geo.longitude is not null " +
+					"GROUP BY tour_pid, node.pid, po.map_name;";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+			}
+			else
+			{
+				string urlApi = "location/list";
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = "location/list";
 			return this.apiCall(urlApi);
@@ -383,19 +465,27 @@ namespace Wezit
 		public IObservable<string> GetGeolocationList()
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText =
-				"SELECT " +
-				" distinct(geo.pid) as pid, " +
-				"geo.lat as latitude, " +
-				"geo.lng as longitude, " +
-				"geo.radius as radius " +
-				"FROM GEOPOSITION geo " +
-				"GROUP BY geo.pid";
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText =
+					"SELECT " +
+					" distinct(geo.pid) as pid, " +
+					"geo.lat as latitude, " +
+					"geo.lng as longitude, " +
+					"geo.radius as radius " +
+					"FROM GEOPOSITION geo " +
+					"GROUP BY geo.pid";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection, true);
+				return dbCall(dbcmd.ExecuteReader(), db_connection, true);
+			}
+			else
+			{
+				string urlApi = "geolocation/list";
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = "geolocation/list";
 			return this.apiCall(urlApi);
@@ -405,13 +495,21 @@ namespace Wezit
 			public IObservable<string> GetGlossaryList(string language)
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText =
-				"SELECT * FROM GLOSSARY WHERE language like \"" + language + "\" OR language IS NULL ORDER BY UPPER(word)";
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText =
+					"SELECT * FROM GLOSSARY WHERE language like \"" + language + "\" OR language IS NULL ORDER BY UPPER(word)";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+			}
+			else
+			{
+				string urlApi = language + "/glossary/list";
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = language + "/glossary/list";
 			return this.apiCall(urlApi);
@@ -421,13 +519,21 @@ namespace Wezit
 		public IObservable<string> GetGlossaryById(string id)
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText =
-				"SELECT * FROM GLOSSARY WHERE pid = " + id;
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText =
+					"SELECT * FROM GLOSSARY WHERE pid = " + id;
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+			}
+			else
+			{
+				string urlApi = "glossary/" + id;
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = "glossary/" + id;
 			return this.apiCall(urlApi);
@@ -437,16 +543,24 @@ namespace Wezit
 			public IObservable<string> GetRelationSubjectByPoiId(string language, string id)
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText =
-				"SELECT node_pid as pid, name as relationName, aspects, is_subject, language " +
-				"FROM VIEW_RELATIONS " +
-				"WHERE (language like \"" + language + "\" OR language IS NULL) AND parent_pid = \"" + id + "\" AND is_subject = \"" + id +
-				"\"ORDER BY relationName;";
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText =
+					"SELECT node_pid as pid, name as relationName, aspects, is_subject, language " +
+					"FROM VIEW_RELATIONS " +
+					"WHERE (language like \"" + language + "\" OR language IS NULL) AND parent_pid = \"" + id + "\" AND is_subject = \"" + id +
+					"\"ORDER BY relationName;";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+			}
+			else
+			{
+				string urlApi = language + "poi/" + id + "relation/list/issubject";
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = language + "/poi/" + id + "/relation/list/issubject";
 			return this.apiCall(urlApi);
@@ -456,18 +570,26 @@ namespace Wezit
 			public IObservable<string> GetIdentifierList(string id)
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText =
-				"SELECT IDENTIFIER.pid " +
-				"FROM IDENTIFIER, DUBLIN_CORE " +
-				" WHERE " +
-				"IDENTIFIER.pid = DUBLIN_CORE.pid " +
-				"AND IDENTIFIER.identifier = \"" + id +
-				"\" AND (DUBLIN_CORE.language is NULL OR DUBLIN_CORE.language like \"" + id + "\")";
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText =
+					"SELECT IDENTIFIER.pid " +
+					"FROM IDENTIFIER, DUBLIN_CORE " +
+					" WHERE " +
+					"IDENTIFIER.pid = DUBLIN_CORE.pid " +
+					"AND IDENTIFIER.identifier = \"" + id +
+					"\" AND (DUBLIN_CORE.language is NULL OR DUBLIN_CORE.language like \"" + id + "\")";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+			}
+			else
+			{
+				string urlApi = "identifier/" + id;
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = "identifier/" + id;
 			return this.apiCall(urlApi);
@@ -477,18 +599,26 @@ namespace Wezit
 			public IObservable<string> GetAssetById(string id)
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText =
-				"SELECT os.pid, os.label, os.metadata, os.mimetype, os.path, a.dc_language AS language, " +
-				"(CASE WHEN rte_subject IS NULL OR rte_subject = '' THEN dc_subject ELSE rte_subject END) AS subject, " +
-				"(CASE WHEN rte_desc IS NULL OR rte_desc = '' THEN dc_description ELSE rte_desc END) AS description " +
-				"FROM OBJECT_SOURCE os " +
-				"LEFT JOIN ASSET a on a.pid = os.pid " +
-				"WHERE os.pid = \"" + id + "\"";
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText =
+					"SELECT os.pid, os.label, os.metadata, os.mimetype, os.path, a.dc_language AS language, " +
+					"(CASE WHEN rte_subject IS NULL OR rte_subject = '' THEN dc_subject ELSE rte_subject END) AS subject, " +
+					"(CASE WHEN rte_desc IS NULL OR rte_desc = '' THEN dc_description ELSE rte_desc END) AS description " +
+					"FROM OBJECT_SOURCE os " +
+					"LEFT JOIN ASSET a on a.pid = os.pid " +
+					"WHERE os.pid = \"" + id + "\"";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+			}
+			else
+			{
+				string urlApi = "asset/" + id;
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = "asset/" + id;
 			return apiCall(urlApi);
@@ -498,16 +628,24 @@ namespace Wezit
 			public IObservable<string> GetVersionByNode(string id)
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText =
-				" SELECT distinct(r.parent_pid) AS pid, dc.language " +
-				" FROM VIEW_RELATIONS r " +
-				" LEFT JOIN DUBLIN_CORE dc on dc.pid = r.parent_pid " +
-				" WHERE r.name = 'hasVersion' AND r.node_pid = \"" + id + "\"";
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText =
+					" SELECT distinct(r.parent_pid) AS pid, dc.language " +
+					" FROM VIEW_RELATIONS r " +
+					" LEFT JOIN DUBLIN_CORE dc on dc.pid = r.parent_pid " +
+					" WHERE r.name = 'hasVersion' AND r.node_pid = \"" + id + "\"";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+			}
+			else
+			{
+				string urlApi = "node/" + id + "/version";
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = "node/" + id + "/version";
 			return this.apiCall(urlApi);
@@ -517,13 +655,21 @@ namespace Wezit
 		public IObservable<string> GetConfigurationFileByNode(string id)
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText =
-				"SELECT path FROM RELATION LEFT JOIN OBJECT_SOURCE on pid = pid_dest WHERE pid_src = \"" + id + "\" AND relation_name = \"relationForSetConfigurationFile\"";
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText =
+					"SELECT path FROM RELATION LEFT JOIN OBJECT_SOURCE on pid = pid_dest WHERE pid_src = \"" + id + "\" AND relation_name = \"relationForSetConfigurationFile\"";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+			}
+			else
+			{
+				string urlApi = "node/" + id + "/configuration";
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = "node/" + id + "/configuration";
 			return this.apiCall(urlApi);
@@ -533,15 +679,23 @@ namespace Wezit
 			public IObservable<string> GetAspectsByPoi(string aspectsName, string poiId)
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText =
-				"SELECT * " +
-				"FROM " + aspectsName + " " +
-				"WHERE pid = \"" + poiId + "\"";
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText =
+					"SELECT * " +
+					"FROM " + aspectsName + " " +
+					"WHERE pid = \"" + poiId + "\"";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+			}
+			else
+			{
+				string urlApi = "Poi/" + poiId + "/" + aspectsName;
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = "Poi/" + poiId + "/" + aspectsName;
 			return this.apiCall(urlApi);
@@ -579,18 +733,26 @@ namespace Wezit
 		public IObservable<string> Get3DPositions()
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText = "SELECT relation.pid_src as tour_pid, node.pid, node.dc_language as language, po.startTime as startTime, " +
-				"po.endTime as endTime, po.yaw as yaw, po.pitch as pitch, po.roll as roll, po.fov as fov, " +
-				"coalesce(vta.title, po.map_name) as map_name, vta.subject as subject, vta.description as description, " +
-				"'[' || GROUP_CONCAT('{ \"pid\" : \"' || coalesce(vta.pid, \"\") || '\", \"metadata\" : \"' || coalesce(vta.metadata, \"\") || '\", \"label\" : \"' || coalesce(vta.transformation, \"\") || '\", \"url\" : \"' || coalesce(vta.uri, \"\") || '\", \"path\": \"' || coalesce(vta.path, \"\") || '\"}') || ']' as maps " +
-				"FROM RELATION relation INNER JOIN NODE AS node ON relation.pid_dest = node.pid AND relation.relation_name = \"hasNode\" " +
-				"LEFT JOIN THREED_POSITION po ON po.pid = node.pid LEFT JOIN VIEW_TRANSFORMED_ASSET vta ON po.map_name = vta.pid where po.yaw is not null and po.pitch is not null " +
-				"GROUP BY tour_pid, node.pid, po.map_name";
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText = "SELECT relation.pid_src as tour_pid, node.pid, node.dc_language as language, po.startTime as startTime, " +
+					"po.endTime as endTime, po.yaw as yaw, po.pitch as pitch, po.roll as roll, po.fov as fov, " +
+					"coalesce(vta.title, po.map_name) as map_name, vta.subject as subject, vta.description as description, " +
+					"'[' || GROUP_CONCAT('{ \"pid\" : \"' || coalesce(vta.pid, \"\") || '\", \"metadata\" : \"' || coalesce(vta.metadata, \"\") || '\", \"label\" : \"' || coalesce(vta.transformation, \"\") || '\", \"url\" : \"' || coalesce(vta.uri, \"\") || '\", \"path\": \"' || coalesce(vta.path, \"\") || '\"}') || ']' as maps " +
+					"FROM RELATION relation INNER JOIN NODE AS node ON relation.pid_dest = node.pid AND relation.relation_name = \"hasNode\" " +
+					"LEFT JOIN THREED_POSITION po ON po.pid = node.pid LEFT JOIN VIEW_TRANSFORMED_ASSET vta ON po.map_name = vta.pid where po.yaw is not null and po.pitch is not null " +
+					"GROUP BY tour_pid, node.pid, po.map_name";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+			}
+			else
+			{
+				string urlApi = "locations/3d";
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = "locations/3d";
 			return apiCall(urlApi);
@@ -600,12 +762,20 @@ namespace Wezit
 		public IObservable<string> GetCategoryList()
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText = "select *, CATEGORY.pid as pid  from CATEGORY inner join DUBLIN_CORE on CATEGORY.categoryId = DUBLIN_CORE.pid";
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText = "select *, CATEGORY.pid as pid  from CATEGORY inner join DUBLIN_CORE on CATEGORY.categoryId = DUBLIN_CORE.pid";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+			}
+			else
+			{
+				string urlApi = "categories";
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = "categories";
 			return apiCall(urlApi);
@@ -614,12 +784,20 @@ namespace Wezit
 		public IObservable<string> GetCategoryById(string nodeId)
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText = "select *, CATEGORY.pid as pid  from CATEGORY inner join DUBLIN_CORE on CATEGORY.categoryId = DUBLIN_CORE.pid where CATEGORY.pid = " + nodeId;
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText = "select *, CATEGORY.pid as pid  from CATEGORY inner join DUBLIN_CORE on CATEGORY.categoryId = DUBLIN_CORE.pid where CATEGORY.pid = " + nodeId;
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+			}
+			else
+			{
+				string urlApi = "categories/" + nodeId;
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = "categories/" + nodeId;
 			return apiCall(urlApi);
@@ -628,12 +806,20 @@ namespace Wezit
 		public IObservable<string> GetAttributesByNodeId(string nodeId)
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText = "select key, value from PROP_GENERICS inner join DUBLIN_CORE on PROP_GENERICS.pid = DUBLIN_CORE.pid	where PROP_GENERICS.pid = " + nodeId;
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText = "select key, value from PROP_GENERICS inner join DUBLIN_CORE on PROP_GENERICS.pid = DUBLIN_CORE.pid	where PROP_GENERICS.pid = " + nodeId;
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+			}
+			else
+			{
+				string urlApi = "node/" + nodeId + "attributes";
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = "node/" + nodeId + "attributes/";
 			return apiCall(urlApi);
@@ -643,12 +829,20 @@ namespace Wezit
 			public IObservable<string> GetAttributes()
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
-			IDbConnection db_connection = new SqliteConnection(db_connection_string);
-			db_connection.Open();
-			IDbCommand dbcmd = db_connection.CreateCommand();
-			dbcmd.CommandText = "select key, value, PROP_GENERICS.pid as pid from PROP_GENERICS inner join DUBLIN_CORE on PROP_GENERICS.pid = DUBLIN_CORE.pid";
+			if(!online)
+            {
+				IDbConnection db_connection = new SqliteConnection(db_connection_string);
+				db_connection.Open();
+				IDbCommand dbcmd = db_connection.CreateCommand();
+				dbcmd.CommandText = "select key, value, PROP_GENERICS.pid as pid from PROP_GENERICS inner join DUBLIN_CORE on PROP_GENERICS.pid = DUBLIN_CORE.pid";
 
-			return dbCall(dbcmd.ExecuteReader(), db_connection);
+				return dbCall(dbcmd.ExecuteReader(), db_connection);
+			}
+			else
+			{
+				string urlApi = "attributes/";
+				return this.apiCall(urlApi);
+			}
 #else
 			string urlApi = "attributes/";
 			return apiCall(urlApi);

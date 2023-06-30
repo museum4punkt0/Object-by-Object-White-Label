@@ -523,8 +523,8 @@ public abstract class OnlineMapsControlBase : MonoBehaviour, IOnlineMapsSavableC
         int maxX = 1 << (lastState.zoom - 1);
         if (dx < -maxX) dx += maxX << 1;
         if (dx < 0 && map.width == (1L << lastState.zoom) * tileSize) dx += map.width / tileSize;
-        px = dx * tileSize / lastState.zoomCoof;
-        py = dy * tileSize / lastState.zoomCoof;
+        px = dx * tileSize / lastState.zoomFactor;
+        py = dy * tileSize / lastState.zoomFactor;
     }
 
     /// <summary>

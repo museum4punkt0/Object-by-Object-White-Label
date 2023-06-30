@@ -33,6 +33,10 @@ public class TourIntroView : BaseView
     [Space]
 	[SerializeField] private Transform _contrastPanelRoot = null;
 	[SerializeField] private ModeExplanation _modeExplanation = null;
+    [Space]
+	[SerializeField] private Button _downloadButton = null;
+	[SerializeField] private Image _downloadButtonBG = null;
+	[SerializeField] private DownloadPopin _downloadPopin = null;
 	#endregion Serialize Fields
 
 	#region Public Variables
@@ -42,9 +46,14 @@ public class TourIntroView : BaseView
 	private Wezit.Tour m_TourData;
 	private Language m_Language;
 	
-	private string m_ChallengeButtonTextSettingKey = "template.spk.tours.modeExplanation.challenge.button.text";
-	private string m_NormalButtonTextSettingKey = "template.spk.tours.modeExplanation.normal.button.text";
-	private string m_StartButtonTextSettingKey = "template.spk.tours.modeExplanation.start.button.text";
+	private string m_challengeButtonTextSettingKey = "template.spk.tours.modeExplanation.challenge.button.text";
+	private string m_normalButtonTextSettingKey = "template.spk.tours.modeExplanation.normal.button.text";
+	private string m_startButtonTextSettingKey = "template.spk.tours.modeExplanation.start.button.text";
+
+	private int m_downloadSize;
+	private string m_downloadPopinTitleSettingKey = "template.spk.tours.download.title.text";
+	private string m_downloadPopinDescriptionSettingKey = "template.spk.tours.download.description.text";
+	private string m_downloadPopinButtonSettingKey = "template.spk.tours.download.button.text";
 	#endregion Private m_Variables
 	#endregion Fields
 
@@ -116,19 +125,19 @@ public class TourIntroView : BaseView
             }
         }
 
-		_colorBackground.color = _startButtonBG.color = _challengeButtonBG.color = _normalButtonBG.color = _title.color = GlobalSettingsManager.Instance.AppColor;
+		_colorBackground.color = _startButtonBG.color = _challengeButtonBG.color = _normalButtonBG.color = _title.color = _downloadButtonBG .color = GlobalSettingsManager.Instance.AppColor;
 
 		ImageUtils.LoadImage(_background, this, m_TourData);
 
 		TourProgressionData tourProgressionData = PlayerManager.Instance.Player.GetTourProgression(m_TourData.pid);
 		if(tourProgressionData.IsModeSet)
         {
-			_startButtonText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_StartButtonTextSettingKey, language);
+			_startButtonText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_startButtonTextSettingKey, language);
 		}
 		else
         {
-			_challengeButtonText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_ChallengeButtonTextSettingKey, language);
-			_normalButtonText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_NormalButtonTextSettingKey, language);
+			_challengeButtonText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_challengeButtonTextSettingKey, language);
+			_normalButtonText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_normalButtonTextSettingKey, language);
         }
 		_startButton.gameObject.SetActive(tourProgressionData.IsModeSet);
 		_challengeButton.gameObject.SetActive(!tourProgressionData.IsModeSet);
@@ -138,12 +147,25 @@ public class TourIntroView : BaseView
         _description.text = m_TourData.description;
         string[] paragraphs = { _description.text };
 		_explanationWindow.Inflate(_title.text, paragraphs, _contrastPanelRoot);
+
+		// Check download necessity
+		if (PlayerManager.Instance.Player.GetTourProgression(m_TourData.pid).HasBeenDownloaded)
+		{
+			m_downloadSize = Wezit.DataGrabber.Instance.GetUpdateSizeForTour(m_TourData.pid);
+		}
+		else
+		{
+			m_downloadSize = Wezit.DataGrabber.Instance.GetDownloadSizeForAssets(Wezit.AssetsLoader.GetAssetsForTour(m_TourData.pid));
+		}
+		_downloadButton.gameObject.SetActive(m_downloadSize != 0);
 	}
 
 	private void ResetViewContent()
 	{
 		if (_background != null) ImageUtils.ResetImage(_background);
 		_modeExplanation.gameObject.SetActive(false);
+		_downloadPopin.Close(false);
+		_downloadButton.gameObject.SetActive(false);
 	}
 
 	private void AddListeners()
@@ -153,6 +175,8 @@ public class TourIntroView : BaseView
 		_normalButton.onClick.AddListener(OnNormalButton);
 		_modeExplanation.StartButtonClicked.AddListener(OnSetModeAndStart);
 		_startButton.onClick.AddListener(OnStart);
+		_downloadButton.onClick.AddListener(OnDownloadOpen);
+		_downloadPopin.DownloadOver.AddListener(OnDownloadOver);
 	}
 
 	private void RemoveListeners()
@@ -161,6 +185,8 @@ public class TourIntroView : BaseView
 		_normalButton.onClick.RemoveAllListeners();
 		_modeExplanation.StartButtonClicked.RemoveAllListeners();
 		_startButton.onClick.RemoveAllListeners();
+		_downloadButton.onClick.RemoveAllListeners();
+		_downloadPopin.DownloadOver.RemoveAllListeners();
 	}
 
 	private void OnChallengeButton()
@@ -188,6 +214,18 @@ public class TourIntroView : BaseView
 	{
 		AppManager.Instance.GoToState(KioskState.TOUR_MAP);
 	}
+
+	private void OnDownloadOpen()
+    {
+		_downloadPopin.Inflate(Wezit.Settings.Instance.GetSettingAsCleanedText(m_downloadPopinTitleSettingKey),
+			String.Format(Wezit.Settings.Instance.GetSettingAsCleanedText(m_downloadPopinDescriptionSettingKey), string.Format("{0:0.00}Mo", m_downloadSize / 1024f / 1024f)),
+			Wezit.Settings.Instance.GetSettingAsCleanedText(m_downloadPopinButtonSettingKey), m_TourData.pid, m_downloadSize);
+    }
+
+	private void OnDownloadOver(bool success)
+    {
+		_downloadButton.gameObject.SetActive(!success);
+    }
 	#endregion Private
 
 	#region Internals

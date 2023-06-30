@@ -1044,7 +1044,7 @@ public abstract class OnlineMapsDrawingElement: IOnlineMapsInteractiveElement
 
         OnlineMaps map = manager.map;
         int zoom = map.zoom;
-        float zoomCoof = map.zoomCoof;
+        float zoomFactor = map.zoomFactor;
 
         OnlineMapsProjection projection = map.projection;
         projection.CoordinatesToTile(tlx, tly, zoom, out sx, out sy);
@@ -1057,8 +1057,8 @@ public abstract class OnlineMapsDrawingElement: IOnlineMapsInteractiveElement
 
         double ppx = 0;
         Vector2 sizeInScene = (map.control as OnlineMapsControlBaseDynamicMesh).sizeInScene;
-        double scaleX = OnlineMapsUtils.tileSize * sizeInScene.x / map.buffer.renderState.width / zoomCoof;
-        double scaleY = OnlineMapsUtils.tileSize * sizeInScene.y / map.buffer.renderState.height / zoomCoof;
+        double scaleX = OnlineMapsUtils.tileSize * sizeInScene.x / map.buffer.renderState.width / zoomFactor;
+        double scaleY = OnlineMapsUtils.tileSize * sizeInScene.y / map.buffer.renderState.height / zoomFactor;
 
         double prx = 0, pry = 0;
 
@@ -1233,7 +1233,7 @@ public abstract class OnlineMapsDrawingElement: IOnlineMapsInteractiveElement
         List<Vector2> activePoints = new List<Vector2>(localPoints.Count);
 
         long maxX = 1L << manager.map.zoom;
-        float maxSize = maxX * OnlineMapsUtils.tileSize * control.sizeInScene.x / manager.map.width / manager.map.zoomCoof;
+        float maxSize = maxX * OnlineMapsUtils.tileSize * control.sizeInScene.x / manager.map.width / manager.map.zoomFactor;
         float halfSize = maxSize / 2;
 
         float lastPointX = 0;

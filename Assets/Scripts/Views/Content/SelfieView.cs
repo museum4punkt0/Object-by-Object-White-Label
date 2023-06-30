@@ -11,6 +11,7 @@ public class SelfieView : BaseView
 {
 	#region Fields
 	#region Serialize Fields
+	[SerializeField] private Image _colorBG;
 	[SerializeField] private RawImage _cameraImage;
 	[SerializeField] private RawImage _bonusImage;
 	[SerializeField] private Popin _popin;
@@ -78,6 +79,7 @@ public class SelfieView : BaseView
 
 	public override void HideView()
 	{
+		m_WebCamTexture.Stop();
 		RemoveListeners();
 		base.HideView();
 	}
@@ -110,18 +112,18 @@ public class SelfieView : BaseView
 		m_TourProgressionData = PlayerManager.Instance.Player.GetTourProgression(StoreAccessor.State.SelectedTour.pid);
 
 		bool isChallenge = m_TourProgressionData.IsChallengeMode;
-		MenuManager.MenuStatus status = isChallenge ? MenuManager.MenuStatus.BackButtonInventory : MenuManager.MenuStatus.BackButton;
+		MenuManager.MenuStatus status = isChallenge ? MenuManager.MenuStatus.BackButtonInventoryScore : MenuManager.MenuStatus.BackButtonInventory;
 		MenuManager.Instance.SetMenuStatus(status);
 		MenuManager.Instance.SetBackButtonState(ViewManager.Instance.PreviousKioskState == KioskState.INVENTORY ? KioskState.INVENTORY : KioskState.TOUR_MAP);
 		m_PoiData = StoreAccessor.State.SelectedPoi;
 
-		_cameraButtonBG.color = _restartButtonBG.color = _shareButtonBG.color = _inventoryButtonBG.color = GlobalSettingsManager.Instance.AppColor;
+		_colorBG.color = _cameraButtonBG.color = _restartButtonBG.color = _shareButtonBG.color = _inventoryButtonBG.color = GlobalSettingsManager.Instance.AppColor;
 		_restartButtonText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_RestartButtonTextSettingKey, language);
 		_shareButtonText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_ShareButtonTextSettingKey, language);
 		_inventoryButtonText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_InventoryButtonTextSettingKey, language);
 
 		StartCoroutine(LoadCamera());
-		ImageUtils.LoadImage(_bonusImage, this, m_PoiData, Wezit.RelationName.REF_PICTURE, WezitSourceTransformation.original, false);
+		ImageUtils.LoadImage(_bonusImage, this, m_PoiData, Wezit.RelationName.REF_PICTURE, WezitSourceTransformation.default_base, false);
 	}
 
 	private void ResetViewContent()
@@ -163,7 +165,7 @@ public class SelfieView : BaseView
 
 	private void OnCameraPopinOkayButton()
 	{
-		_popin.Close();
+		_popin.Close(false);
 		StartCoroutine(TakeSelfie());
 	}
 

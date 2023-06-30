@@ -81,8 +81,8 @@ namespace Wezit
                 imageName = imageName.Replace("wzasset://", "");
                 WezitAssets.Asset asset = AssetsLoader.GetAssetById(imageName);
                 await StartCoroutine(Utils.ImageUtils.SetImage(imageComponent,
-                                                         asset.GetAssetSourceByTransformation(WezitSourceTransformation.original),
-                                                         asset.GetAssetMimeTypeByTransformation(WezitSourceTransformation.original),
+                                                         asset.GetAssetSourceByTransformation(WezitSourceTransformation.default_base),
+                                                         asset.GetAssetMimeTypeByTransformation(WezitSourceTransformation.default_base),
                                                          true));
             }
         }
@@ -94,8 +94,8 @@ namespace Wezit
                 imageName = imageName.Replace("wzasset://", "");
                 WezitAssets.Asset asset = AssetsLoader.GetAssetById(imageName);
                 await StartCoroutine(Utils.ImageUtils.SetImage(imageComponent,
-                                                         asset.GetAssetSourceByTransformation(WezitSourceTransformation.original),
-                                                         asset.GetAssetMimeTypeByTransformation(WezitSourceTransformation.original),
+                                                         asset.GetAssetSourceByTransformation(WezitSourceTransformation.default_base),
+                                                         asset.GetAssetMimeTypeByTransformation(WezitSourceTransformation.default_base),
                                                          true));
             }
         }
@@ -108,7 +108,7 @@ namespace Wezit
                 imageName = imageName.Replace("wzasset://", "");
                 WezitAssets.Asset asset = AssetsLoader.GetAssetById(imageName);
                 await StartCoroutine(SpriteUtils.GetTextureFromSource(
-                                                         asset.GetAssetSourceByTransformation(WezitSourceTransformation.original),
+                                                         asset.GetAssetSourceByTransformation(WezitSourceTransformation.default_base),
                                                          result,
                                                          key));
             }

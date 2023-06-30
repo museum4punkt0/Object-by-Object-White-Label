@@ -34,7 +34,7 @@ public class MapListVertical : MonoBehaviour
         foreach (Tour tour in tours)
         {
             MapListItem itemInstance = Instantiate(_itemPrefab, _prefabRoot);
-            itemInstance.Inflate(tour, activeMonobehaviour);
+            itemInstance.Inflate(tour, activeMonobehaviour, true);
             itemInstance.ItemClickedTour.AddListener(OnItemClicked);
             m_Items.Add(itemInstance);
         }
@@ -48,8 +48,8 @@ public class MapListVertical : MonoBehaviour
         foreach (Poi poi in pois)
         {
             MapListItem itemInstance = Instantiate(_itemPrefab, _prefabRoot);
-            itemInstance.Inflate(poi, activeMonobehaviour);
-            itemInstance.ItemClickedTour.AddListener(OnItemClicked);
+            itemInstance.Inflate(poi, activeMonobehaviour, true);
+            itemInstance.ItemClickedPoi.AddListener(OnItemClicked);
             m_Items.Add(itemInstance);
         }
         _title.color = GlobalSettingsManager.Instance.AppColor;
@@ -69,6 +69,11 @@ public class MapListVertical : MonoBehaviour
     private void OnItemClicked(Tour tour)
     {
         ItemClickedTour?.Invoke(tour);
+    }
+
+    private void OnItemClicked(Poi poi)
+    {
+        ItemClickedPoi?.Invoke(poi);
     }
     #endregion
     #endregion

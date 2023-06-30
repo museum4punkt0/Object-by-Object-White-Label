@@ -12,7 +12,7 @@ public class VideoManager : MonoBehaviour
 	#region SerializeFields
 	[SerializeField] private RenderTexture _videoRenderTexture = null;
 	[SerializeField] private VideoPlayer _videoPlayer = null;
-	[SerializeField] private Slider _slider;
+	[SerializeField] private SliderWithPointerEvents _slider;
     [Space]
 	[SerializeField] private Button _playButton = null;
 	[SerializeField] private Button _screenPlayButton = null;
@@ -26,16 +26,18 @@ public class VideoManager : MonoBehaviour
 	[Space]
 	[SerializeField] private Button _openButton;
 	[SerializeField] private Button _closeButton;
+	[SerializeField] private Image _closeButtonBG;
 	[SerializeField] private GameObject _playerRoot;
 	#endregion
 	#region Private
 	private const string TIMER_TEXT = "{0}:{1}";
 	private ScreenOrientation m_UserOrientation;
+	private bool m_isSeeking;
 	#endregion
 	#endregion
 
 	#region Properties
-	public UnityEvent<bool> VideoPlayerOpen = new();
+	public UnityEvent<bool> VideoPlayerToggled = new();
 	public UnityEvent VideoLoopPointReached = new();
     #endregion
 
@@ -54,12 +56,21 @@ public class VideoManager : MonoBehaviour
 		_openButton.gameObject.SetActive(true);
 		m_UserOrientation = Screen.orientation;
 
+		_closeButtonBG.color = GlobalSettingsManager.Instance.AppColor;
+
 		_videoRenderTexture.Release();
 		_videoPlayer.url = videoSource;
 		_videoPlayer.isLooping = false;
+		_videoPlayer.Prepare();
 		_titleText.text = title;
+		_playButtonImage.sprite = _pauseIcon;
 
+		_slider.onSliderPointerDown.RemoveAllListeners();
+		_slider.onSliderPointerDown.AddListener(BeginScrub);
+		_slider.onValueChanged.RemoveAllListeners();
 		_slider.onValueChanged.AddListener(OnSliderValueChanged);
+		_slider.onSliderPointerUp.RemoveAllListeners();
+		_slider.onSliderPointerUp.AddListener(EndScrub);
 
 		_playButton.onClick.RemoveAllListeners();
 		_playButton.onClick.AddListener(OnPlayButton);
@@ -72,6 +83,12 @@ public class VideoManager : MonoBehaviour
 		_closeButton.onClick.AddListener(OnClose);
 
 	}
+
+	public void Toggle(bool isOn)
+    {
+		gameObject.SetActive(isOn);
+		_openButton.gameObject.SetActive(isOn);
+    }
 	#endregion
 
 	#region Private
@@ -97,16 +114,44 @@ public class VideoManager : MonoBehaviour
 		}
 	}
 
-	private void OnSliderValueChanged(float value)
+	private void BeginScrub()
 	{
-		_videoPlayer.time = value;
+		//It is recommended to pause the player when seeking as otherwise,
+		//you will continuously fight the VideoPlayer from playing and buffering frames.
+		_videoPlayer.Pause();
+
+		//To know when the player has finished seeking      
+		_videoPlayer.seekCompleted += PlayerSeekCompleted;
+		m_isSeeking = false;
 	}
 
+	private void OnSliderValueChanged(float value)
+	{
+		//If you are currently seeking there is no point to seek again.
+		if (m_isSeeking)
+			return;
+
+		//Don't seek, if the time between the slider value and the current player time is too small.
+		//We will seek to the closest frame so if the delta is 0.00001f you will most likely seek the same frame.
+		//Change the value to fit your use case.
+		if (Mathf.Abs((float)_videoPlayer.time - value) < 0.01f)
+			return;
+
+		_videoPlayer.time = value;
+		m_isSeeking = true;
+	}
+
+	public void EndScrub()
+	{
+		//You don't want random event when you are not using this script
+		_videoPlayer.seekCompleted -= PlayerSeekCompleted;
+		_videoPlayer.Play();
+	}
 
 	private IEnumerator VideoProgressRoutine()
 	{
 		_slider.value = 0;
-		while (!_videoPlayer.isPlaying)
+		while (!_videoPlayer.isPrepared)
         {
 			yield return null;
         }
@@ -126,20 +171,26 @@ public class VideoManager : MonoBehaviour
 		VideoLoopPointReached?.Invoke();
 	}
 
+	private void PlayerSeekCompleted(VideoPlayer source)
+    {
+		m_isSeeking = false;
+    }
+
 	private void OnOpen()
 	{
-		VideoPlayerOpen?.Invoke(true);
+		VideoPlayerToggled?.Invoke(true);
 		Screen.orientation = ScreenOrientation.LandscapeLeft;
 		MenuManager.Instance.SetMenuStatus(MenuManager.MenuStatus.Hidden);
 		_playerRoot.SetActive(true);
 		_openButton.gameObject.SetActive(false);
 		_videoPlayer.Play();
+		_playButtonImage.sprite = _pauseIcon;
 		StartCoroutine(VideoProgressRoutine());
 	}
 
 	private void OnClose()
 	{
-		VideoPlayerOpen?.Invoke(false);
+		VideoPlayerToggled?.Invoke(false);
 		Screen.orientation = m_UserOrientation;
 		MenuManager.Instance.SetPreviousStatus();
 		_playerRoot.SetActive(false);

@@ -216,7 +216,7 @@ public class OnlineMapsMarkerFlatDrawer : OnlineMapsMarker2DMeshDrawer
 
         foreach (Mesh mesh in markersMeshes) mesh.Clear();
 
-        float zoomCoof = map.buffer.renderState.zoomCoof;
+        float zoomFactor = map.buffer.renderState.zoomFactor;
 
         Matrix4x4 matrix = new Matrix4x4();
         int meshIndex = 0;
@@ -236,10 +236,10 @@ public class OnlineMapsMarkerFlatDrawer : OnlineMapsMarker2DMeshDrawer
             if (fx < 0) fx += maxX;
             else if (fx > maxX) fx -= maxX;
 
-            fx /= zoomCoof;
+            fx /= zoomFactor;
 
             fx = fx * OnlineMapsUtils.tileSize - offset.x;
-            fy = (fy - ty) / zoomCoof * OnlineMapsUtils.tileSize - offset.y;
+            fy = (fy - ty) / zoomFactor * OnlineMapsUtils.tileSize - offset.y;
 
             if (marker.texture == null)
             {

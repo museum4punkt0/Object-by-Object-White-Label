@@ -138,7 +138,7 @@ GameObject:
   - component: {fileID: 7622521514736958518}
   m_Layer: 0
   m_Name: Main Camera
-  m_TagString: MainCamera
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -151,7 +151,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7622521514736958516}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -8}
+  m_LocalPosition: {x: 0, y: 0.5, z: -7.67}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -189,7 +189,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 183
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -248,18 +248,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   smooth: 0
-  _lerpTime: 0.5
-  _maxZoom: 1
-  _zoomSpeed: 0.01
   _minDistanceDelta: 1
   _rotationSpeed: 5
-  _verticalAngle: 30
+  _verticalAngle: 180
+  _zoomSpeed: 0.1
+  _zoomMin: -10
+  _zoomMax: -1
   _focusObject: {fileID: 0}
   _useMouseControl: 1
   _pivot: {fileID: 7622521516236193523}
-  _views:
-  - name: Default
-    pivotPosition: {x: 0, y: 0, z: 0}
-    pivotRotation: {x: 0, y: 0, z: 0}
-    verticalPivotRotation: {x: 0, y: 0, z: 0}
-    cameraPosition: {x: 0, y: 0, z: -8}
+  FirstManipulated:
+    m_PersistentCalls:
+      m_Calls: []

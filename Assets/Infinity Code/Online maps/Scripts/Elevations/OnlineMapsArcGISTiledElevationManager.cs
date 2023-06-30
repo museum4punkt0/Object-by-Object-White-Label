@@ -8,8 +8,6 @@ using UnityEngine;
 /// <summary>
 /// Implements the use of elevation data from ArcGIS base on tiles
 /// </summary>
-[OnlineMapsPlugin("ArcGIS Tiled Elevations", typeof(OnlineMapsControlBaseDynamicMesh), "Elevations")]
-[AddComponentMenu("Infinity Code/Online Maps/Elevations/ArcGIS Tiled")]
 public class OnlineMapsArcGISTiledElevationManager : OnlineMapsTiledElevationManager<OnlineMapsArcGISTiledElevationManager>
 {
     /// <summary>

@@ -128,7 +128,7 @@ public class WezitDataUtils
 
 	protected async UniTask<Wezit.Poi> GetCorrespondingPoiByLanguage(Wezit.Poi currentPoi, Language language)
 	{
-		List<Wezit.Poi> resultData = await Wezit.StoreInitializer.Instance.GetPoiVersions(currentPoi.pid);
+		List<Wezit.Poi> resultData = await Wezit.StoreInitializer.GetPoiVersions(currentPoi.pid);
 
 		if (resultData != null)
 		{

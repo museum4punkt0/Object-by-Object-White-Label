@@ -7,15 +7,16 @@ public class Popin : MonoBehaviour
 {
     #region Fields
     #region Serialize Fields
-    [SerializeField] private Button _closeButton = null;
+    [SerializeField] internal Button _closeButton = null;
     [SerializeField] private Image _closeButtonBG = null;
-    [SerializeField] private Button _popinButton = null;
-    [SerializeField] private Image _popinButtonBG = null;
+    [SerializeField] internal Button _popinButton = null;
+    [SerializeField] internal Image _popinButtonBG = null;
+    [SerializeField] private GameObject _panelRoot;
     [SerializeField] private TMPro.TextMeshProUGUI _popinButtonText;
-    [SerializeField] private TMPro.TextMeshProUGUI _title;
-    [SerializeField] private TMPro.TextMeshProUGUI _description;
+    [SerializeField] internal TMPro.TextMeshProUGUI _title;
+    [SerializeField] internal TMPro.TextMeshProUGUI _description;
     [SerializeField] private GameObject _iconRoot;
-    [SerializeField] private RawImage _icon;
+    [SerializeField] internal RawImage _icon;
     [SerializeField] private ContrastButton _contrastButton;
     [SerializeField] private Transform _contrastPanelRoot;
     #endregion
@@ -44,7 +45,7 @@ public class Popin : MonoBehaviour
         {
             _iconRoot.SetActive(true);
             Wezit.Poi bank = StoreAccessor.State.SelectedTourBank;
-            Utils.ImageUtils.LoadImage(_icon, this, bank, Wezit.RelationName.SHOW_PICTURE, WezitSourceTransformation.original, false, 0.1f, iconType);
+            Utils.ImageUtils.LoadImage(_icon, this, bank, Wezit.RelationName.SHOW_PICTURE, WezitSourceTransformation.default_base, false, 0.1f, iconType);
         }
         else
         {
@@ -56,19 +57,27 @@ public class Popin : MonoBehaviour
         _popinButtonText.text = buttonText;
         _popinButtonBG.color = _closeButtonBG.color = _title.color = GlobalSettingsManager.Instance.AppColor;
 
+        if(gameObject.activeInHierarchy)
+        {
+            StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_panelRoot));
+        }
+
         string[] paragraphs = { description };
         _contrastButton.Inflate(title, paragraphs, _contrastPanelRoot);
 
         _closeButton.onClick.RemoveAllListeners();
-        _closeButton.onClick.AddListener(Close);
+        _closeButton.onClick.AddListener(OnCloseButton);
 
         _popinButton.onClick.RemoveAllListeners();
         _popinButton.onClick.AddListener(OnPopinButton);
     }
 
-    public void Close()
+    public void Close(bool invokeEvent = true)
     {
-        PopinClosed?.Invoke();
+        if(invokeEvent)
+        {
+            PopinClosed?.Invoke();
+        }
         gameObject.SetActive(false);
         MenuManager.Instance.SetPreviousStatus();
     }
@@ -81,9 +90,14 @@ public class Popin : MonoBehaviour
     #endregion
 
     #region Private
-    private void OnPopinButton()
+    internal void OnPopinButton()
     {
         PopinButtonClicked?.Invoke();
+    }
+
+    private void OnCloseButton()
+    {
+        Close(true);
     }
     #endregion
     #endregion

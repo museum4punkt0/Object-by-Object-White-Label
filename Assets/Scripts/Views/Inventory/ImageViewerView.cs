@@ -85,7 +85,7 @@ public class ImageViewerView : BaseView
 		_colorBackground.color = GlobalSettingsManager.Instance.AppColor;
 
 		_pinchableScrollRect.Init(true);
-		ImageUtils.LoadImage(_background, this, m_PoiData, Wezit.RelationName.SHOW_PICTURE, WezitSourceTransformation.original, false);
+		ImageUtils.LoadImage(_background, this, m_PoiData, Wezit.RelationName.SHOW_PICTURE, WezitSourceTransformation.default_base, false);
 	}
 
 	private void ResetViewContent()

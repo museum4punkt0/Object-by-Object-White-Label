@@ -48,9 +48,10 @@
 	"wezit": {
 		"manifestUrl": "https://static.wezit.io/005064/appdata/wzobj_application_1c7edf4f-9049-4c78-ac99-72846d9757a9/manifest.json",
 		"version": "cdn-v3",
-		"online": true,
+		"online": false,
 		"loadImages": true,
-		"downloadImagesOnStartup": true,
+		"downloadImagesOnStartup": false,
 		"downloadTransformation": "default",
+		"downloadSettingsImagesOnStartup": true
 	}
 }

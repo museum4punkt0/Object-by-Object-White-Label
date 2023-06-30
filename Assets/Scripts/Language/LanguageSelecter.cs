@@ -15,19 +15,13 @@ public class LanguageSelecter : MonoBehaviour
 
 	[SerializeField] private bool _initOnEnable = false;
 
-	private HorizontalLayoutGroup horizontalLayoutGroup;
 	private ToggleGroup toggleGroup;
-	private IDisposable langSelectSubscription = null;
-	private RectOffset buttonPadding;
-	private Language selectedLanguage = Language.none;
 	#endregion Fields
 
 	#region Methods
 	#region MonoBehaviour
 	private void Awake()
 	{
-		horizontalLayoutGroup = GetComponent<HorizontalLayoutGroup>();
-		buttonPadding = new RectOffset();
 	}
 
 	private void OnEnable()

@@ -108,7 +108,7 @@ public class ContentView : BaseView
 		m_TourProgressionData = PlayerManager.Instance.Player.GetTourProgression(StoreAccessor.State.SelectedTour.pid);
 		bool isChallenge = m_TourProgressionData.IsChallengeMode;
 		m_PoiProgressionData = m_TourProgressionData.GetPoiProgression(m_PoiData.parentPid);
-		MenuManager.MenuStatus status = isChallenge ? MenuManager.MenuStatus.BackButtonInventory : MenuManager.MenuStatus.BackButton;
+		MenuManager.MenuStatus status = isChallenge ? MenuManager.MenuStatus.BackButtonInventoryScore : MenuManager.MenuStatus.BackButtonInventory;
 		MenuManager.Instance.SetMenuStatus(status);
 		MenuManager.Instance.SetBackButtonState(ViewManager.Instance.PreviousKioskState);
 
@@ -117,22 +117,22 @@ public class ContentView : BaseView
 			Wezit.Settings.Instance.GetSettingAsCleanedText(m_RemainingItemsSingularTextSettingKey);
 		_remainingItems.text = string.Format(remainingText, m_PoiProgressionData.GetPoiMaxProgression() - progress);
 
-		_uIBackground.color = _3DManipulationInstruction.color = _continueButtonBG.color = _title.color = GlobalSettingsManager.Instance.AppColor;
+		_remainingItems.color = _uIBackground.color = _3DManipulationInstruction.color = _continueButtonBG.color = _title.color = GlobalSettingsManager.Instance.AppColor;
 
 		_pinchableScrollRect.Init(true);
 		switch (m_PoiData.type)
         {
 			case ARItemTypes.image:
-				ImageUtils.LoadImage(_background, this, m_PoiData, Wezit.RelationName.SHOW_PICTURE, WezitSourceTransformation.original, false);
+				ImageUtils.LoadImage(_background, this, m_PoiData, Wezit.RelationName.SHOW_PICTURE, WezitSourceTransformation.default_base, false);
 				OnItemCompleted();
 				break;
 			case ARItemTypes.video:
-				ImageUtils.LoadCover(_background, this, m_PoiData, Wezit.RelationName.PLAY_VIDEO, WezitSourceTransformation.original, false);
-				_videoManager.gameObject.SetActive(true);
+				ImageUtils.LoadCover(_background, this, m_PoiData, Wezit.RelationName.PLAY_VIDEO, WezitSourceTransformation.default_base, false);
+				_videoManager.Toggle(true);
 				_videoManager.Inflate(await VideoUtils.GetVideoSourceByTransformation(m_PoiData), m_PoiData.title);
 				break;
 			case ARItemTypes.audio:
-				ImageUtils.LoadCover(_background, this, m_PoiData, Wezit.RelationName.PLAY_TRACK, WezitSourceTransformation.original, false);
+				ImageUtils.LoadCover(_background, this, m_PoiData, Wezit.RelationName.PLAY_TRACK, WezitSourceTransformation.default_base, false);
 				_audioManager.gameObject.SetActive(true);
 				_audioManager.Inflate(await AudioUtils.GetAudioClip(m_PoiData));
 				break;
@@ -150,8 +150,8 @@ public class ContentView : BaseView
 		_remainingItems.text = string.Format("There are {0} items remaining", m_PoiProgressionData.GetPoiMaxProgression() - m_PoiProgressionData.GetPoiCurrentProgression());
         string[] paragraphs = { _description.text };
 		_explanationWindow.Inflate(_title.text, paragraphs, _contrastPanelRoot);
-		StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_textContainer));
-		StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_textContainer));
+		await StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_textContainer));
+		await StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_textContainer));
 	}
 
 	private void ResetViewContent()
@@ -160,7 +160,7 @@ public class ContentView : BaseView
 		_background.gameObject.SetActive(true);
 		_uIBackground.enabled = true;
 		_audioManager.gameObject.SetActive(false);
-		_videoManager.gameObject.SetActive(false);
+		_videoManager.Toggle(false);
 		_threeDManager.gameObject.SetActive(false);
 		_popinPoints.gameObject.SetActive(false);
 		_3DManipulationInstruction.gameObject.SetActive(false);
@@ -170,7 +170,7 @@ public class ContentView : BaseView
 	{
 		RemoveListeners();
 		_continueButton.onClick.AddListener(OnContinueButton);
-		_videoManager.VideoPlayerOpen.AddListener(OnVideoPlayerToggle);
+		_videoManager.VideoPlayerToggled.AddListener(OnVideoPlayerToggle);
 		_videoManager.VideoLoopPointReached.AddListener(OnItemCompleted);
 		_audioManager.AudioLoopPointReached.AddListener(OnItemCompleted);
 		_threeDManager.ItemManipulated.AddListener(OnItemCompleted);
@@ -179,7 +179,7 @@ public class ContentView : BaseView
 	private void RemoveListeners()
 	{
 		_continueButton.onClick.RemoveAllListeners();
-		_videoManager.VideoPlayerOpen.RemoveAllListeners();
+		_videoManager.VideoPlayerToggled.RemoveAllListeners();
 		_videoManager.VideoLoopPointReached.RemoveAllListeners();
 		_audioManager.AudioLoopPointReached.RemoveAllListeners();
 		_threeDManager.ItemManipulated.RemoveAllListeners();
@@ -192,22 +192,27 @@ public class ContentView : BaseView
 
 	private void OnVideoPlayerToggle(bool isOpen)
     {
-		_explanationWindow.gameObject.SetActive(!isOpen);
+        //_explanationWindow.gameObject.SetActive(!isOpen);
+        if (!isOpen)
+		{
+			StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_textContainer));
+			_explanationWindow.Rebuild();
+		}
     }
 
 	private void OnItemCompleted()
     {
-		if(m_TourProgressionData.IsChallengeMode)
-        {
-			ContentProgressionData contentProgressionData = m_PoiProgressionData.GetContentProgression(m_PoiData.pid);
-			if(contentProgressionData.State != EContentProgressionState.Complete)
+		ContentProgressionData contentProgressionData = m_PoiProgressionData.GetContentProgression(m_PoiData.pid);
+		if(contentProgressionData.State != EContentProgressionState.Complete)
+		{
+			if(m_TourProgressionData.IsChallengeMode)
 			{
-				contentProgressionData.SetCompleted();
-				m_TourProgressionData.TourScore = m_TourProgressionData.TourScore + GlobalSettingsManager.Instance.PointsEarnedContent;
-				PlayerManager.Instance.Player.Save();
+				m_TourProgressionData.TourScore += GlobalSettingsManager.Instance.PointsEarnedContent;
 				_popinPoints.Inflate(m_PoiData);
 			}
-        }
+			contentProgressionData.SetCompleted();
+			PlayerManager.Instance.Player.Save();
+		}
 	}
 	#endregion Private
 

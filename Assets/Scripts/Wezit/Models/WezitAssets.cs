@@ -43,6 +43,10 @@ namespace Wezit
             public string GetAssetSourceByTransformation(string transformation)
             {
                 File file = files.Find(x => x.label == transformation);
+                if(file == null)
+                {
+                    file = files.Find(x => x.label == "original");
+                }
                 string fullPath = Path.Combine(DataGrabber.ImagesFolderPath, file.path);
 #if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
 		    	fullPath = "file://" + fullPath;
@@ -62,17 +66,5 @@ namespace Wezit
             public string defaultmode { get; set; }
             public string usermode { get; set; }
         }
-
-		public override string ToString()
-		{
-			return String.Format(
-				"Contents Pid: {0}\n" +
-				"Settings Path: {1}\n",
-                "Coucou",
-                "Hahaha"
-			);
-		}
     }
-
-
 }

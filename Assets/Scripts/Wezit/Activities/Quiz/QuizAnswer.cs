@@ -47,7 +47,7 @@ namespace Wezit
 
 
             _icon.sprite = _unselectedSprite;
-            _answerText.color = _icon.color = GlobalSettingsManager.Instance.AppColor;
+            _outline.color = _answerText.color = _icon.color = GlobalSettingsManager.Instance.AppColor;
             _background.color = Color.white;
         }
 

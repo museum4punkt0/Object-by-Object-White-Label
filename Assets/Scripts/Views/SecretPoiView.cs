@@ -12,6 +12,7 @@ public class SecretPoiView : BaseView
 	#region Fields
 	#region Serialize Fields
 	[SerializeField] private RawImage _background = null;
+	[SerializeField] private Image _colorBG = null;
 	[Header("Explanation")]
 	[SerializeField] private ExplanationWindow _explanationWindow = null;
 	[SerializeField] private TextMeshProUGUI _title = null;
@@ -91,13 +92,13 @@ public class SecretPoiView : BaseView
 
 		TourProgressionData tourProgressionData = PlayerManager.Instance.Player.GetTourProgression(StoreAccessor.State.SelectedTour.pid);
 		bool isChallenge = tourProgressionData.IsChallengeMode;
-		MenuManager.MenuStatus status = isChallenge ? MenuManager.MenuStatus.BackButtonInventory : MenuManager.MenuStatus.BackButton;
+		MenuManager.MenuStatus status = isChallenge ? MenuManager.MenuStatus.BackButtonInventoryScore : MenuManager.MenuStatus.BackButtonInventory;
 		MenuManager.Instance.SetMenuStatus(status);
 		MenuManager.Instance.SetBackButtonState(KioskState.TOUR_MAP);
 		m_PoiData = StoreAccessor.State.SelectedPoi;
 		m_Language = language;
 
-		_bonusButtonBG.color = _title.color = GlobalSettingsManager.Instance.AppColor;
+		_colorBG.color = _bonusButtonBG.color = _title.color = GlobalSettingsManager.Instance.AppColor;
 		_bonusButtonText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_ContinueButtonTextSettingKey, language);
 		_bonusButton.gameObject.SetActive(tourProgressionData.HasBeenCompleted);
 

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4321965501980810214}
   - component: {fileID: 3189814680044637255}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -81,7 +81,7 @@ SpriteRenderer:
   m_Size: {x: 2.56, y: 2.56}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &7827106824355397987
@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 7827106824355397997}
   - component: {fileID: 7827106824355397986}
   - component: {fileID: -4620257052885461959}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: TourMapPin
   m_TagString: Untagged
   m_Icon: {fileID: 0}

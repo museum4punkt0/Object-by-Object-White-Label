@@ -56,6 +56,7 @@ namespace Wezit
 
         public static string ImagesFolderPath { get { return Path.Combine(UnityEngine.Application.persistentDataPath, "wezit"); } }
         public List<WezitAssets.Asset> Assets {  get { return m_Assets; } }
+        public string AppDefaultTransformation;
         #endregion
 
         #region Properties
@@ -70,61 +71,15 @@ namespace Wezit
             return DownloadedImagesMd5Dict;
         }
 
-        public async UniTask GetAssetsForTour(Tour tour, string transformation = "all")
+        public async UniTask GetAllAssets(string transformation = "")
         {
             m_StopDownload = false;
             Load();
-            if (m_Assets.Count == 0)
+            if (string.IsNullOrEmpty(transformation))
             {
-                if (AssetsLoader.Assets.Count == 0)
-                {
-                    await AssetsLoader.Init(true);
-                }
-                else
-                {
-                    m_Assets = AssetsLoader.Assets;
-                }
+                transformation = AppDefaultTransformation;
             }
 
-            int currentDownloaded = 0;
-            int currentCounter = 0;
-            foreach (WezitAssets.Asset asset in m_Assets)
-            {
-                if (!asset.use.Contains(tour.pid)) continue;
-                if (m_StopDownload) return;
-                bool hasTransformation = false;
-                foreach (WezitAssets.File file in asset.files)
-                {
-                    if ((file.label == transformation) || (transformation == "all"))
-                    {
-                        hasTransformation = true;
-                        int downloaded = file.size;
-                        if (CheckDownloadNecessity(file)) downloaded = await DownloadImage(file);
-                        currentDownloaded += downloaded;
-                        DownloadProgress?.Invoke(currentDownloaded);
-                        currentCounter++;
-                    }
-                }
-                if (!hasTransformation)
-                {
-                    WezitAssets.File file = asset.files.Find(x => x.label == "original");
-                    int downloaded = file.size;
-                    if (CheckDownloadNecessity(file)) downloaded = await DownloadImage(file);
-                    currentDownloaded += downloaded;
-                    DownloadProgress?.Invoke(currentDownloaded);
-                    currentCounter++;
-                }
-            }
-            HasDownloaded = true;
-            Save();
-            Wezit.FilesDownloader.SqliteUpdated = false;
-            DownloadOver?.Invoke();
-        }
-
-        public async UniTask GetAllAssets(string transformation)
-        {
-            m_StopDownload = false;
-            Load();
             if (m_Assets.Count == 0)
             {
                 if(AssetsLoader.Assets.Count == 0)
@@ -142,29 +97,7 @@ namespace Wezit
             foreach (WezitAssets.Asset asset in m_Assets)
             {
                 if (m_StopDownload) return;
-                bool hasTransformation = false;
-                foreach(WezitAssets.File file in asset.files)
-                {
-                    if ((file.label == transformation) || (transformation == "all"))
-                    {
-                        hasTransformation = true;
-                        int downloaded = file.size;
-                        if (CheckDownloadNecessity(file)) downloaded = await DownloadImage(file);
-                        currentDownloaded += downloaded;
-                        DownloadProgress?.Invoke(currentDownloaded);
-                        currentCounter++;
-                    }
-                }
-                if(!hasTransformation)
-                {
-                    if (asset.files.Count == 0) continue;
-                    WezitAssets.File file = asset.files.Find(x => x.label == "original");
-                    int downloaded = file.size;
-                    if (CheckDownloadNecessity(file)) downloaded = await DownloadImage(file);
-                    currentDownloaded += downloaded;
-                    DownloadProgress?.Invoke(currentDownloaded);
-                    currentCounter++;
-                }
+                await DownloadAsset(asset, currentDownloaded, currentCounter, transformation);
             }
             HasDownloaded = true;
             Save();
@@ -172,10 +105,61 @@ namespace Wezit
             DownloadOver?.Invoke();
         }
 
-        public int GetDownloadSize(string transformation = "all")
+        public async UniTask GetAssetsForTour(string tourId, string transformation = "")
+        {
+            m_StopDownload = false;
+            Load();
+
+            if (string.IsNullOrEmpty(transformation))
+            {
+                transformation = AppDefaultTransformation;
+            }
+            int currentDownloaded = 0;
+            int currentCounter = 0;
+            List<WezitAssets.Asset> tourAssets = AssetsLoader.GetAssetsForTour(tourId);
+            foreach (WezitAssets.Asset asset in tourAssets)
+            {
+                if (m_StopDownload) return;
+                (currentDownloaded, currentCounter) = await DownloadAsset(asset, currentDownloaded, currentCounter, transformation);
+            }
+            HasDownloaded = true;
+            Save();
+            Wezit.FilesDownloader.SqliteUpdated = false;
+            DownloadOver?.Invoke();
+        }
+
+        public async UniTask GetSettingsAssets(string transformation = "")
+        {
+            m_StopDownload = false;
+            Load();
+
+            if (string.IsNullOrEmpty(transformation))
+            {
+                transformation = AppDefaultTransformation;
+            }
+            int currentDownloaded = 0;
+            int currentCounter = 0;
+            List<WezitAssets.Asset> tourAssets = AssetsLoader.GetAllSettingsAssets();
+            foreach (WezitAssets.Asset asset in tourAssets)
+            {
+                if (m_StopDownload) return;
+                (currentDownloaded, currentCounter) = await DownloadAsset(asset, currentDownloaded, currentCounter, transformation);
+            }
+            HasDownloaded = true;
+            Save();
+            Wezit.FilesDownloader.SqliteUpdated = false;
+            DownloadOver?.Invoke();
+        }
+
+        // Download size
+        public int GetDownloadSize(string transformation = "")
         {
             int downloadSize = 0;
-            int counter = m_Assets.Count;
+            if(string.IsNullOrEmpty(transformation))
+            {
+                transformation = AppDefaultTransformation;
+            }
+
             foreach(WezitAssets.Asset asset in m_Assets)
             {
                 foreach (WezitAssets.File file in asset.files)
@@ -189,13 +173,59 @@ namespace Wezit
             return downloadSize;
         }
 
-        public int GetUpdateSize()
+        public int GetDownloadSizeForAssets(List<WezitAssets.Asset> assets, string transformation = "all")
         {
+            int downloadSize = 0;
+            if (string.IsNullOrEmpty(transformation))
+            {
+                transformation = AppDefaultTransformation;
+            }
+
+            foreach (WezitAssets.Asset asset in assets)
+            {
+                foreach (WezitAssets.File file in asset.files)
+                {
+                    if (file.label == transformation || transformation == "all")
+                    {
+                        downloadSize += file.size;
+                    }
+                }
+            }
+            return downloadSize;
+        }
+
+        public int GetDownloadSizeForTour(string tourId, string transformation = "all")
+        {
+            if (string.IsNullOrEmpty(transformation))
+            {
+                transformation = AppDefaultTransformation;
+            }
+
+            List<WezitAssets.Asset> tourAssets = AssetsLoader.GetAssetsForTour(tourId);
+            return (GetDownloadSizeForAssets(tourAssets, transformation));
+        }
+
+        // Update size
+        public int GetUpdateSize(string transformation = "")
+        {
+            Load();
+            if (string.IsNullOrEmpty(transformation))
+            {
+                transformation = AppDefaultTransformation;
+            }
+
             List<WezitAssets.File> filesToUpdate = new List<WezitAssets.File>();
             foreach (WezitAssets.Asset asset in m_Assets)
             {
-                foreach(WezitAssets.File file in asset.files)
+                string assetTransformation = asset.usages.Contains("maps") ? "tiles" : transformation;
+
+                foreach (WezitAssets.File file in asset.files)
                 {
+                    if(file.label != assetTransformation && assetTransformation != "all")
+                    {
+                        continue;
+                    }
+
                     ImageAndMd5 imageMd5 = DownloadedImagesMd5Dict.Find(x => x.path == file.path);
                     if (imageMd5 != null)
                     {
@@ -218,6 +248,59 @@ namespace Wezit
             return downloadSize;
         }
 
+        public int GetUpdateSizeForAssets(List<WezitAssets.Asset> assets, string transformation = "")
+        {
+            Load();
+            if (string.IsNullOrEmpty(transformation))
+            {
+                transformation = AppDefaultTransformation;
+            }
+
+            List<WezitAssets.File> filesToUpdate = new List<WezitAssets.File>();
+            foreach (WezitAssets.Asset asset in assets)
+            {
+                string assetTransformation = asset.usages.Contains("maps") ? "tiles" : transformation;
+
+                foreach (WezitAssets.File file in asset.files)
+                {
+                    if (file.label != assetTransformation && assetTransformation != "all")
+                    {
+                        continue;
+                    }
+
+                    ImageAndMd5 imageMd5 = DownloadedImagesMd5Dict.Find(x => x.path == file.path);
+                    if (imageMd5 != null)
+                    {
+                        if (imageMd5.md5 != file.md5)
+                        {
+                            Debug.Log("There is a file to update \nAsset name: " + asset.title + "\nFile uri: " + file.uri);
+                            filesToUpdate.Add(file);
+                        }
+                    }
+                    else
+                    {
+                        filesToUpdate.Add(file);
+                        Debug.Log("There is a new file \n" + asset.title);
+                    }
+                }
+            }
+            int downloadSize = 0;
+            int counter = filesToUpdate.Count;
+            downloadSize = filesToUpdate.Sum(x => x.size);
+            return downloadSize;
+        }
+
+        public int GetUpdateSizeForTour(string tourId, string transformation = "")
+        {
+            List<WezitAssets.Asset> tourAssets = AssetsLoader.GetAssetsForTour(tourId);
+            if (string.IsNullOrEmpty(transformation))
+            {
+                transformation = AppDefaultTransformation;
+            }
+
+            return (GetUpdateSizeForAssets(tourAssets, transformation));
+        }
+
         public bool CheckDownloadNecessity(WezitAssets.File file)
         {
             ImageAndMd5 imageMd5 = DownloadedImagesMd5Dict.Find(x => x.path == file.path);
@@ -225,6 +308,7 @@ namespace Wezit
             {
                 if (imageMd5.md5 != file.md5)
                 {
+                    Debug.LogWarning(imageMd5.md5);
                     return true;
                 }
                 else return false;
@@ -235,7 +319,51 @@ namespace Wezit
             }
         }
 
-        public async UniTask<int> DownloadImage(WezitAssets.File file)
+        // Download
+        public async UniTask<(int currentDownloaded, int currentCounter)> DownloadAsset(WezitAssets.Asset asset, int currentDownloaded, int currentCounter, string transformation = "all")
+        {
+            bool hasTransformation = false;
+            if (asset.usages.Contains("maps"))
+            {
+                transformation = "tiles";
+            }
+            foreach (WezitAssets.File file in asset.files)
+            {
+                if ((file.label == transformation) || (transformation == "all"))
+                {
+                    hasTransformation = true;
+                    int downloaded = file.size;
+                    if (CheckDownloadNecessity(file))
+                    {
+                        if(transformation == "tiles")
+                        {
+                            downloaded = await DownloadMapTiles(file);
+                        }
+                        else
+                        {
+                            downloaded = await DownloadFile(file);
+                        }
+                    }
+
+                    currentDownloaded += downloaded;
+                    DownloadProgress?.Invoke(currentDownloaded);
+                    currentCounter++;
+                }
+            }
+            if (!hasTransformation)
+            {
+                WezitAssets.File file = asset.files.Find(x => x.label == "original");
+                if (file == null) return (currentDownloaded, currentCounter);
+                int downloaded = file.size;
+                if (CheckDownloadNecessity(file)) downloaded = await DownloadFile(file);
+                currentDownloaded += downloaded;
+                DownloadProgress?.Invoke(currentDownloaded);
+                currentCounter++;
+            }
+            return (currentDownloaded, currentCounter);
+        }
+
+        public async UniTask<int> DownloadFile(WezitAssets.File file)
         {
             m_WebRequest = UnityWebRequest.Get(file.uri);
             await m_WebRequest.SendWebRequest();
@@ -258,6 +386,20 @@ namespace Wezit
             return (int)m_WebRequest.downloadedBytes;
         }
 
+        private async UniTask<int> DownloadMapTiles(WezitAssets.File file)
+        {
+            Debug.LogError("DOWNLOADING MAP");
+            if (!Directory.Exists(Path.Combine(ImagesFolderPath, Path.GetDirectoryName(file.path.Replace("metadata.json", "")))))
+            {
+                Directory.CreateDirectory(Path.Combine(ImagesFolderPath, Path.GetDirectoryName(file.path.Replace("metadata.json", ""))));
+            }
+            await UniRxZipDownloader.DownloadAndUnzip(file.uri.Replace("metadata.json", "original.zip"), Path.Combine(ImagesFolderPath, file.path.Replace("metadata.json", "")));
+
+            DownloadedImagesMd5Dict.Add(new ImageAndMd5(file.path, file.md5));
+            return file.size;
+        }
+
+        // Delete
         public void DeleteImages()
         {
             foreach (var directory in Directory.GetDirectories(ImagesFolderPath))
@@ -333,7 +475,7 @@ namespace Wezit
 
             if (File.Exists(m_FilePath))
             {
-                File.WriteAllText(m_FilePath, String.Empty);
+                File.WriteAllText(m_FilePath, string.Empty);
                 file = File.OpenWrite(m_FilePath);
             }
             else file = File.Create(m_FilePath);

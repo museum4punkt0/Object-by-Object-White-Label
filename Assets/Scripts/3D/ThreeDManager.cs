@@ -35,6 +35,14 @@ public class ThreeDManager : MonoBehaviour
 
 		m_PoiData = poi;
 		GameObject model = await Utils.GLTFSpawner.SpawnGLTF(_itemRoot, m_PoiData);
+		SetLayerOfChildren.SetLayerAllChildren(model.transform, 7);
+
+		MeshRenderer[] meshRenderers = model.GetComponentsInChildren<MeshRenderer>();
+        foreach (MeshRenderer meshRenderer in meshRenderers)
+        {
+			meshRenderer.material.SetFloat("metallicFactor", 0.3f);
+        }
+
 		_manipulation3D.SetFocusObject(model);
 		_manipulation3D.FirstManipulated.RemoveAllListeners();
 		_manipulation3D.FirstManipulated.AddListener(OnItemManipulated);

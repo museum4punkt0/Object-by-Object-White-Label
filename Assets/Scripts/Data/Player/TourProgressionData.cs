@@ -39,6 +39,8 @@ public class TourProgressionData
     [FormerlySerializedAs("TourSelfiePath")]
     [SerializeField]
     private string m_TourSelfiePath = "";
+    [FormerlySerializedAs("HasBeenDownloaded")]
+    [SerializeField] public bool HasBeenDownloaded = false;
 
     #region Public API
     public bool HasBeenVisited

@@ -19,8 +19,11 @@ public class OnlineMapView : BaseView
 	[SerializeField] private MapListHorizontal _mapList = null;
 	[SerializeField] private MapListToggle _mapListToggle = null;
 	[SerializeField] private Button _centerButton = null;
+	[SerializeField] private Image _centerButtonBG = null;
 	[SerializeField] private Button _zoomInButton = null;
+	[SerializeField] private Image _zoomInButtonBG = null;
 	[SerializeField] private Button _zoomOutButton = null;
+	[SerializeField] private Image _zoomOutButtonBG = null;
 	#endregion Serialize Fields
 
 	#region Public Variables
@@ -31,6 +34,9 @@ public class OnlineMapView : BaseView
 	private OnlineMapsLocationService m_LocationService;
 	private Vector3 m_CenteredPostion;
 	private List<GameObject> m_Pins = new List<GameObject>();
+
+	private string m_mapProviderSettingKey = "template.spk.maps.global.map.provider.url";
+	private string m_mapProviderUrl;
 	#endregion Private m_Variables
 	#endregion Fields
 
@@ -89,8 +95,24 @@ public class OnlineMapView : BaseView
 	{
 		ResetViewContent();
 		MenuManager.Instance.SetMenuStatus(MenuManager.MenuStatus.RightImage);
+		PlayerManager.Instance.ViewOnInventoryBackButton = KioskState.GLOBAL_MAP;
+
+		ScoreDisplay.Instance.Init();
 
 		StoreAccessor.State.SelectedTourBank = null;
+
+		_centerButtonBG.color = _zoomInButtonBG.color = _zoomOutButtonBG.color = GlobalSettingsManager.Instance.AppColor;
+
+		m_mapProviderUrl = Wezit.Settings.Instance.GetSettingAsCleanedText(m_mapProviderSettingKey);
+		if(!string.IsNullOrEmpty(m_mapProviderUrl))
+        {
+			_map.customProviderURL = m_mapProviderUrl;
+        }
+		else
+        {
+			_map.customProviderURL = "https://tiles.stadiamaps.com/styles/stamen_watercolor/{z}/{x}/{y}.jpg";
+
+		}
 
 		m_Tours = WezitDataUtils.GetWezitToursByLang(language);
 		OnlineMapsMarker3DManager onlineMapsMarker3Ds = _map.GetComponent<OnlineMapsMarker3DManager>();
@@ -144,7 +166,9 @@ public class OnlineMapView : BaseView
 		_mapRoot.SetActive(true);
 		_mapList.ResetView();
 		_listRoot.SetActive(false);
-        foreach (GameObject mapPin in m_Pins)
+		_mapListToggle.Reset();
+
+		foreach (GameObject mapPin in m_Pins)
         {
             if (mapPin!= null) Destroy(mapPin);
         }

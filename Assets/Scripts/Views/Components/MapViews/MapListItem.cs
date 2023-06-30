@@ -12,6 +12,7 @@ public class MapListItem : MonoBehaviour
     #region SerializeField
     [SerializeField] private Button _button;
     [SerializeField] private RawImage _image = null;
+    [SerializeField] private LayoutElement _imageMask = null;
     [SerializeField] private CompletionBars _completion = null;
     [SerializeField] private GameObject _textContainer = null;
     [SerializeField] private TextMeshProUGUI _title;
@@ -22,6 +23,7 @@ public class MapListItem : MonoBehaviour
     private Tour m_Tour;
     private Poi m_Poi;
     private Vector2 m_Geolocation;
+    private bool m_isVertical;
     #endregion
     #endregion
 
@@ -55,9 +57,17 @@ public class MapListItem : MonoBehaviour
 
     #region Methods
     #region Monobehaviour
+    private void OnEnable()
+    {
+        if (m_isVertical)
+        {
+            StartCoroutine(SquarifyImage());
+        }
+    }
     #endregion
+
     #region Public
-    public void Inflate(Tour tour, MonoBehaviour activeMonobehavour)
+    public void Inflate(Tour tour, MonoBehaviour activeMonobehavour, bool isVertical = false)
     {
         ResetView();
         SetProgression(PlayerManager.Instance.Player.GetTourProgression(tour.pid), tour);
@@ -65,8 +75,13 @@ public class MapListItem : MonoBehaviour
         _title.color = GlobalSettingsManager.Instance.AppColor;
         _title.text = tour.title;
         _description.text = tour.subject;
-        if (_textContainer) activeMonobehavour.StartCoroutine(RebuildContainer());
+        if (_textContainer)
+        {
+            activeMonobehavour.StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_textContainer));
+        }
+
         Utils.ImageUtils.LoadImage(_image, activeMonobehavour, tour);
+        m_isVertical = isVertical;
 
         m_Tour = tour;
         Wezit.PoiLocation poiLocation = PoiLocationStore.GetPoiLocationById(tour.pid);
@@ -77,7 +92,7 @@ public class MapListItem : MonoBehaviour
         _button.onClick.AddListener(OnButtonClickTour);
     }
 
-    public void Inflate(Poi poi, MonoBehaviour activeMonobehavour)
+    public void Inflate(Poi poi, MonoBehaviour activeMonobehavour, bool isVertical = false)
     {
         ResetView();
 
@@ -86,8 +101,14 @@ public class MapListItem : MonoBehaviour
         _title.color = GlobalSettingsManager.Instance.AppColor;
         _title.text = poi.title;
         _description.text = poi.subject;
-        if (_textContainer) activeMonobehavour.StartCoroutine(RebuildContainer());
-        Utils.ImageUtils.LoadImage(_image, activeMonobehavour, poi, RelationName.SHOW_PICTURE, WezitSourceTransformation.original, false);
+
+        if (_textContainer)
+        {
+            activeMonobehavour.StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_textContainer));
+        }
+
+        Utils.ImageUtils.LoadImage(_image, activeMonobehavour, poi, RelationName.SHOW_PICTURE, WezitSourceTransformation.default_base, false);
+        m_isVertical = isVertical;
 
         m_Poi = poi;
         Wezit.PoiLocation poiLocation = PoiLocationStore.GetPoiLocationById(poi.pid);
@@ -136,12 +157,10 @@ public class MapListItem : MonoBehaviour
         ItemClickedPoi?.Invoke(m_Poi);
     }
 
-    private IEnumerator RebuildContainer()
+    private IEnumerator SquarifyImage()
     {
         yield return null;
-        _textContainer.SetActive(false);
-        yield return null;
-        _textContainer.SetActive(true);
+        _imageMask.minHeight = GetComponent<RectTransform>().sizeDelta.x;
     }
     #endregion
     #endregion

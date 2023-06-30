@@ -30,7 +30,8 @@ public class AppStartUp : Singleton<AppStartUp>
 											 wezitConfigModel.online,
 										     wezitConfigModel.loadImages,
 										     wezitConfigModel.downloadImagesOnStartup,
-										     wezitConfigModel.downloadTransformation);
+										     wezitConfigModel.downloadTransformation,
+											 wezitConfigModel.downloadSettingsImagesOnStartup);
 		}
 
 		// Init app

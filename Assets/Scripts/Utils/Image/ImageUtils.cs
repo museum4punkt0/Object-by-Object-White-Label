@@ -104,7 +104,7 @@ namespace Utils
 			}
 		}
 
-		public async static void LoadImage(Image imageComponent, MonoBehaviour monoBehaviourInstance, Wezit.Node wzData, string targetRelation = "relationForShowPicture", string targetWzSourceTransformation = "original", bool envelopeParent = true, float crossFadeAlphaDuration = 0.25f)
+		public async static void LoadImage(Image imageComponent, MonoBehaviour monoBehaviourInstance, Wezit.Node wzData, string targetRelation = "relationForShowPicture", string targetWzSourceTransformation = "default", bool envelopeParent = true, float crossFadeAlphaDuration = 0.25f)
 		{
 			if (imageComponent != null)
 			{
@@ -197,7 +197,7 @@ namespace Utils
 			}
 		}
 
-		public async static void LoadImage(SpriteRenderer spriteRenderer, MonoBehaviour monoBehaviourInstance, Wezit.Node wzData, int refHeight, float refScale, string targetRelation = "relationForShowPicture", string targetWzSourceTransformation = "original")
+		public async static void LoadImage(SpriteRenderer spriteRenderer, MonoBehaviour monoBehaviourInstance, Wezit.Node wzData, int refHeight, float refScale, string targetRelation = "relationForShowPicture", string targetWzSourceTransformation = "default")
 		{
 			if (spriteRenderer != null)
 			{
@@ -232,11 +232,6 @@ namespace Utils
 		#region RawImage
 		public static IEnumerator SetImage(RawImage imageComponent, string assetSource, string mimeType = "", bool envelopeParent = true, MonoBehaviour context = null, float crossFadeAlphaDuration = 0.5f, bool enableImageOnLoaded = true, float alphaOnLoaded = 1)
 		{
-			if(mimeType == "image/webp")
-            {
-				WebpAnimation.LoadAndApplyWebp(assetSource, imageComponent, envelopeParent, false, crossFadeAlphaDuration, enableImageOnLoaded, alphaOnLoaded);
-				yield break;
-			}
 
 			if (_currentImagesLoadCount >= _imagesLoadBeforeResourceClean) Resources.UnloadUnusedAssets();
 			_currentImagesLoadCount++;
@@ -322,7 +317,7 @@ namespace Utils
 			}
 		}
 
-		public async static void LoadImage(RawImage imageComponent, MonoBehaviour monoBehaviourInstance, Wezit.Node wzData, string targetRelation = "relationForShowPicture", string targetWzSourceTransformation = "original", bool envelopeParent = true, float crossFadeAlphaDuration = 0.25f, string type = "")
+		public async static void LoadImage(RawImage imageComponent, MonoBehaviour monoBehaviourInstance, Wezit.Node wzData, string targetRelation = "relationForShowPicture", string targetWzSourceTransformation = "default", bool envelopeParent = true, float crossFadeAlphaDuration = 0.25f, string type = "")
 		{
 			if (imageComponent != null)
 			{
@@ -357,7 +352,7 @@ namespace Utils
 			}
 		}
 
-		public async static void LoadCover(RawImage imageComponent, MonoBehaviour monoBehaviourInstance, Wezit.Node wzData, string targetRelation, string targetWzSourceTransformation = "original", bool envelopeParent = true, float crossFadeAlphaDuration = 0.25f)
+		public async static void LoadCover(RawImage imageComponent, MonoBehaviour monoBehaviourInstance, Wezit.Node wzData, string targetRelation, string targetWzSourceTransformation = "default", bool envelopeParent = true, float crossFadeAlphaDuration = 0.25f)
 		{
 			if (imageComponent != null)
 			{

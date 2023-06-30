@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Debug = UnityEngine.Debug;
 
 /// <summary>
 /// Map log manager
@@ -47,7 +48,7 @@ public class OnlineMapsLog: MonoBehaviour
     {
         if (!ValidateType(type)) return;
 
-        UnityEngine.Debug.Log(message);
+        Debug.Log(message);
         AddUIMessage(message);
     }
 
@@ -101,7 +102,7 @@ public class OnlineMapsLog: MonoBehaviour
     {
         if (!ValidateType(type)) return;
 
-        UnityEngine.Debug.LogWarning(message);
+        Debug.LogWarning(message);
         AddUIMessage("[WARNING] " + message);
     }
 

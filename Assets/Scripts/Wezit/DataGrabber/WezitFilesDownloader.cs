@@ -165,22 +165,25 @@ namespace Wezit
 		#endregion
 
 		#region Assets
-		public static async UniTask<List<WezitAssets.Asset>> GetAssets(bool online)
+		public static async UniTask<string> GetAssets(bool online)
 		{
 			string assetsPath = Wezit.ManifestLoader.AssetsUrl;
 
 #if !UNITY_WEBGL
-			if (!File.Exists(AssetsFullPath) || m_SQliteUpdateNeeded)
-			{
-				Debug.LogWarning("Assets don't exist or need an update, downloading");
-				bool downloadSuccess = online ? await DownloadAssets() : await DownloadAssets();
-				if (downloadSuccess) assetsPath = AssetsFullPath;
-			}
-			else
-			{
-				Debug.Log("Assets exist");
-				assetsPath = AssetsFullPath;
-			}
+			if(!online)
+            {
+				if (!File.Exists(AssetsFullPath) || m_SQliteUpdateNeeded)
+				{
+					Debug.LogWarning("Assets don't exist or need an update, downloading");
+					bool downloadSuccess = online ? await DownloadAssets() : await DownloadAssets();
+					if (downloadSuccess) assetsPath = AssetsFullPath;
+				}
+				else
+				{
+					Debug.Log("Assets exist");
+					assetsPath = AssetsFullPath;
+				}
+            }
 #endif
 #if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
 			assetsPath = "file://" + assetsPath;
@@ -194,8 +197,8 @@ namespace Wezit
 			}
 			else
 			{
-				Debug.Log("Assets loaded");
-				return JsonConvert.DeserializeObject<List<WezitAssets.Asset>>(assetsJsonString);
+				Debug.Log("Assets loaded \n");
+				return assetsJsonString;
 			}
 		}
 
@@ -242,26 +245,29 @@ namespace Wezit
 		public static async UniTask<Wezit.Manifest> GetManifest(string manifestUrl, bool online)
 		{
 #if !UNITY_WEBGL
-			if (!File.Exists(ManifestFullPath))
-			{
-				Debug.LogWarning("The manifest doesn't exist or needs an update, downloading");
-				bool downloadSuccess = online ? await DownloadManifest(manifestUrl) : await DownloadManifest(manifestUrl);
-				if (downloadSuccess) manifestUrl = ManifestFullPath;
-			}
-			else
-			{
-				bool updateNeeded = await CheckManifestUpdateNeeded(manifestUrl);
-				if (updateNeeded)
+			if(!online)
+            {
+				if (!File.Exists(ManifestFullPath))
 				{
-					Debug.LogWarning("A manifest update is needed, downloading...");
-					await DownloadManifest(manifestUrl);
+					Debug.LogWarning("The manifest doesn't exist or needs an update, downloading");
+					bool downloadSuccess = online ? await DownloadManifest(manifestUrl) : await DownloadManifest(manifestUrl);
+					if (downloadSuccess) manifestUrl = ManifestFullPath;
 				}
 				else
 				{
-					Debug.Log("Manifest exists");
+					bool updateNeeded = await CheckManifestUpdateNeeded(manifestUrl);
+					if (updateNeeded)
+					{
+						Debug.LogWarning("A manifest update is needed, downloading...");
+						await DownloadManifest(manifestUrl);
+					}
+					else
+					{
+						Debug.Log("Manifest exists");
+					}
+					manifestUrl = ManifestFullPath;
 				}
-				manifestUrl = ManifestFullPath;
-			}
+            }
 #endif
 
 			// Store manifest URL
@@ -350,17 +356,20 @@ namespace Wezit
 			string settingsPath = Wezit.ManifestLoader.SettingsUrl;
 
 #if !UNITY_WEBGL
-			if (!File.Exists(SettingsFullPath) || m_SQliteUpdateNeeded)
-			{
-				Debug.LogWarning("Settings don't exist or need an update, downloading");
-				bool downloadSuccess = online ? await DownloadSettings() : await DownloadSettings();
-				if (downloadSuccess) settingsPath = SettingsFullPath;
-			}
-			else
-			{
-				Debug.Log("Settings exist");
-				settingsPath = SettingsFullPath;
-			}
+			if(!online)
+            {
+				if (!File.Exists(SettingsFullPath) || m_SQliteUpdateNeeded)
+				{
+					Debug.LogWarning("Settings don't exist or need an update, downloading");
+					bool downloadSuccess = online ? await DownloadSettings() : await DownloadSettings();
+					if (downloadSuccess) settingsPath = SettingsFullPath;
+				}
+				else
+				{
+					Debug.Log("Settings exist");
+					settingsPath = SettingsFullPath;
+				}
+            }
 #endif
 #if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
 		settingsPath = "file://" + settingsPath;

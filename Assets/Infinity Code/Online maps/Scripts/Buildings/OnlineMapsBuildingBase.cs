@@ -207,10 +207,10 @@ public abstract class OnlineMapsBuildingBase:MonoBehaviour
         container.map.projection.CoordinatesToTile(tl.x, tl.y, container.map.buffer.renderState.zoom, out sx, out sy);
 
         List<Vector3> localPoints = new List<Vector3>(Mathf.Min(nodes.Count, 8));
-        float zoomCoof = container.map.buffer.renderState.zoomCoof;
+        float zoomFactor = container.map.buffer.renderState.zoomFactor;
 
-        float sw = OnlineMapsUtils.tileSize * container.control.sizeInScene.x / container.map.width / zoomCoof;
-        float sh = OnlineMapsUtils.tileSize * container.control.sizeInScene.y / container.map.height / zoomCoof;
+        float sw = OnlineMapsUtils.tileSize * container.control.sizeInScene.x / container.map.width / zoomFactor;
+        float sh = OnlineMapsUtils.tileSize * container.control.sizeInScene.y / container.map.height / zoomFactor;
 
         for (int i = 0; i < nodes.Count; i++)
         {

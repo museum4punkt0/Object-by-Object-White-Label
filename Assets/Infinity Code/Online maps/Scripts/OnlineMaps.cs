@@ -27,7 +27,7 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver, IOnline
     /// <summary>
     /// The current version of Online Maps
     /// </summary>
-    public const string version = "3.8.1.1";
+    public const string version = "3.8.3.1";
 
     /// <summary>
     /// The minimum zoom level
@@ -594,6 +594,12 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver, IOnline
     /// <summary>
     /// The scaling factor for zoom
     /// </summary>
+    public float zoomFactor
+    {
+        get { return 1 - zoomScale / 2; }
+    }
+    
+    [Obsolete("Use zoomFactor instead.")]
     public float zoomCoof
     {
         get { return 1 - zoomScale / 2; }
@@ -1265,7 +1271,7 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver, IOnline
 #endif
         }
         else StartBuffer();
-
+        
         Redraw();
     }
 
@@ -1346,7 +1352,7 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver, IOnline
         double tpx, tpy;
         projection.CoordinatesToTile(lng, lat, zoom, out tpx, out tpy);
 
-        float haftCountY = countY / 2f * zoomCoof;
+        float haftCountY = countY / 2f * zoomFactor;
         int maxY = 1 << zoom;
         bool modified = false;
         if (tpy < haftCountY)
@@ -1505,8 +1511,8 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver, IOnline
         double px, py;
         projection.CoordinatesToTile(longitude, latitude, zoom, out px, out py);
 
-        px += countX / 2d * zoomCoof;
-        py += countY / 2d * zoomCoof;
+        px += countX / 2d * zoomFactor;
+        py += countY / 2d * zoomFactor;
 
         projection.TileToCoordinates(px, py, zoom, out bottomRightLongitude, out bottomRightLatitude);
     }
@@ -1520,8 +1526,8 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver, IOnline
 
         projection.CoordinatesToTile(longitude, latitude, zoom, out px, out py);
 
-        px -= countX / 2d * zoomCoof;
-        py -= countY / 2d * zoomCoof;
+        px -= countX / 2d * zoomFactor;
+        py -= countY / 2d * zoomFactor;
 
         projection.TileToCoordinates(px, py, zoom, out topLeftLongitude, out topLeftLatitude);
     }

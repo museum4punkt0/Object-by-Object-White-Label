@@ -22,6 +22,7 @@ public class OnlineMapsGUITooltipDrawer: OnlineMapsTooltipDrawerBase
     /// </summary>
     public static OnPrepareTooltipStyleDelegate OnPrepareTooltipStyle;
 
+    private static GUIContent content;
     private GUIStyle tooltipStyle;
 
     /// <summary>
@@ -50,6 +51,8 @@ public class OnlineMapsGUITooltipDrawer: OnlineMapsTooltipDrawerBase
             stretchWidth = true,
             padding = new RectOffset(0, 0, 3, 3)
         };
+        
+        content = new GUIContent();
     }
 
     ~OnlineMapsGUITooltipDrawer()
@@ -277,8 +280,8 @@ public class OnlineMapsGUITooltipDrawer: OnlineMapsTooltipDrawerBase
             return;
         }
 
-        GUIContent tip = new GUIContent(text);
-        Vector2 size = style.CalcSize(tip);
+        content.text = text;
+        Vector2 size = style.CalcSize(content);
         GUI.Label(new Rect(position.x - size.x / 2 - 5, Screen.height - position.y - size.y - 20, size.x + 10, size.y + 5), text, style);
     }
 }

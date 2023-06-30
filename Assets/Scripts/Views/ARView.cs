@@ -88,11 +88,11 @@ public class ARView : BaseView
 
 		TourProgressionData tourProgressionData = PlayerManager.Instance.Player.GetTourProgression(StoreAccessor.State.SelectedTour.pid);
 		bool isChallenge = tourProgressionData.IsChallengeMode;
-		MenuManager.MenuStatus status = isChallenge ? MenuManager.MenuStatus.BackButtonInventory : MenuManager.MenuStatus.BackButton;
+		MenuManager.MenuStatus status = isChallenge ? MenuManager.MenuStatus.BackButtonInventoryScore : MenuManager.MenuStatus.BackButtonInventory;
 		MenuManager.Instance.SetMenuStatus(status);
 		MenuManager.Instance.SetBackButtonState(KioskState.TOUR_MAP);
 
-		_quizManager.Inflate(isChallenge);// && !tourProgressionData.GetPoiProgression(m_PoiData.pid).QuizCompleted);
+		_quizManager.Inflate(isChallenge && !tourProgressionData.GetPoiProgression(m_PoiData.pid).QuizCompleted);
 
 		// Keep AR session going while the user did not go back to the map
 		KioskState previousKioskState = ViewManager.Instance.PreviousKioskState;
@@ -121,6 +121,7 @@ public class ARView : BaseView
 			return;
         }
 
+		_arManager.Reset();
         foreach (Transform child in _itemsRoot)
         {
             Destroy(child.gameObject);

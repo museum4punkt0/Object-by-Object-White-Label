@@ -86,9 +86,9 @@ public class OnlineMapsNGUITextureControl : OnlineMapsControlBase2D
         int countX = map.texture.width / OnlineMapsUtils.tileSize;
         int countY = map.texture.height / OnlineMapsUtils.tileSize;
 
-        float zoomCoof = map.zoomCoof;
-        tx += countX * localPos.x * zoomCoof;
-        ty -= countY * localPos.y * zoomCoof;
+        float zoomFactor = map.zoomFactor;
+        tx += countX * localPos.x * zoomFactor;
+        ty -= countY * localPos.y * zoomFactor;
 
         return true;
     }

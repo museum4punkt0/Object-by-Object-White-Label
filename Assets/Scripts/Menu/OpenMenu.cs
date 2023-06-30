@@ -10,7 +10,10 @@ public class OpenMenu : MonoBehaviour
 {
 	#region Fields
 	#region SerializeFields
+	[SerializeField] private Image _colorBG;
+	[SerializeField] private Image _backColorBG;
 	[SerializeField] private Transform _menuRoot = null;
+	[SerializeField] private Transform _menuColorBGRoot = null;
 	[SerializeField] private GameObject _uiRoot;
     [SerializeField] private Button _closeButton = null;
     [SerializeField] private Button _darkenCloseButton = null;
@@ -35,12 +38,25 @@ public class OpenMenu : MonoBehaviour
 	private string m_resetPopinCancelSettingKey = "template.spk.menu.reset.button.cancel.text";
 	private string m_resetPopinConfirmSettingKey = "template.spk.menu.reset.button.confirm.text";
 	private RectTransform m_MenuRecttransform;
-	#endregion
-	#endregion Fields
+	private RectTransform m_MenuBGRecttransform;
+    #endregion
+    #endregion Fields
 
-	#region Methods
-	#region MonoBehaviour
-	private void OnDisable()
+    #region Methods
+    #region MonoBehaviour
+    private void OnEnable()
+	{
+		if (m_MenuRecttransform == null)
+		{
+			m_MenuRecttransform = _menuRoot.GetComponent<RectTransform>();
+		}
+		if (m_MenuBGRecttransform == null)
+		{
+			m_MenuBGRecttransform = _menuColorBGRoot.GetComponent<RectTransform>();
+		}
+	}
+
+    private void OnDisable()
     {
         _menuRoot.localPosition = Vector3.left * _menuRoot.GetComponent<RectTransform>().sizeDelta.x;
 	}
@@ -57,10 +73,11 @@ public class OpenMenu : MonoBehaviour
     {
 		ResetViewContent();
 		m_MenuRecttransform = _menuRoot.GetComponent<RectTransform>();
+		_backColorBG.color = _colorBG.color = GlobalSettingsManager.Instance.AppColor;
 		
 		if (!string.IsNullOrEmpty(Wezit.Settings.Instance.GetSetting(m_logoSettingKey, lang)))
 		{
-			Wezit.Settings.Instance.SetImageFromSetting(_logo, m_logoSettingKey, lang, WezitSourceTransformation.original, false);
+			Wezit.Settings.Instance.SetImageFromSetting(_logo, m_logoSettingKey, lang, WezitSourceTransformation.default_base, false);
 			_logo.gameObject.SetActive(true);
 			_appName.gameObject.SetActive(false);
 		}
@@ -71,7 +88,7 @@ public class OpenMenu : MonoBehaviour
 			_appName.gameObject.SetActive(true);
 		}
 		
-		Wezit.Settings.Instance.SetImageFromSetting(_logo, m_logoSettingKey, lang, WezitSourceTransformation.original, false);
+		Wezit.Settings.Instance.SetImageFromSetting(_logo, m_logoSettingKey, lang, WezitSourceTransformation.default_base, false);
 		SimpleJSON.JSONNode linksArray = Wezit.Settings.Instance.GetSettingArray(m_menuLinksArraySettingKey, lang);
 		
 		foreach(SimpleJSON.JSONNode node in linksArray)
@@ -100,7 +117,7 @@ public class OpenMenu : MonoBehaviour
 		RemoveListeners();
 		_closeButton.onClick.AddListener(Close);
 		_darkenCloseButton.onClick.AddListener(Close);
-		_resetPopin.PopinButtonClicked.AddListener(_resetPopin.Close);
+        _resetPopin.PopinButtonClicked.AddListener(delegate { _resetPopin.Close(false); } );
 		_resetPopinConfirmButton.onClick.AddListener(OnResetConfirm);
 	}
 
@@ -140,9 +157,11 @@ public class OpenMenu : MonoBehaviour
     {
 		float width = m_MenuRecttransform.sizeDelta.x;
 		m_MenuRecttransform.anchoredPosition = width * Vector2.left;
+		m_MenuBGRecttransform.anchoredPosition = width * Vector2.left;
 		while(m_MenuRecttransform.anchoredPosition.x < 0)
         {
 			m_MenuRecttransform.Translate(Mathf.Min(100, -m_MenuRecttransform.anchoredPosition.x), 0, 0);
+			m_MenuBGRecttransform.Translate(Mathf.Min(100, -m_MenuBGRecttransform.anchoredPosition.x), 0, 0);
 			yield return null;
         }
 		m_MenuRecttransform.anchoredPosition = Vector2.zero;
@@ -150,7 +169,10 @@ public class OpenMenu : MonoBehaviour
 
 	private void Close()
     {
-		StartCoroutine(SlideClosed());
+		if(gameObject.activeInHierarchy)
+        {
+			StartCoroutine(SlideClosed());
+        }
     }
 
 	private IEnumerator SlideClosed(bool instantly = false)
@@ -159,6 +181,7 @@ public class OpenMenu : MonoBehaviour
 		while (m_MenuRecttransform.anchoredPosition.x > -width || instantly)
 		{
 			m_MenuRecttransform.Translate(-100, 0, 0);
+			m_MenuBGRecttransform.Translate(-100, 0, 0);
 			yield return null;
 		}
 		_uiRoot.SetActive(false);

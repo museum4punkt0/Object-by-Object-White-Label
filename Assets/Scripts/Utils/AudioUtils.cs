@@ -16,7 +16,7 @@ public class AudioUtils : MonoBehaviour
 			{
 				if (relation.relation == Wezit.RelationName.PLAY_TRACK)
 				{
-					source = relation.GetAssetSourceByTransformation(WezitSourceTransformation.original);
+					source = relation.GetAssetSourceByTransformation(WezitSourceTransformation.default_base);
 					break;
 				}
 			}

@@ -87,7 +87,7 @@ namespace Wezit
                 ResetQuestion();
 
                 string questionImageName = m_Questions[m_QuestionIndex].Image;
-                LoadImage(questionImageName, _questionImage);
+                System.Threading.Tasks.Task task = LoadImage(questionImageName, _questionImage);
 
                 _title.text = StringUtils.CleanFromWezit(m_Questions[m_QuestionIndex].Title);
                 List<string> instructionAndAnswers = new List<string>();

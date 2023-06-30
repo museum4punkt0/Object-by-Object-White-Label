@@ -92,7 +92,7 @@ public class ScratchView : BaseView
 		m_TourProgressionData = PlayerManager.Instance.Player.GetTourProgression(StoreAccessor.State.SelectedTour.pid);
 
 		bool isChallenge = m_TourProgressionData.IsChallengeMode;
-		MenuManager.MenuStatus status = isChallenge ? MenuManager.MenuStatus.BackButtonInventory : MenuManager.MenuStatus.BackButton;
+		MenuManager.MenuStatus status = isChallenge ? MenuManager.MenuStatus.BackButtonInventoryScore : MenuManager.MenuStatus.BackButtonInventory;
 		MenuManager.Instance.SetMenuStatus(status);
 		MenuManager.Instance.SetBackButtonState(KioskState.TOUR_MAP);
 		m_PoiData = StoreAccessor.State.SelectedPoi;

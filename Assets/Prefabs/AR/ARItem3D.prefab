@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3181532725667944681}
   - component: {fileID: 3181532725667944680}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ARItem3D
   m_TagString: Untagged
   m_Icon: {fileID: 0}

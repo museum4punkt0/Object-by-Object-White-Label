@@ -103,4 +103,12 @@ public class StringUtils
         }
 		return scrumbledString;
 	}
+
+	public static string AddCustomTagsFromWezit(string input)
+	{
+		string result = input;
+		result = result.Replace('[', '<').Replace(']', '>');
+
+		return result;
+	}
 }

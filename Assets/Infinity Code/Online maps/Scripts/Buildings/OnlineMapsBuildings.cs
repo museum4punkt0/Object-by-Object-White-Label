@@ -767,7 +767,6 @@ public class OnlineMapsBuildings : MonoBehaviour, IOnlineMapsSavableComponent
         if (Math.Abs(building.initialZoom - map.floatZoom) < float.Epsilon) s = c;
         else if (building.initialZoom < map.floatZoom) s = c * Mathf.Pow(2, map.floatZoom - building.initialZoom);
         else if (building.initialZoom > map.floatZoom) s = c / Mathf.Pow(2, building.initialZoom - map.floatZoom);
-        s *= map.zoomCoof;
 
         building.transform.localScale = s;
     }

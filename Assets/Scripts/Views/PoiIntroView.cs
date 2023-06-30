@@ -21,7 +21,11 @@ public class PoiIntroView : BaseView
 	[SerializeField] private Button _scanButton = null;
 	[SerializeField] private Image _scanButtonBG = null;
 	[SerializeField] private TextMeshProUGUI _scanButtonText = null;
-    [Space]
+	[Space]
+	[SerializeField] private Button _goButton = null;
+	[SerializeField] private Image _goButtonBG = null;
+	[SerializeField] private TextMeshProUGUI _goButtonText = null;
+	[Space]
 	[SerializeField] private Transform _contrastPanelRoot = null;
 	#endregion Serialize Fields
 
@@ -32,7 +36,8 @@ public class PoiIntroView : BaseView
 	private Wezit.Poi m_PoiData;
 	private Language m_Language;
 	
-	private string m_ScanButtonTextSettingKey = "template.spk.tours.map.popups.QRCode.button.text";
+	private string m_scanButtonTextSettingKey = "template.spk.tours.map.popups.QRCode.button.text";
+	private string m_goButtonTextSettingKey = "template.spk.pois.intro.go.button.text";
 	#endregion Private m_Variables
 	#endregion Fields
 
@@ -91,14 +96,15 @@ public class PoiIntroView : BaseView
 		ResetViewContent();
 
 		bool isChallenge = PlayerManager.Instance.Player.GetTourProgression(StoreAccessor.State.SelectedTour.pid).IsChallengeMode;
-		MenuManager.MenuStatus status = isChallenge ? MenuManager.MenuStatus.BackButtonInventory : MenuManager.MenuStatus.BackButton;
+		MenuManager.MenuStatus status = isChallenge ? MenuManager.MenuStatus.BackButtonInventoryScore : MenuManager.MenuStatus.BackButtonInventory;
 		MenuManager.Instance.SetMenuStatus(status);
 		MenuManager.Instance.SetBackButtonState(KioskState.TOUR_MAP);
 		m_PoiData = StoreAccessor.State.SelectedPoi;
 		m_Language = language;
 
-		_scanButtonBG.color = _title.color = GlobalSettingsManager.Instance.AppColor;
-		_scanButtonText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_ScanButtonTextSettingKey, language);
+		_goButtonBG.color = _scanButtonBG.color = _title.color = GlobalSettingsManager.Instance.AppColor;
+		_scanButtonText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_scanButtonTextSettingKey, language);
+		_goButtonText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_goButtonTextSettingKey, language);
 
 		ImageUtils.LoadImage(_background, this, m_PoiData);
 
@@ -107,6 +113,9 @@ public class PoiIntroView : BaseView
 		StartCoroutine(LayoutGroupRebuilder.Rebuild(_textContainer));
 		string[] paragraphs = { _description.text };
 		_explanationWindow.Inflate(_title.text, paragraphs, _contrastPanelRoot);
+
+		_goButton.gameObject.SetActive(m_PoiData != PlayerManager.Instance.LastPOIInRange && PlayerManager.Instance.IsGPSOn);
+		_scanButton.gameObject.SetActive(m_PoiData == PlayerManager.Instance.LastPOIInRange || !PlayerManager.Instance.IsGPSOn);
 	}
 
 	private void ResetViewContent()
@@ -118,11 +127,13 @@ public class PoiIntroView : BaseView
 	{
 		RemoveListeners();
 		_scanButton.onClick.AddListener(OnScan);
+		_goButton.onClick.AddListener(OnStart);
 	}
 
 	private void RemoveListeners()
 	{
 		_scanButton.onClick.RemoveAllListeners();
+		_goButton.onClick.RemoveAllListeners();
 	}
 
 	private void OnStart()

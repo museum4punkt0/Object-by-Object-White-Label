@@ -94,8 +94,7 @@ public class InventoryPoiView : BaseView
 			}
 		}
 		StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_poiItemsRoot.gameObject));
-		StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_poiItemsRoot.gameObject));
-		StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_poiItemsRoot.gameObject));
+		StartCoroutine(Utils.LayoutGroupRebuilder.DisableEnable(_poiItemsRoot.gameObject));
 	}
 
 	private void ResetViewContent()

@@ -67,7 +67,10 @@ namespace Wezit
 		// Ids
 		public static string InventoryId
 		{
-			get { return manifest.contents.pid; }
+			get 
+			{ 
+				return manifest.contents.pid.Replace("wzobj:inventory_", ""); 
+			}
 		}
 
 		public static string EntityId

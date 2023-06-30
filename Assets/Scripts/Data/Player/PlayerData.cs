@@ -24,6 +24,11 @@ public class PlayerData
     [FormerlySerializedAs("HasAcceptedRGPD")]
     [SerializeField]
     public bool HasAcceptedRGPD = false;
+
+
+    [FormerlySerializedAs("HasSeenHomeScreen")]
+    [SerializeField]
+    public bool HasSeenHomeScreen = false;
     #endregion
 
     #region Public API
@@ -101,7 +106,7 @@ public class PlayerData
         }
         else
         {
-            Debug.LogError("No file");
+            Debug.LogError("No player data file, creating one...");
         }
     }
 

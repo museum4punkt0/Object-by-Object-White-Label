@@ -98,7 +98,7 @@ namespace Wezit
 			return asset;
 		}
 
-		public string GetSettingAsAssetSourceByTransformation(string key, Language language = Language.none, string transformation = "original")
+		public string GetSettingAsAssetSourceByTransformation(string key, Language language = Language.none, string transformation = "default")
 		{
 			language = language == Language.none ? StoreAccessor.State.Language : language;
 			WezitAssets.Asset asset = GetSettingAsAsset(key, language);
@@ -110,7 +110,7 @@ namespace Wezit
 			return source;
         }
 
-		public void SetImageFromSetting(RawImage rawImage, string key, Language language = Language.none, string transformation = "original", bool envelopeParent = true)
+		public void SetImageFromSetting(RawImage rawImage, string key, Language language = Language.none, string transformation = "default", bool envelopeParent = true)
         {
 			StartCoroutine(Utils.ImageUtils.SetImage(rawImage, GetSettingAsAssetSourceByTransformation(key, language, transformation), "", envelopeParent));
         }

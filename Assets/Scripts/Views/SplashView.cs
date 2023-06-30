@@ -10,6 +10,7 @@ public class SplashView : Singleton<SplashView>
     #region SerializeFields
     [SerializeField] private GameObject _root;
     [SerializeField] private RawImage _background;
+    [SerializeField] private MenuManager _menuManager;
     #endregion
     #region Private
     #endregion
@@ -24,7 +25,11 @@ public class SplashView : Singleton<SplashView>
     {
         base.Awake();
         _root.SetActive(true);
+    }
 
+    private void Start()
+    {
+        MenuManager.Instance.SetMenuStatus(MenuManager.MenuStatus.Hidden);
     }
     #endregion
     #region Public

@@ -96,9 +96,15 @@ public class HomeView : BaseView
 	{
 		ResetViewContent();
 
+		if(!PlayerManager.Instance.Player.HasSeenHomeScreen)
+        {
+			PlayerManager.Instance.Player.HasSeenHomeScreen = true;
+			PlayerManager.Instance.Player.Save();
+		}
+
 		_colorBackground.color = _continueButtonBG.color = _introTitle.color = GlobalSettingsManager.Instance.AppColor;
 
-        Wezit.Settings.Instance.SetImageFromSetting(_background, _backgroundSettingKey, language);
+        Wezit.Settings.Instance.SetImageFromSetting(_background, _backgroundSettingKey, language, "default", false);
 
         if (string.IsNullOrEmpty(Wezit.Settings.Instance.GetSetting(_introImageSettingKey, language)))
         {

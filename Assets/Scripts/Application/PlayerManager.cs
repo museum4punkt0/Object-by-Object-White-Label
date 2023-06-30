@@ -11,7 +11,10 @@ public class PlayerManager : Singleton<PlayerManager>
     public Tour CurrentTour = null;
     public Poi CurrentPoi;
     public Poi CurrentContent;
+    public bool IsGPSOn;
+    public Poi LastPOIInRange;
     public string Language = "de";
+    public KioskState ViewOnInventoryBackButton = KioskState.GLOBAL_MAP;
 
     public static string PlayerDataPath
     {

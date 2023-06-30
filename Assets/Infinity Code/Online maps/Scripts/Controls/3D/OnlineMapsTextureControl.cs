@@ -40,9 +40,9 @@ public class OnlineMapsTextureControl : OnlineMapsControlBase3D
 
         Vector2 r = hit.textureCoord;
 
-        float zoomCoof = map.zoomCoof;
-        r.x = (r.x - 0.5f) * zoomCoof;
-        r.y = (r.y - 0.5f) * zoomCoof;
+        float zoomFactor = map.zoomFactor;
+        r.x = (r.x - 0.5f) * zoomFactor;
+        r.y = (r.y - 0.5f) * zoomFactor;
 
         int countX = map.width / OnlineMapsUtils.tileSize;
         int countY = map.height / OnlineMapsUtils.tileSize;

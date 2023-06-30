@@ -16,6 +16,7 @@ public class ExplanationWindow : MonoBehaviour, IBeginDragHandler
     [SerializeField] private RectTransform _explanationPanel;
     [SerializeField] private ContrastButton _contrastButton;
     [SerializeField] private ScrollRect _scrollRect;
+    [SerializeField] private GameObject _bottom;
     #endregion
     #region Private
     private Coroutine m_MovementCoroutine;
@@ -25,6 +26,8 @@ public class ExplanationWindow : MonoBehaviour, IBeginDragHandler
     #endregion
 
     #region Methods
+    #region Monobehaviours
+    #endregion
     #region Public
     public void Inflate(string contrastTitle, string[] contrastParagraphs, Transform contrastPanelRoot)
     {
@@ -38,7 +41,7 @@ public class ExplanationWindow : MonoBehaviour, IBeginDragHandler
         StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_explanationPanel.gameObject));
         StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_explanationPanel.gameObject));
 
-        m_TopPos = Mathf.Min(_transparentFiller.sizeDelta.y, _transparentFiller.sizeDelta.y + _explanationPanel.sizeDelta.y - 2200);
+        m_TopPos = Mathf.Min(_transparentFiller.sizeDelta.y, _transparentFiller.sizeDelta.y + _explanationPanel.sizeDelta.y - Screen.safeArea.height + 200);
         _openArrow.localEulerAngles = Vector3.zero;
 
         _scrollRect.onValueChanged.AddListener(OnScrollRectValueChanged);
@@ -52,11 +55,18 @@ public class ExplanationWindow : MonoBehaviour, IBeginDragHandler
             m_MovementCoroutine = null;
         }
     }
+
+    public void Rebuild()
+    {
+        StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_bottom));
+        StartCoroutine(Utils.LayoutGroupRebuilder.DisableEnable(_bottom, 2, 0.1f));
+    }
     #endregion
 
     #region Private
     private void OnOpenButton(bool isOpen)
     {
+        m_TopPos = Mathf.Min(_transparentFiller.sizeDelta.y, _transparentFiller.sizeDelta.y + _explanationPanel.sizeDelta.y - Screen.safeArea.height + 200);
         m_MovementCoroutine = StartCoroutine(OpenExplanation(isOpen));
         _openArrow.Rotate(180, 0, 0);
     }
@@ -64,9 +74,13 @@ public class ExplanationWindow : MonoBehaviour, IBeginDragHandler
     private IEnumerator OpenExplanation(bool isOpen)
     {
         float goalHeight = isOpen ? 0 : m_TopPos;
-        while ((isOpen && _explanationContent.localPosition.y > goalHeight) || (!isOpen && _explanationContent.localPosition.y < goalHeight))
+        Vector2 prevPos = _explanationContent.localPosition;
+        Vector2 currentPos = Vector2.negativeInfinity;
+        while (((isOpen && _explanationContent.localPosition.y > goalHeight) || (!isOpen && _explanationContent.localPosition.y < goalHeight)) && (currentPos != prevPos))
         {
             _explanationContent.Translate(0, isOpen ? -100 : 100, 0);
+            prevPos = currentPos;
+            currentPos = _explanationContent.localPosition;
             yield return null;
         }
         yield return null;

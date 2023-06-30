@@ -231,7 +231,7 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBaseDynamicMesh
         lng = 0;
 
         if (!HitTest(position)) return false;
-        return GetCoordsByWorldPosition(out lng, out lat, lastRaycastHit.point);
+        return GetCoordsByWorldPosition(lastRaycastHit.point, out lng, out lat);
     }
 
     protected override bool GetCoordsInternal(out double lng, out double lat)
@@ -245,7 +245,7 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBaseDynamicMesh
         Ray ray = currentCamera.ScreenPointToRay(position);
         if (!dragPlane.Value.Raycast(ray, out distance)) return false;
 
-        return GetCoordsByWorldPosition(out lng, out lat, ray.GetPoint(distance));
+        return GetCoordsByWorldPosition(ray.GetPoint(distance), out lng, out lat);
     }
 
     /// <summary>
@@ -264,25 +264,19 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBaseDynamicMesh
 
         Vector2 r = new Vector3(size.x - .5f, size.z - .5f);
 
-        float zoomCoof = map.buffer.renderState.zoomCoof;
+        float zoomFactor = map.buffer.renderState.zoomFactor;
         int countX = map.buffer.renderState.width / OnlineMapsUtils.tileSize;
         int countY = map.buffer.renderState.height / OnlineMapsUtils.tileSize;
 
         double px, py;
         map.GetTilePosition(out px, out py, map.buffer.renderState.zoom);
-        px += countX * r.x * zoomCoof;
-        py -= countY * r.y * zoomCoof;
+        px += countX * r.x * zoomFactor;
+        py -= countY * r.y * zoomFactor;
         map.projection.TileToCoordinates(px, py, map.buffer.renderState.zoom, out px, out py);
         return new Vector2((float) px, (float) py);
     }
 
-    /// <summary>
-    /// Returns the geographical coordinates by world position.
-    /// </summary>
-    /// <param name="lng">Longitude</param>
-    /// <param name="lat">Latitude</param>
-    /// <param name="position">World position</param>
-    /// <returns>True - success, False - otherwise.</returns>
+    [Obsolete("Use GetCoordsByWorldPosition(Vector3 position, out double lng, out double lat) instead.")]
     public bool GetCoordsByWorldPosition(out double lng, out double lat, Vector3 position)
     {
         return GetCoordsByWorldPosition(position, out lng, out lat);
@@ -303,6 +297,37 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBaseDynamicMesh
         if (!GetTileByWorldPosition(position, out tx, out ty)) return false;
 
         map.projection.TileToCoordinates(tx, ty, map.zoom, out lng, out lat);
+        return true;
+    }
+
+    /// <summary>
+    /// Returns the geographical coordinates by world position.
+    /// </summary>
+    /// <param name="position">World position</param>
+    /// <param name="lng">Longitude</param>
+    /// <param name="lat">Latitude</param>
+    /// <param name="altitude">Altitude</param>
+    /// <returns>True - success, False - otherwise.</returns>
+    public bool GetCoordsByWorldPosition(Vector3 position, out double lng, out double lat, out float altitude)
+    {
+        if (!GetCoordsByWorldPosition(position, out lng, out lat))
+        {
+            altitude = 0;
+            return false;
+        }
+        
+        altitude = position.y - transform.position.y;
+
+        double tlx, tly, brx, bry;
+        map.GetCorners(out tlx, out tly, out brx, out bry);
+        float yScale = OnlineMapsElevationManagerBase.GetBestElevationYScale(tlx, tly, brx, bry);
+        if (elevationManager != null)
+        {
+            if (elevationManager.bottomMode == OnlineMapsElevationBottomMode.minValue) altitude += elevationManager.minValue * yScale;
+            altitude /= elevationManager.scale;
+        }
+        
+        altitude /= yScale;
         return true;
     }
 
@@ -392,13 +417,13 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBaseDynamicMesh
 
         Vector2 r = new Vector3(size.x - .5f, size.z - .5f);
 
-        float zoomCoof = map.zoomCoof;
+        float zoomFactor = map.zoomFactor;
         int countX = map.buffer.renderState.width / OnlineMapsUtils.tileSize;
         int countY = map.buffer.renderState.height / OnlineMapsUtils.tileSize;
 
         map.GetTilePosition(out tx, out ty);
-        tx += countX * r.x * zoomCoof;
-        ty -= countY * r.y * zoomCoof;
+        tx += countX * r.x * zoomFactor;
+        ty -= countY * r.y * zoomFactor;
 
         return true;
     }

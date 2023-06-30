@@ -9,23 +9,31 @@ namespace Wezit
 		/********************** STATIC METHODS ***********************/
 		/*************************************************************/
 
-		public static async Task Init(string manifestUrl, bool online, bool loadImages, bool downloadImagesOnStartup, string downloadTransformation)
+		public static async Task Init(string manifestUrl, bool online, bool loadImages, bool downloadImagesOnStartup, string downloadTransformation, bool downloadSettingsImagesOnStartup)
 		{
 			await ManifestLoader.Init(manifestUrl, online);
 #if !UNITY_WEBGL
-			await FilesDownloader.GetSqlite();
+			if(!online)
+            {
+				await FilesDownloader.GetSqlite();
+            }
 #endif
 			await Settings.Instance.Init(online);
 			await AssetsLoader.Init(online);
-			await StoreInitializer.Instance.Init();
+			await StoreInitializer.Init();
 #if !UNITY_WEBGL
-			if (loadImages)
+			if (loadImages && !online)
 			{
 				DataGrabber.Instance.Load();
+				DataGrabber.Instance.AppDefaultTransformation = downloadTransformation;
 				if (downloadImagesOnStartup)
 				{
 					await DataGrabber.Instance.GetAllAssets(downloadTransformation);
 				}
+				else if(downloadSettingsImagesOnStartup)
+                {
+					await DataGrabber.Instance.GetSettingsAssets(downloadTransformation);
+                }
 			}
 #endif
 		}

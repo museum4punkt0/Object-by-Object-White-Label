@@ -102,14 +102,14 @@ public class QuizView : BaseView
 		m_PoiProgressionData = m_TourProgressionData.GetPoiProgression(m_PoiData.pid);
 
 		bool isChallenge = m_TourProgressionData.IsChallengeMode;
-		MenuManager.MenuStatus status = isChallenge ? MenuManager.MenuStatus.BackButtonInventory : MenuManager.MenuStatus.BackButton;
+		MenuManager.MenuStatus status = isChallenge ? MenuManager.MenuStatus.BackButtonInventoryScore : MenuManager.MenuStatus.BackButtonInventory;
 		MenuManager.Instance.SetMenuStatus(status);
 		MenuManager.Instance.SetBackButtonState(KioskState.AR);
 		m_Language = language;
 
 		LoadActivity();
-	
-		_colorBackground.color = _continueButtonBG.color = GlobalSettingsManager.Instance.AppColor;
+
+		_pointsTitle.color = _colorBackground.color = _continueButtonBG.color = GlobalSettingsManager.Instance.AppColor;
 		_continueButtonText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_ContinueButtonTextSettingKey, language);
 	}
 

@@ -149,6 +149,13 @@ public partial class OnlineMapsCache
     /// <returns>Relative path to the tile in the file cache</returns>
     public StringBuilder GetShortTilePath(OnlineMapsTile tile)
     {
+        OnlineMapsRasterTile rTile = tile as OnlineMapsRasterTile;
+        OnlineMapsProvider.MapType mapType = rTile != null? rTile.mapType: tile.map.activeType;
+        return GetShortTilePath(tile, mapType);
+    }
+    
+    public StringBuilder GetShortTilePath(OnlineMapsTile tile, OnlineMapsProvider.MapType mapType)
+    {
 #if ALLOW_FILECACHE
         int startIndex = 0;
         StringBuilder stringBuilder = GetStringBuilder();
@@ -168,8 +175,8 @@ public partial class OnlineMapsCache
                     {
                         stringBuilder.Append(fileCacheTilePath.Substring(startIndex, i - startIndex));
                         string v = fileCacheTilePath.Substring(i + 1, j - i - 1).ToLower();
-                        if (v == "pid") stringBuilder.Append(rTile.mapType.provider.id);
-                        else if (v == "mid") stringBuilder.Append(rTile.mapType.id);
+                        if (v == "pid") stringBuilder.Append(mapType.provider.id);
+                        else if (v == "mid") stringBuilder.Append(mapType.id);
                         else if (v == "zoom" || v == "z") stringBuilder.Append(tile.zoom);
                         else if (v == "x") stringBuilder.Append(tile.x);
                         else if (v == "y") stringBuilder.Append(tile.y);
@@ -189,6 +196,37 @@ public partial class OnlineMapsCache
         return stringBuilder;
 #else
         return null;
+#endif
+    }
+
+    /// <summary>
+    /// Gets the tile texture from file cache.
+    /// </summary>
+    /// <param name="tile">Tile</param>
+    /// <param name="mapType">Map Type</param>
+    /// <param name="texture">Texture</param>
+    /// <returns>True - if successful, False - otherwise.</returns>
+    public bool GetTileTexture(OnlineMapsTile tile, OnlineMapsProvider.MapType mapType, out Texture2D texture)
+    {
+        texture = null;
+#if ALLOW_FILECACHE
+        if (fileCacheAtlas == null) LoadFileCacheAtlas();
+
+        StringBuilder filename = GetShortTilePath(tile, mapType);
+        string shortFilename = filename.ToString();
+        if (!fileCacheAtlas.Contains(shortFilename)) return false;
+
+        string fullTilePath = fileCacheAtlas.GetFullPath(this, shortFilename);
+        if (!File.Exists(fullTilePath)) return false;
+        
+        byte[] bytes = File.ReadAllBytes(fullTilePath);
+        texture = new Texture2D(0, 0, TextureFormat.ARGB32, tile.map.control.mipmapForTiles);
+        texture.LoadImage(bytes);
+        texture.wrapMode = TextureWrapMode.Clamp;
+
+        return true;
+#else
+        return false;
 #endif
     }
 
@@ -247,8 +285,21 @@ public partial class OnlineMapsCache
         if (fileCacheAtlas != null) fileCacheAtlas.Save(this);
         saveFileCacheAtlasCoroutine = null;
     }
+    
+    public void SetTileTexture(OnlineMapsTile tile, OnlineMapsProvider.MapType mapType, Texture2D texture)
+    {
+#if ALLOW_FILECACHE
+        if (fileCacheAtlas == null) LoadFileCacheAtlas();
+        fileCacheAtlas.Add(this, tile, mapType, texture.EncodeToPNG());
+#endif
+    }
 
-    private bool TryLoadFromCache(OnlineMapsTile tile)
+    /// <summary>
+    /// Try to load tile from file cache. 
+    /// </summary>
+    /// <param name="tile">Tile</param>
+    /// <returns>True - if the tile was loaded from the file cache, False - if not.</returns>
+    public bool TryLoadFromCache(OnlineMapsTile tile)
     {
 #if ALLOW_FILECACHE
         if (useFileCache && TryLoadFromFileCache(tile))
@@ -328,8 +379,22 @@ public partial class OnlineMapsCache
         /// <param name="bytes">Bytes of tile</param>
         public void Add(OnlineMapsCache cache, OnlineMapsTile tile, byte[] bytes)
         {
+            OnlineMapsRasterTile rTile = tile as OnlineMapsRasterTile;
+            OnlineMapsProvider.MapType mapType = rTile != null? rTile.mapType: tile.map.activeType;
+            Add(cache, tile, mapType, bytes);
+        }
+
+        /// <summary>
+        /// Adds the tile to the cache.
+        /// </summary>
+        /// <param name="cache">Cache</param>
+        /// <param name="tile">Tile</param>
+        /// <param name="mapType">Map Type</param>
+        /// <param name="bytes">Bytes of tile</param>
+        public void Add(OnlineMapsCache cache, OnlineMapsTile tile, OnlineMapsProvider.MapType mapType, byte[] bytes)
+        {
 #if ALLOW_FILECACHE
-            StringBuilder filename = cache.GetShortTilePath(tile);
+            StringBuilder filename = cache.GetShortTilePath(tile, mapType);
             string shortFilename = filename.ToString();
             if (Contains(shortFilename)) return;
 
@@ -343,7 +408,7 @@ public partial class OnlineMapsCache
                 if (!Directory.Exists(fileInfo.DirectoryName)) Directory.CreateDirectory(fileInfo.DirectoryName);
                 File.WriteAllBytes(fullFilename, bytes);
 #if !UNITY_WEBGL
-        });
+            });
 #endif
 
             AddItem(shortFilename, bytes.Length);

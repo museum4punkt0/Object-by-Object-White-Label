@@ -149,8 +149,8 @@ public abstract class OnlineMapsControlBaseDynamicMesh : OnlineMapsControlBase3D
         int maxX = 1 << (map.zoom - 1);
         if (dx < -maxX) dx += maxX << 1;
         if (dx < 0 && map.width == (1L << map.zoom) * tileSize) dx += map.width / tileSize;
-        px = dx * tileSize / map.zoomCoof;
-        py = dy * tileSize / map.zoomCoof;
+        px = dx * tileSize / map.zoomFactor;
+        py = dy * tileSize / map.zoomFactor;
     }
 
     public override Vector2 GetScreenPosition(double lng, double lat)
@@ -238,7 +238,7 @@ public abstract class OnlineMapsControlBaseDynamicMesh : OnlineMapsControlBase3D
     /// Converts geographical coordinates to position in world space with elevation.
     /// </summary>
     /// <param name="lng">Longitude</param>
-    /// <param name="lat">Laatitude</param>
+    /// <param name="lat">Latitude</param>
     /// <param name="tlx">Top-left longitude.</param>
     /// <param name="tly">Top-left latitude.</param>
     /// <param name="brx">Bottom-right longitude.</param>
@@ -253,6 +253,40 @@ public abstract class OnlineMapsControlBaseDynamicMesh : OnlineMapsControlBase3D
         my = my / map.height * sizeInScene.y;
 
         float y = hasElevation ? elevationManager.GetElevationValue(mx, my, OnlineMapsElevationManagerBase.GetBestElevationYScale(tlx, tly, brx, bry), tlx, tly, brx, bry) : 0;
+
+        Vector3 offset = transform.rotation * new Vector3((float)mx, y, (float)my);
+        offset.Scale(map.transform.lossyScale);
+
+        return map.transform.position + offset;
+    }
+    
+    /// <summary>
+    /// Converts geographical coordinates to position in world space with elevation.
+    /// </summary>
+    /// <param name="lng">Longitude</param>
+    /// <param name="lat">Latitude</param>
+    /// <param name="altitude">Altitude</param>
+    /// <returns>Position in world space.</returns>
+    public Vector3 GetWorldPositionWithElevation(double lng, double lat, float altitude)
+    {
+        double mx, my;
+        GetPosition(lng, lat, out mx, out my);
+
+        mx = -mx / map.width * sizeInScene.x;
+        my = my / map.height * sizeInScene.y;
+        
+        double tlx, tly, brx, bry;
+        map.GetCorners(out tlx, out tly, out brx, out bry);
+
+        float y = altitude;
+        float yScale = OnlineMapsElevationManagerBase.GetBestElevationYScale(tlx, tly, brx, bry);
+        y *= yScale;
+        
+        if (hasElevation)
+        {
+            if (elevationManager.bottomMode == OnlineMapsElevationBottomMode.minValue) y -= elevationManager.minValue * yScale;
+            y *= elevationManager.scale;
+        }
 
         Vector3 offset = transform.rotation * new Vector3((float)mx, y, (float)my);
         offset.Scale(map.transform.lossyScale);

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 9158552349042527065}
   - component: {fileID: 203590886892626306}
   - component: {fileID: 203590886892626307}
+  - component: {fileID: 7797208201621660350}
   m_Layer: 0
   m_Name: Image
   m_TagString: Untagged
@@ -101,6 +102,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8e49b977b9bb1d4cb1062d26dface4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7797208201621660350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 203590886892626308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97bc2ebab6563400c95b036136d26ea6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Inverse: 0
+  m_MaskInteraction: 85
+  m_UseStencil: 1
+  m_RaycastFilter: 0
 --- !u!1 &1477450776300353743
 GameObject:
   m_ObjectHideFlags: 0
@@ -385,7 +402,8 @@ MonoBehaviour:
   _bonusImageBG: {fileID: 4132659055659376855}
   _selfieButton: {fileID: 1131705773069756026}
   _selfieImage: {fileID: 2366459009157541677}
-  _selfieImageBG: {fileID: 5069161792419005885}
+  _selfieImageBG: {fileID: 1232594838911071071}
+  _selfieImageOutline: {fileID: 1232594838911071071}
   _cameraButton: {fileID: 6783484704894318976}
   _cameraButtonBG: {fileID: 5069161792076898802}
 --- !u!1 &2920868019391596757
@@ -551,7 +569,7 @@ GameObject:
   - component: {fileID: 8900319627515721661}
   - component: {fileID: 2733685146251184546}
   - component: {fileID: 1762704160218227551}
-  - component: {fileID: 8832936648760677835}
+  - component: {fileID: 1086533254461165998}
   m_Layer: 0
   m_Name: Background
   m_TagString: Untagged
@@ -619,7 +637,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 4
---- !u!114 &8832936648760677835
+--- !u!114 &1086533254461165998
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -628,10 +646,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 3169993227621537178}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
+  m_Script: {fileID: 11500000, guid: 385b7d1277b6c4007a84c065696e0f8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 1
+  m_DownSamplingRate: 1
+  m_Softness: 1
+  m_Alpha: 1
+  m_IgnoreParent: 0
+  m_PartOfParent: 0
+  m_IgnoreSelfGraphic: 0
+  m_IgnoreSelfStencil: 0
 --- !u!1 &3607523785685899102
 GameObject:
   m_ObjectHideFlags: 0
@@ -930,9 +955,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5069161791043924198}
-  - component: {fileID: 5069161791043924196}
-  - component: {fileID: 5069161791043924197}
-  - component: {fileID: 5069161791043924195}
   m_Layer: 0
   m_Name: ImageContainer
   m_TagString: Untagged
@@ -961,57 +983,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 400, y: 0}
   m_Pivot: {x: 0, y: 0.5}
---- !u!222 &5069161791043924196
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5069161791043924199}
-  m_CullTransparentMesh: 1
---- !u!114 &5069161791043924197
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5069161791043924199}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!114 &5069161791043924195
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5069161791043924199}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ShowMaskGraphic: 0
 --- !u!1 &5069161791223092645
 GameObject:
   m_ObjectHideFlags: 0

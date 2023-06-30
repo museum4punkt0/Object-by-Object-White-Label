@@ -13,6 +13,7 @@ public class ARManager : MonoBehaviour
     [SerializeField] private ARTrackedImageManager _aRTrackedImageManager = null;
     [SerializeField] private ARItemRoot _arRootPrefab = null;
     [SerializeField] private Camera _arCamera = null;
+    [SerializeField] private Light _light = null;
     #endregion
     #region Private
     private Poi m_PoiData;
@@ -32,21 +33,31 @@ public class ARManager : MonoBehaviour
     private void OnEnable()
     {
         _aRTrackedImageManager.trackedImagesChanged += OnTrackedImageChanged;
+        _arCamera.enabled = true;
+        _light.enabled = true;
     }
 
     private void OnDisable()
     {
         _aRTrackedImageManager.trackedImagesChanged -= OnTrackedImageChanged;
+        _arCamera.enabled = false;
+        _light.enabled = false;
     }
     #endregion
     #region Public
     public async void Inflate(Poi poi)
     {
-        if(m_ItemRootInstance)
+        _aRTrackedImageManager.trackedImagesChanged -= OnTrackedImageChanged;
+        _aRTrackedImageManager.trackedImagesChanged += OnTrackedImageChanged;
+        _arCamera.enabled = true;
+        _light.enabled = true;
+
+        if (m_ItemRootInstance)
         {
             Destroy(m_ItemRootInstance.gameObject);
         }
         m_PoiData = poi;
+
         if (m_PoiData != null)
         {
             await m_PoiData.GetRelations(m_PoiData);
@@ -57,11 +68,27 @@ public class ARManager : MonoBehaviour
                     RuntimeReferenceImageLibrary library = _aRTrackedImageManager.CreateRuntimeLibrary();
                     _aRTrackedImageManager.referenceLibrary = library;
                     _aRTrackedImageManager.enabled = true;
-                    StartCoroutine(SpriteUtils.GetTextureFromSource(relation.GetAssetSourceByTransformation(WezitSourceTransformation.original), OnQRCodeDownloaded, ""));
+                    StartCoroutine(SpriteUtils.GetTextureFromSource(relation.GetAssetSourceByTransformation(WezitSourceTransformation.default_base), OnQRCodeDownloaded, ""));
                     break;
                 }
             }
         }
+        else
+        {
+            Debug.LogError("ARManager - POI data is null");
+        }
+    }
+
+    public void Reset()
+    {
+        _aRTrackedImageManager.trackedImagesChanged -= OnTrackedImageChanged;
+        if (m_ItemRootInstance)
+        {
+            Destroy(m_ItemRootInstance.gameObject);
+        }
+        _arCamera.enabled = false;
+        _light.enabled = false;
+
     }
     #endregion
     #region Private
@@ -71,7 +98,7 @@ public class ARManager : MonoBehaviour
         {
             ImageFound?.Invoke();
             m_ItemRootInstance = Instantiate(_arRootPrefab, trackedImage.transform);
-            m_ItemRootInstance.transform.Rotate(m_QRCodeAngle, 0, 0);
+            m_ItemRootInstance.transform.localEulerAngles = new Vector3(m_QRCodeAngle, 0, 0);
             m_ItemRootInstance.Inflate(m_PoiData, _arCamera);
             m_ItemRootInstance.ARItemClicked.AddListener(OnARItemClicked);
         }
@@ -83,10 +110,13 @@ public class ARManager : MonoBehaviour
                        System.Globalization.NumberStyles.AllowDecimalPoint,
                        new System.Globalization.CultureInfo("en-US"),
                        out float size);
-        float.TryParse(m_PoiData.spatial,
+        float.TryParse(m_PoiData.location,
                            System.Globalization.NumberStyles.AllowDecimalPoint,
                            new System.Globalization.CultureInfo("en-US"),
                            out m_QRCodeAngle);
+#if UNITY_IOS
+        size = size == 0 ? 0.015f : size;
+#endif
         StartCoroutine(AddImage(texture2D, m_PoiData.title, size));
     }
 
@@ -94,6 +124,7 @@ public class ARManager : MonoBehaviour
     {
         yield return null;
         var library = _aRTrackedImageManager.referenceLibrary;
+
         if (library is MutableRuntimeReferenceImageLibrary mutableLibrary)
         {
                 mutableLibrary.ScheduleAddImageWithValidationJob(
@@ -107,6 +138,6 @@ public class ARManager : MonoBehaviour
     {
         ARItemClicked?.Invoke(poi);
     }
-    #endregion
-    #endregion
+#endregion
+#endregion
 }

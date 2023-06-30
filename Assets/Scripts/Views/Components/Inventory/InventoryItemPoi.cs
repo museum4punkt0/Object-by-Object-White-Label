@@ -13,6 +13,7 @@ public class InventoryItemPoi : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _title;
     [SerializeField] private TextMeshProUGUI _score;
     [SerializeField] private Image _titleBackground;
+    [SerializeField] private Image _titleBackgroundBottom;
     [SerializeField] private InventoryItemContent _inventoryItemContentPrefab;
     [SerializeField] private Transform _inventoryItemContentRoot;
     #endregion
@@ -31,7 +32,7 @@ public class InventoryItemPoi : MonoBehaviour
     {
         ResetComponent();
 
-        _titleBackground.color = GlobalSettingsManager.Instance.AppColor;
+        _titleBackground.color = _titleBackgroundBottom.color = GlobalSettingsManager.Instance.AppColor;
         _title.text = StringUtils.CleanFromWezit(poi.title);
         
         TourProgressionData tourProgressionData = PlayerManager.Instance.Player.GetTourProgression(StoreAccessor.State.SelectedTour.pid);

@@ -94,7 +94,7 @@ public class SpriteUtils
 			}
 			else
 			{
-				Debug.LogError("SpriteUtils - GetSpriteFromSource - Error when downloading " + source + ": " + webRequest.error);
+				Debug.LogError("SpriteUtils - GetTextureFromSource - Error when downloading " + source + ": " + webRequest.error);
 				result(Resources.Load<Texture2D>("Images/DefaultImage/default"));
 				CleanRequestBySourceUri(requestKey);
 				yield break;
@@ -137,7 +137,6 @@ public class SpriteUtils
 				return(Resources.Load<Texture2D>("Images/DefaultImage/default"));
 			}
 		}
-		Resources.UnloadUnusedAssets();
 	}
 
 	public static async UniTask SaveTextureFromSource(string source, string path, string fileName)

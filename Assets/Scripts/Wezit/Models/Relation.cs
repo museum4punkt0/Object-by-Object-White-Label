@@ -38,7 +38,22 @@ namespace Wezit
 
 		public AssetInfo GetAssetByTransformation(string transformation)
 		{
-			return assets != null ? this.assets.Find((info) => info.label == transformation) : null;
+			if(assets != null)
+            {
+				AssetInfo asset = assets.Find(info => info.label == transformation);
+				if(asset != null)
+                {
+					return asset;
+                }
+				else
+                {
+					return assets.Find(info => info.label == "original");
+                }
+            }
+			else
+            {
+				return null;
+            }
 		}
 
 		public string GetAssetSourceByTransformation(string transformation)

@@ -111,13 +111,13 @@ public class OnlineMapsMarkerBufferDrawer : OnlineMapsMarker2DDrawer
             else if (px > maxX) px -= maxX;
         }
 
-        float zoomCoof = map.buffer.renderState.zoomCoof;
+        float zoomFactor = map.buffer.renderState.zoomFactor;
 
         px *= s;
         py *= s;
 
-        int ipx = (int)((px - frontBufferPosition.x) / zoomCoof);
-        int ipy = (int)((py - frontBufferPosition.y) / zoomCoof);
+        int ipx = (int)((px - frontBufferPosition.x) / zoomFactor);
+        int ipy = (int)((py - frontBufferPosition.y) / zoomFactor);
 
         OnlineMapsVector2i ip = marker.GetAlignedPosition(ipx, ipy);
 
@@ -151,7 +151,7 @@ public class OnlineMapsMarkerBufferDrawer : OnlineMapsMarker2DDrawer
 
         if (isEntireWorld)
         {
-            ip.x -= (int)(buffer.renderState.width / zoomCoof);
+            ip.x -= (int)(buffer.renderState.width / zoomFactor);
             for (int y = 0; y < marker.height; y++)
             {
                 if (ip.y + y < 0 || ip.y + y >= map.height) continue;
@@ -172,7 +172,7 @@ public class OnlineMapsMarkerBufferDrawer : OnlineMapsMarker2DDrawer
                 }
             }
 
-            ip.x += (int)(buffer.renderState.width * 2 / zoomCoof);
+            ip.x += (int)(buffer.renderState.width * 2 / zoomFactor);
             for (int y = 0; y < marker.height; y++)
             {
                 if (ip.y + y < 0 || ip.y + y >= map.height) continue;

@@ -25,7 +25,7 @@ namespace Wezit
 
 		public static async Task<JSONNode> LoadActivity(Relation an_activity)
         {
-			string source = an_activity.GetAssetSourceByTransformation(WezitSourceTransformation.original);
+			string source = an_activity.GetAssetSourceByTransformation(WezitSourceTransformation.default_base);
 
 			JSONNode activitySettings = null;
 			string settingsJsonString = await Utils.FileUtils.RequestTextContent(source, 5);

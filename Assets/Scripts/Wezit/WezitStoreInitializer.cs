@@ -5,11 +5,11 @@ using UniRx.Async;
 
 namespace Wezit
 {
-	public class StoreInitializer : Singleton<StoreInitializer>
+	public class StoreInitializer
 	{
 		private static Wezit.SqlManager sqlManager = new Wezit.SqlManager();
 
-		public async UniTask<bool> Init()
+		public static async UniTask<bool> Init()
 		{
 			Debug.Log("[Wezit Data] - Init");
 			var (inventoryListResult,
@@ -52,7 +52,7 @@ namespace Wezit
 			return true;
 		}
 
-		public async UniTask<List<Poi>> GetPoiVersions(string id)
+		public static async UniTask<List<Poi>> GetPoiVersions(string id)
 		{
 			var result = await sqlManager.GetVersionByNode(id).ToUniTask();
 			APIResponse<List<Poi>> response = JsonUtility.FromJson<APIResponse<List<Poi>>>(result);

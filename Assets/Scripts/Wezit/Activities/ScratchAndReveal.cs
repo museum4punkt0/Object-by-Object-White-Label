@@ -74,7 +74,7 @@ namespace Wezit
             {
                 imageName = imageName.Replace("wzasset://", "");
                 WezitAssets.Asset asset = AssetsLoader.GetAssetById(imageName);
-                path = asset.GetAssetSourceByTransformation(WezitSourceTransformation.original);
+                path = asset.GetAssetSourceByTransformation(WezitSourceTransformation.default_base);
             }
             return path;
         }

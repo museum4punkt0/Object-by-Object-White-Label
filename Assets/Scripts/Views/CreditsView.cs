@@ -1,31 +1,28 @@
-﻿/**
- * Created by Willy
- */
-
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Utils;
+using SimpleJSON;
 
 public class CreditsView : BaseView
 {
 	#region Fields
-	public static string TAG = "<color=orange>[CreditsManager]</color>";
-	public static string WEZIT_TAG = "credits";
-
 	#region Serialize Fields
-	[SerializeField] private Image _uIBackground = null;
-	[SerializeField] private TextMeshProUGUI _titleText = null;
-	[SerializeField] private TextMeshProUGUI _descriptionText = null;
-	[SerializeField] private Button _closeButton = null;
-	// [SerializeField] private CanvasGroupFader _faderOut;
+	[SerializeField] private Image _colorBG;
+	[SerializeField] private TextMeshProUGUI _titleText;
+	[SerializeField] private TextMeshProUGUI _descriptionText;
+    [Space]
+	[SerializeField] private CreditLogo _creditLogoPrefab;
+	[SerializeField] private Transform _creditLogoRoot;
 	#endregion Serialize Fields
 
 	#region Public Variables
 	#endregion Public Variables
 
 	#region Private m_Variables
-	private Wezit.Poi m_WzPoiData = null;
+	private string m_titleSettingKey = "template.spk.credits.title.text";
+	private string m_creditsSettingKey = "template.spk.credits.credits.text";
+	private string m_logosArraySettingKey = "template.spk.credits.logos.array";
 	#endregion Private m_Variables
 	#endregion Fields
 
@@ -46,19 +43,14 @@ public class CreditsView : BaseView
 
 	public override void ShowView()
 	{
-		if (_uIBackground != null) _uIBackground.color = ColorsUtils.GetColorByHtmlString(AppConfig.Instance.ConfigModel.backgroundColor);
-
 		InitViewContentByLang(ViewManager.Instance.CurrentLanguage);
-
 		base.ShowView();
-
 		AddListeners();
 	}
 
 	public override void HideView()
 	{
 		RemoveListeners();
-
 		base.HideView();
 	}
 
@@ -79,56 +71,42 @@ public class CreditsView : BaseView
 	#region MonoBehavior
 	#endregion MonoBehavior
 
-	#region Internals
-	protected override void OnFadeEndView()
-	{
-
-	}
-	#endregion Internals
-
 	#region Private
 	private void AddListeners()
 	{
 		RemoveListeners();
-
-		if (_closeButton) _closeButton.onClick.AddListener(OnCloseButton);
-		// if (_faderOut) _faderOut.OnFadeEnd.AddListener(OnFadeOutEnd);
 	}
 
 	private void RemoveListeners()
 	{
-		if (_closeButton) _closeButton.onClick.RemoveAllListeners();
-		// if (_faderOut) _faderOut.OnFadeEnd.RemoveAllListeners();
-	}
-
-	private void OnFadeOutEnd()
-	{
-		HideView();
-	}
-
-	private void OnCloseButton()
-	{
-		// if (_faderOut) _faderOut.StartFading();
-		ViewManager.Instance.GoBack();
 	}
 
 	private void ResetViewContent()
 	{
-		m_WzPoiData = null;
 		if (_titleText) _titleText.text = "";
 		if (_descriptionText) _descriptionText.text = "";
+        foreach (Transform child in _creditLogoRoot)
+        {
+			Destroy(child.gameObject);
+        }
 	}
 
 	private void InitViewContentByLang(Language language)
 	{
-		ResetViewContent();
-		m_WzPoiData = WezitDataUtils.GetWezitPoiByTag(language, WEZIT_TAG);
+        ResetViewContent();
 
-		if (m_WzPoiData == null) return;
-
-		if (_titleText) _titleText.text = StringUtils.CleanFromWezit(m_WzPoiData.title.ToUpper());
-		if (_descriptionText) _descriptionText.text = StringUtils.CleanFromWezit(m_WzPoiData.description);
+        _titleText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_titleSettingKey, language);
+        _descriptionText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_creditsSettingKey, language);
+        JSONNode logoArray = Wezit.Settings.Instance.GetSettingArray(m_logosArraySettingKey, language);
+        foreach (JSONNode logo in logoArray)
+        {
+			Instantiate(_creditLogoPrefab, _creditLogoRoot).Inflate(
+				Wezit.Settings.Instance.GetSettingAsAssetSourceByTransformation(logo["image"]), 
+				StringUtils.AddCustomTagsFromWezit(Wezit.Settings.Instance.GetSettingAsCleanedText(logo["url"])));
+        }
 	}
 	#endregion Private
+	#region Internals
+	#endregion Internals
 	#endregion Methods
 }

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4321965501980810214}
   - component: {fileID: 3189814680044637255}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 7827106824355397997}
   - component: {fileID: 7827106824355397986}
   - component: {fileID: -1173731282501717822}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: GlobalMapPin
   m_TagString: Untagged
   m_Icon: {fileID: 0}

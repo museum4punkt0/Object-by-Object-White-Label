@@ -37,6 +37,7 @@ public class SecretPoiButton : MonoBehaviour
         TourProgressionData tourProgressionData = PlayerManager.Instance.Player.GetTourProgression(StoreAccessor.State.SelectedTour.pid);
         _background.color = tourProgressionData.HasBeenCompleted ? GlobalSettingsManager.Instance.AppColor : Settings.Instance.GetSettingAsColor(m_SecretLockedColorSettingKey);
         Settings.Instance.SetImageFromSetting(_icon, tourProgressionData.HasBeenCompleted ? m_SecretUnlockedImageSettingKey : m_SecretLockedImageSettingKey);
+        _button.interactable = tourProgressionData.HasBeenVisited;
 
         _button.onClick.RemoveAllListeners();
         _button.onClick.AddListener(OnButtonClick);

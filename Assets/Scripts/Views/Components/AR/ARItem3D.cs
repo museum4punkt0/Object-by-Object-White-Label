@@ -35,6 +35,14 @@ public class ARItem3D : ARItemBase
         childRenderer.gameObject.AddComponent<BoxCollider>();
         childRenderer.gameObject.AddComponent<ColliderClicked>().Clicked.AddListener(OnChildColliderClicked);
 
+        MeshRenderer[] meshRenderers = model.GetComponentsInChildren<MeshRenderer>();
+        foreach (MeshRenderer meshRenderer in meshRenderers)
+        {
+            meshRenderer.material.SetFloat("metallicFactor", 0.3f);
+        }
+
+        SetLayerOfChildren.SetLayerAllChildren(model.transform, 6);
+
     }
     #endregion
     #region Private

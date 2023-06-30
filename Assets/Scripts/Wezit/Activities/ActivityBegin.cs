@@ -58,8 +58,8 @@ namespace Wezit
                 imageName = imageName.Replace("wzasset://", "");
                 WezitAssets.Asset asset = AssetsLoader.GetAssetById(imageName);
                 StartCoroutine(Utils.ImageUtils.SetImage(_beginImage,
-                                                         asset.GetAssetSourceByTransformation(WezitSourceTransformation.original),
-                                                         asset.GetAssetMimeTypeByTransformation(WezitSourceTransformation.original),
+                                                         asset.GetAssetSourceByTransformation(WezitSourceTransformation.default_base),
+                                                         asset.GetAssetMimeTypeByTransformation(WezitSourceTransformation.default_base),
                                                          true));
             }
         }

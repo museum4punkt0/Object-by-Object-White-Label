@@ -20,7 +20,7 @@ namespace Utils
 				{
 					if (relation.relation == Wezit.RelationName.SHOW_3D_MODEL)
 					{
-						source = relation.GetAssetSourceByTransformation(WezitSourceTransformation.original);
+						source = relation.GetAssetSourceByTransformation(WezitSourceTransformation.default_base);
 					}
 				}
 			}

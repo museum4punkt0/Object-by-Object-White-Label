@@ -24,6 +24,7 @@ public class InventoryItemTour : MonoBehaviour
     [SerializeField] private Button _selfieButton;
     [SerializeField] private RawImage _selfieImage;
     [SerializeField] private Image _selfieImageBG;
+    [SerializeField] private Image _selfieImageOutline;
     [SerializeField] private Button _cameraButton;
     [SerializeField] private Image _cameraButtonBG;
     #endregion
@@ -47,7 +48,7 @@ public class InventoryItemTour : MonoBehaviour
         m_Tour = tour;
 
         ImageUtils.LoadImage(_image, this, m_Tour);
-        _title.color = _score.color = _bonusImageBG.color = _cameraButtonBG.color = _selfieImageBG.color = GlobalSettingsManager.Instance.AppColor;
+        _title.color = _score.color = _bonusImageBG.color = _cameraButtonBG.color = _selfieImageBG.color = _selfieImageOutline.color = GlobalSettingsManager.Instance.AppColor;
         _title.text = StringUtils.CleanFromWezit(m_Tour.title);
 
         m_tourProgressionData = PlayerManager.Instance.Player.GetTourProgression(m_Tour.pid);

@@ -16,6 +16,7 @@ public class MenuManager : Singleton<MenuManager>
 		Hidden,
 		BackButton,
 		BackButtonInventory,
+		BackButtonInventoryScore,
 		BackButtonLogo,
 		RightImage,
 		Darken,
@@ -25,10 +26,12 @@ public class MenuManager : Singleton<MenuManager>
 	public static string TAG = "<color=blue>[MenuManager]</color>";
 
 	[SerializeField] private Button _menuButton = null;
+	[SerializeField] private Image _openButtonBG = null;
 	[SerializeField] private OpenMenu _openMenu = null;
 	[SerializeField] private GameObject _openMenuUIRoot = null;
 	[SerializeField] private Button _inventoryButton = null;
 	[SerializeField] private Button _backButton = null;
+	[SerializeField] private Image _backButtonBG = null;
 	[SerializeField] private TextMeshProUGUI _titleText = null;
 	[SerializeField] private Button _scoreCounter = null;
 	[SerializeField] private GameObject _uiRoot = null;
@@ -36,6 +39,8 @@ public class MenuManager : Singleton<MenuManager>
 	[SerializeField] private TextMeshProUGUI _appName = null;
 	[SerializeField] private RawImage _rightImage = null;
 	[SerializeField] private GameObject _darken = null;
+	[SerializeField] private Image _colorBG;
+	[SerializeField] private Image _topColorBG;
 
 	private KioskState m_BackButtonkioskState;
 	private MenuStatus m_PreviousStatus;
@@ -65,6 +70,7 @@ public class MenuManager : Singleton<MenuManager>
 		{
 			AppManager.Instance.onLoadingOver.AddListener(OnLoadingOver);
 		}
+		SetMenuStatus(MenuStatus.Hidden);
 	}
 	#endregion MonoBehaviour
 
@@ -75,6 +81,7 @@ public class MenuManager : Singleton<MenuManager>
 		_menuButton.onClick.AddListener(OnOpenMenu);
 		_backButton.onClick.AddListener(OnBackButton);
 		_inventoryButton.onClick.AddListener(OnInventoryButton);
+		_scoreCounter.onClick.AddListener(OnInventoryButton);
 
 		m_currentLanguage = StoreAccessor.State.Language;
 
@@ -115,14 +122,13 @@ public class MenuManager : Singleton<MenuManager>
 			_logo.gameObject.SetActive(m_IsLogo && (a_status == MenuStatus.Default || a_status == MenuStatus.RightImage || a_status == MenuStatus.BackButtonLogo));
 			_appName.gameObject.SetActive(!m_IsLogo && (a_status == MenuStatus.Default || a_status == MenuStatus.RightImage || a_status == MenuStatus.BackButtonLogo));
 
-			_inventoryButton.gameObject.SetActive(a_status == MenuStatus.BackButtonInventory);
-			_scoreCounter.gameObject.SetActive(a_status == MenuStatus.BackButtonInventory);
+			_inventoryButton.gameObject.SetActive(a_status == MenuStatus.BackButtonInventory || a_status == MenuStatus.BackButtonInventoryScore);
+			_scoreCounter.gameObject.SetActive(a_status == MenuStatus.BackButtonInventoryScore);
 
 			_menuButton.gameObject.SetActive(a_status == MenuStatus.Default || a_status == MenuStatus.RightImage);
-			_backButton.gameObject.SetActive(a_status == MenuStatus.BackButton || a_status == MenuStatus.BackButtonInventory || a_status == MenuStatus.BackButtonLogo);
-			_titleText.gameObject.SetActive(a_status == MenuStatus.BackButton || a_status == MenuStatus.BackButtonInventory);
+			_backButton.gameObject.SetActive(a_status == MenuStatus.BackButton || a_status == MenuStatus.BackButtonInventory || a_status == MenuStatus.BackButtonLogo || a_status == MenuStatus.BackButtonInventoryScore);
+			_titleText.gameObject.SetActive(a_status == MenuStatus.BackButton || a_status == MenuStatus.BackButtonInventory || a_status == MenuStatus.BackButtonInventoryScore);
         }
-
 
 		StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_uiRoot));
 	}
@@ -152,9 +158,11 @@ public class MenuManager : Singleton<MenuManager>
 	private void InitViewContentByLang(Language language)
 	{
 		ResetViewContent();
+		_backButtonBG.color = _openButtonBG.color = _colorBG.color = _topColorBG.color = GlobalSettingsManager.Instance.AppColor;
+
 		if(!string.IsNullOrEmpty(Wezit.Settings.Instance.GetSetting(m_LogoSettingKey, language)))
         {
-			Wezit.Settings.Instance.SetImageFromSetting(_logo, m_LogoSettingKey, language, WezitSourceTransformation.original, false);
+			Wezit.Settings.Instance.SetImageFromSetting(_logo, m_LogoSettingKey, language, WezitSourceTransformation.default_base, false);
 			m_IsLogo = true;
         }
 		else

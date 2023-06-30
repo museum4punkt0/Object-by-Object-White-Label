@@ -19,6 +19,7 @@ public class InventoryView : BaseView
 	private List<Wezit.Tour> m_Tours = new List<Wezit.Tour>();
 
 	private string m_InventoryTitleSettingKey = "";
+	private KioskState m_previousKioskState;
 	#endregion Private m_Variables
 	#endregion Fields
 
@@ -75,7 +76,8 @@ public class InventoryView : BaseView
 	private void InitViewContentByLang(Language language)
 	{
 		ResetViewContent();
-		MenuManager.Instance.SetMenuStatus(MenuManager.MenuStatus.Default);
+		MenuManager.Instance.SetMenuStatus(MenuManager.MenuStatus.BackButtonLogo);
+		MenuManager.Instance.SetBackButtonState(PlayerManager.Instance.ViewOnInventoryBackButton);
 
 		_title.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_InventoryTitleSettingKey, language);
 		_title.color = GlobalSettingsManager.Instance.AppColor;

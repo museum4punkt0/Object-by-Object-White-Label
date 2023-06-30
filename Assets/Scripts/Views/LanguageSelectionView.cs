@@ -81,7 +81,9 @@ public class LanguageSelectionView : BaseView
 	{
 		ResetViewContent();
 		_colorBackground.color = GlobalSettingsManager.Instance.AppColor;
-		SpriteUtils.SaveTextureFromSource("https://www.planetesauvage.com/fileadmin/_processed_/0/0/csm_planete-sauvage-lama-1_c9cece830a.jpg", System.IO.Path.Combine(Application.dataPath, "Resources", "Images"), "splash");
+		string splashSource = Wezit.Settings.Instance.GetSettingAsAssetSourceByTransformation("template.spk.loading.splashscreen");
+		UniRx.Async.UniTask task = SpriteUtils.SaveTextureFromSource(splashSource, System.IO.Path.Combine(Application.dataPath, "Resources", "Images"), "splash");
+		m_StateOnLanguageButton = PlayerManager.Instance.Player.HasSeenHomeScreen ? KioskState.GLOBAL_MAP : KioskState.HOME;
 
 		// If no language has previously been selected or if the user accesses the language selection screen through the menu, display the language selection screen
 		if ((ViewManager.Instance.PreviousKioskState != KioskState.NONE && ViewManager.Instance.PreviousKioskState != KioskState.SPLASH) || string.IsNullOrEmpty(PlayerManager.Instance.Player.Language))

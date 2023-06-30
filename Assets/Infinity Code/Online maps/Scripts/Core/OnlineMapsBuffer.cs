@@ -316,18 +316,18 @@ public class OnlineMapsBuffer
 
         map.projection.CoordinatesToTile(renderState.longitude, renderState.latitude, renderState.zoom, out tlx, out tly);
 
-        float coof = renderState.zoomCoof;
+        float factor = renderState.zoomFactor;
 
-        brx = tlx + countX / 2f * coof;
-        bry = tly + countY / 2f * coof;
-        tlx -= countX / 2f * coof;
-        tly -= countY / 2f * coof;
+        brx = tlx + countX / 2f * factor;
+        bry = tly + countY / 2f * factor;
+        tlx -= countX / 2f * factor;
+        tly -= countY / 2f * factor;
 
         map.projection.TileToCoordinates(tlx, tly, renderState.zoom, out tlx, out tly);
         map.projection.TileToCoordinates(brx, bry, renderState.zoom, out brx, out bry);
 
         long max = (1L << renderState.zoom) * OnlineMapsUtils.tileSize;
-        if (max == renderState.width && Math.Abs(coof) < float.Epsilon)
+        if (max == renderState.width && Math.Abs(factor) < float.Epsilon)
         {
             double lng = renderState.longitude + 180;
             tlx = lng + 0.001;
@@ -353,15 +353,15 @@ public class OnlineMapsBuffer
         py -= bufferPosition.y;
 
         // Top-left frontbuffer tile in the backbuffer
-        px -= countX / 2f * renderState.zoomCoof;
-        py -= countY / 2f * renderState.zoomCoof;
+        px -= countX / 2f * renderState.zoomFactor;
+        py -= countY / 2f * renderState.zoomFactor;
 
         // Top-left frontbuffer pixel in the backbuffer
         int ix = (int) (px * OnlineMapsUtils.tileSize);
         int iy = (int) (py * OnlineMapsUtils.tileSize);
 
         if (iy < 0) iy = 0;
-        else if (iy >= (int)(height - renderState.height * renderState.zoomCoof)) iy = (int)(height - renderState.height * renderState.zoomCoof);
+        else if (iy >= (int)(height - renderState.height * renderState.zoomFactor)) iy = (int)(height - renderState.height * renderState.zoomFactor);
 
         frontBufferPosition = new OnlineMapsVector2i(ix, iy);
     }
@@ -679,14 +679,14 @@ public class OnlineMapsBuffer
 
     private void UpdateFrontBuffer()
     {
-        float zoomCoof = renderState.zoomCoof;
+        float zoomFactor = renderState.zoomFactor;
         int w = renderState.width;
         int h = renderState.height;
         int bufferSize = height * width;
 
         for (int y = 0; y < h; y++)
         {
-            float fy = y * zoomCoof + frontBufferPosition.y;
+            float fy = y * zoomFactor + frontBufferPosition.y;
             int iy1 = (int) fy;
             int iyw1 = iy1 * width;
             int iyw2 = iyw1 + width + 1;
@@ -699,7 +699,7 @@ public class OnlineMapsBuffer
             {
                 Color32 clr1 = backBuffer[iyw1 + (int)fx];
                 frontBuffer[fby++] = clr1;
-                fx += zoomCoof;
+                fx += zoomFactor;
             }
         }
     }
@@ -757,7 +757,7 @@ public class OnlineMapsBuffer
         /// <summary>
         /// The scaling factor for zoom
         /// </summary>
-        public float zoomCoof;
+        public float zoomFactor;
 
         /// <summary>
         /// The fractional part of zoom
@@ -777,8 +777,15 @@ public class OnlineMapsBuffer
                 _floatZoom = value;
                 zoom = (int) value;
                 zoomScale = _floatZoom - zoom;
-                zoomCoof = 1 - zoomScale / 2;
+                zoomFactor = 1 - zoomScale / 2;
             }
+        }
+
+        [Obsolete("Use zoomFactor instead of zoomCoof")]
+        public float zoomCoof
+        {
+            get { return zoomFactor; }
+            set { zoomFactor = value; }
         }
     }
 }

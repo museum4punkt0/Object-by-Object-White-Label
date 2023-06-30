@@ -105,6 +105,7 @@ public class GlobalSettingsManager : Singleton<GlobalSettingsManager>
     public void Init()
     {
         m_AppColor = Settings.Instance.GetSettingAsColor(m_AppColorSettingKey);
+        Camera.main.backgroundColor = m_AppColor;
 
         // Map settings
         string userPinSpriteSource = Settings.Instance.GetSettingAsAssetSourceByTransformation(m_MapUserSettingKey);

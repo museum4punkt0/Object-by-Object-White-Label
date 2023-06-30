@@ -60,7 +60,7 @@ public class ImagePoi : MonoBehaviour
         {
             if (relation.relation == RelationName.SHOW_PICTURE)
             {
-                Wezit.AssetInfo assetInfo = relation.GetAssetByTransformation(WezitSourceTransformation.original);
+                Wezit.AssetInfo assetInfo = relation.GetAssetByTransformation(WezitSourceTransformation.default_base);
                 await StartCoroutine(ImageUtils.SetImage(_image, assetInfo.GetSource(), assetInfo.GetMimeType(), false));
                 assetInfo = relation.GetAssetByTransformation(WezitSourceTransformation.default2kpx);
                 await StartCoroutine(ImageUtils.SetImage(_colorImage, assetInfo.GetSource(), assetInfo.GetMimeType(), false));

@@ -141,9 +141,9 @@ public abstract class OnlineMapsControlBaseUI<T> : OnlineMapsControlBase2D where
 
         map.GetTilePosition(out tx, out ty);
 
-        float zoomCoof = map.zoomCoof;
-        tx -= countX * r.x * zoomCoof;
-        ty += countY * r.y * zoomCoof;
+        float zoomFactor = map.zoomFactor;
+        tx -= countX * r.x * zoomFactor;
+        ty += countY * r.y * zoomFactor;
 
         return true;
     }

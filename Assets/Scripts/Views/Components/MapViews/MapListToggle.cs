@@ -24,8 +24,15 @@ public class MapListToggle : MonoBehaviour
 
     public UnityEvent<bool> ToggleValueChanged = new UnityEvent<bool>();
 
+    public void Reset()
+    {
+        _toggle.isOn = false;
+        _toggle.isOn = true;
+    }
+
     private void Start()
     {
+        _toggle.onValueChanged.RemoveAllListeners();
         _toggle.onValueChanged.AddListener(OnValueChanged);
         m_OnColor = GlobalSettingsManager.Instance.AppColor;
 

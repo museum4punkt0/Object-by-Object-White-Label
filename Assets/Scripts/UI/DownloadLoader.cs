@@ -23,7 +23,10 @@ public class DownloadLoader : MonoBehaviour
 
     private void Start()
     {
-        _loadingRoot.SetActive(false);
+        if(_loadingRoot != null)
+        {
+            _loadingRoot.SetActive(false);
+        }
         m_DownloadSize = 0;
         _loadingBar.fillAmount = 0;
         _waitingText.text = m_DefaultText;
@@ -46,7 +49,10 @@ public class DownloadLoader : MonoBehaviour
 
     private void OnDownloadOver()
     {
-        _loadingRoot.SetActive(false);
+        if(_loadingRoot != null)
+        {
+            _loadingRoot.SetActive(false);
+        }
         _waitingText.text = m_DefaultText;
     }
     #endregion

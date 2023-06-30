@@ -42,7 +42,7 @@ public class HomeEntry : MonoBehaviour
 
 		m_WzPoiData = wzPoi;
 		_titleText.text = StringUtils.CleanFromWezit(m_WzPoiData.title).ToUpper();
-		if (_imageBackground != null) LoadImage(_imageBackground, m_WzPoiData, Wezit.RelationName.REF_PICTURE, WezitSourceTransformation.original, true);
+		if (_imageBackground != null) LoadImage(_imageBackground, m_WzPoiData, Wezit.RelationName.REF_PICTURE, WezitSourceTransformation.default_base, true);
 	}
 
 	public void ResetData()

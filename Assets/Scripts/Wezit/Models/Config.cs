@@ -11,6 +11,7 @@ namespace Wezit
 		public bool loadImages;
 		public bool downloadImagesOnStartup;
 		public string downloadTransformation;
+		public bool downloadSettingsImagesOnStartup;
 
 		public override string ToString() 
 		{
@@ -20,13 +21,15 @@ namespace Wezit
 				"online: {2}\n" +
 				"loadImages: {3}\n" +
 				"downloadImagesOnStartup: {4}\n" +
-				"downloadTransformation: {5}",
+				"downloadTransformation: {5}" +
+				"downloadSettingsImagesOnStartup: {6}",
 				manifestUrl,
 				version,
 				online,
 				loadImages,
 				downloadImagesOnStartup,
-				downloadTransformation
+				downloadTransformation,
+				downloadSettingsImagesOnStartup
 			);
 		}
 	}

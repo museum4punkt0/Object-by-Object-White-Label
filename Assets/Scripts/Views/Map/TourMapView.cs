@@ -18,12 +18,16 @@ public class TourMapView : BaseView
 	[SerializeField] private GameObject _listHorizontalRoot;
 	[SerializeField] private MapListHorizontal _mapListHorizontal;
 	[SerializeField] private MapListToggle _mapListToggle;
-	[SerializeField] private Button _centerButton;
+	[SerializeField] private Button _centerButton = null;
+	[SerializeField] private Image _centerButtonBG = null;
 	[SerializeField] private Button _zoomInButton = null;
+	[SerializeField] private Image _zoomInButtonBG = null;
 	[SerializeField] private Button _zoomOutButton = null;
+	[SerializeField] private Image _zoomOutButtonBG = null;
 	[SerializeField] private QRCodeNotification _QRCodeNotification;
 	[SerializeField] private SecretPoiButton _secretPoiButton;
 	[SerializeField] private SecretPoiNotification _secretPoiNotification;
+	[SerializeField] private LocationWarningNotification _locationWarningNotification;
 	#endregion Serialize Fields
 
 	#region Public Variables
@@ -42,6 +46,11 @@ public class TourMapView : BaseView
 	private TourMapPin m_CurrentHighlightedPin;
 
 	private Wezit.Poi m_LastPoiInrange;
+	private Wezit.PoiLocation m_tourPoiLocation;
+
+	private string m_mapProviderSettingKey = "template.spk.maps.global.map.provider.url";
+	private string m_mapProviderUrl;
+	private bool m_hasSeenLocationWarning;
 	#endregion Private m_Variables
 	#endregion Fields
 
@@ -96,18 +105,24 @@ public class TourMapView : BaseView
 	#endregion Public
 
 	#region Private
-	private void InitViewContentByLang(Language language)
+	private async void InitViewContentByLang(Language language)
 	{
 		ResetViewContent();
 
 		m_Tour = StoreAccessor.State.SelectedTour;
+		m_tourPoiLocation = PoiLocationStore.GetPoiLocationById(m_Tour.pid);
+
+		PlayerManager.Instance.IsGPSOn = Input.location.isEnabledByUser;
+		PlayerManager.Instance.ViewOnInventoryBackButton = KioskState.TOUR_MAP;
+
+		_map.emptyColor = _centerButtonBG.color = _zoomInButtonBG.color = _zoomOutButtonBG.color = GlobalSettingsManager.Instance.AppColor;
 
 		bool isChallenge = PlayerManager.Instance.Player.GetTourProgression(StoreAccessor.State.SelectedTour.pid).IsChallengeMode;
 		if(isChallenge)
         {
 			ScoreDisplay.Instance.UpdateScore();
         }
-		MenuManager.MenuStatus status = isChallenge ? MenuManager.MenuStatus.BackButtonInventory : MenuManager.MenuStatus.BackButton;
+		MenuManager.MenuStatus status = isChallenge ? MenuManager.MenuStatus.BackButtonInventoryScore : MenuManager.MenuStatus.BackButtonInventory;
 		MenuManager.Instance.SetMenuStatus(status);
 		MenuManager.Instance.SetBackButtonState(KioskState.GLOBAL_MAP);
 
@@ -117,7 +132,8 @@ public class TourMapView : BaseView
 		List<Vector2> poiLocations = new List<Vector2>();
 		List<Wezit.Poi> locatedPois = new List<Wezit.Poi>();
 
-		// Instantiate map markers
+		// Instantiate map markers and look for a map
+		Wezit.AssetInfo mapInfo = null;
 		foreach(Wezit.Poi poi in m_Tour.childs)
         {
 			Wezit.PoiLocation poiLocation = PoiLocationStore.GetPoiLocationById(poi.pid);
@@ -126,7 +142,7 @@ public class TourMapView : BaseView
 				poiLocations.Add(new Vector2(poiLocation.lng, poiLocation.lat));
 				locatedPois.Add(poi);
 				m_PoisAndLocations.Add(poiLocation, poi);
-
+				mapInfo = poiLocation.GetMapByTransformation(WezitSourceTransformation.tiles);
 
 				OnlineMapsMarker3D marker3D = onlineMapsMarker3Ds.Create(poiLocation.lng, poiLocation.lat, _tourMapPinPrefab.gameObject);
 				TourMapPin tourMapPinInstance = marker3D.instance.GetComponent<TourMapPin>();
@@ -140,6 +156,45 @@ public class TourMapView : BaseView
 				_secretPoiButton.Inflate(poi);
             }
         }
+
+		// Display map
+		if(mapInfo != null)
+        {
+			
+			string mapMetadataJsonString = await FileUtils.RequestTextContent(mapInfo.GetSource(), 5);
+			Wezit.MapMetadata mapMetadata = JsonUtility.FromJson<Wezit.MapMetadata>(mapMetadataJsonString);
+			Vector4 bounds = mapMetadata.GetBounds();
+
+			// Add limits to the map
+			OnlineMapsLimits limits = _map.GetComponent<OnlineMapsLimits>();
+			limits.minLongitude = bounds.x;
+			limits.minLatitude = bounds.y;
+
+			limits.maxLongitude = bounds.z;
+			limits.maxLatitude = bounds.w;
+
+			limits.minZoom = mapMetadata.minzoom;
+			limits.maxZoom = mapMetadata.maxzoom;
+
+			limits.positionRangeType = OnlineMapsPositionRangeType.center;
+			limits.usePositionRange = true;
+			limits.useZoomRange = true;
+			limits.ApplySetings();
+
+			_map.customProviderURL = mapInfo.GetSource().Replace("metadata.json", "{zoom}/{x}/{y}.jpg");
+		}
+		else
+		{
+			m_mapProviderUrl = Wezit.Settings.Instance.GetSettingAsCleanedText(m_mapProviderSettingKey);
+			if (!string.IsNullOrEmpty(m_mapProviderUrl))
+			{
+				_map.customProviderURL = m_mapProviderUrl;
+			}
+			else
+			{
+				_map.customProviderURL = "https://tiles.stadiamaps.com/styles/stamen_watercolor/{z}/{x}/{y}.jpg";
+			}
+		}
         _mapListVertical.Inflate(locatedPois, this);
         _mapListHorizontal.Inflate(locatedPois, this);
 
@@ -153,6 +208,7 @@ public class TourMapView : BaseView
 		_mapListHorizontal.ResetView();
 		_listVerticalRoot.SetActive(false);
 		_QRCodeNotification.gameObject.SetActive(false);
+		_mapListToggle.Reset();
 
 		foreach (GameObject mapPin in m_Pins)
 		{
@@ -168,6 +224,7 @@ public class TourMapView : BaseView
         {
 			m_LastPoiInrange = null;
         }
+		m_hasSeenLocationWarning = false;
 	}
 
 	private void AddListeners()
@@ -211,7 +268,9 @@ public class TourMapView : BaseView
 			_QRCodeNotification.StartButtonClicked.AddListener(OnQRCodeStart);
 			_QRCodeNotification.Inflate();
 			m_LastPoiInrange = poiInRange;
+			PlayerManager.Instance.LastPOIInRange = poiInRange;
         }
+		PlayerManager.Instance.IsGPSOn = true;
     }
 
 	// Map management
@@ -225,6 +284,16 @@ public class TourMapView : BaseView
 				result = m_PoisAndLocations[poiLocation];
             }
         }
+
+		if(!m_hasSeenLocationWarning)
+        {
+			if(!IsInRange(location, m_tourPoiLocation).isInRange)
+			{
+				_locationWarningNotification.Inflate();
+				m_hasSeenLocationWarning = true;
+			}
+        }
+
 		return result;
     }
 
@@ -312,6 +381,11 @@ public class TourMapView : BaseView
 		AppManager.Instance.SelectPoi(poi);
 		AppManager.Instance.GoToState(KioskState.SECRET_POI);
 	}
+
+	private void OnUserNotInTour()
+    {
+
+    }
 	#endregion Private
 
 	#region Internals

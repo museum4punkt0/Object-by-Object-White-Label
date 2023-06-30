@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6689392219428133865}
   - component: {fileID: 6689392219428133871}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 6689392220662509004}
   - component: {fileID: 4825390872906398282}
   - component: {fileID: 1596748558531462119}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ARItemSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
