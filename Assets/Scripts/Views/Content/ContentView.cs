@@ -145,9 +145,8 @@ public class ContentView : BaseView
 		}
 
 		_continueButtonText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_ContinueButtonTextSettingKey, language);
-		_title.text = StringUtils.CleanFromWezit(m_PoiData.title);
-		_description.text = StringUtils.CleanFromWezit(m_PoiData.description);
-		_remainingItems.text = string.Format("There are {0} items remaining", m_PoiProgressionData.GetPoiMaxProgression() - m_PoiProgressionData.GetPoiCurrentProgression());
+		_title.text = m_PoiData.CleanedTitle;
+		_description.text = m_PoiData.CleanedDescription;
         string[] paragraphs = { _description.text };
 		_explanationWindow.Inflate(_title.text, paragraphs, _contrastPanelRoot);
 		await StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_textContainer));

@@ -151,11 +151,11 @@ public class QuizView : BaseView
 		_pointsTitle.text = hasWon ? Wezit.Settings.Instance.GetSettingAsCleanedText(m_SuccessTitleSettingKey) : Wezit.Settings.Instance.GetSettingAsCleanedText(m_FailureTitleSettingKey);
 		_pointsDescription.text = hasWon ? Wezit.Settings.Instance.GetSettingAsCleanedText(m_SuccessDescriptionSettingKey) : Wezit.Settings.Instance.GetSettingAsCleanedText(m_FailureDescriptionSettingKey);
 		_pointsEarned.gameObject.SetActive(hasWon);
-		if(hasWon)
-		{
-			string pointsEarned = Wezit.Settings.Instance.GetSettingAsCleanedText(m_PointsEarnedSettingKey);
-			_pointsEarned.text = string.Format(pointsEarned, GlobalSettingsManager.Instance.PointsEarnedSecret);
-		}
+		//if(hasWon)
+		//{
+		//	string pointsEarned = Wezit.Settings.Instance.GetSettingAsCleanedText(m_PointsEarnedSettingKey);
+		//	_pointsEarned.text = string.Format(pointsEarned, GlobalSettingsManager.Instance.PointsEarnedSecret);
+		//}
 
 		string[] paragraphs = { _pointsDescription.text, _pointsEarned.text };
 		_pointsPanelContrastButton.Inflate(_pointsTitle.text, paragraphs, _pointsPanelContrastPanelRoot);

@@ -6,6 +6,7 @@ using TMPro;
 using Utils;
 using UniRx;
 using System.Collections;
+using UnityEngine.Android;
 
 public class TourMapView : BaseView
 {
@@ -124,7 +125,7 @@ public class TourMapView : BaseView
         }
 		MenuManager.MenuStatus status = isChallenge ? MenuManager.MenuStatus.BackButtonInventoryScore : MenuManager.MenuStatus.BackButtonInventory;
 		MenuManager.Instance.SetMenuStatus(status);
-		MenuManager.Instance.SetBackButtonState(KioskState.GLOBAL_MAP);
+		MenuManager.Instance.SetBackButtonState(KioskState.TOUR_INTRO);
 
 		OnlineMapsMarker3DManager onlineMapsMarker3Ds = _map.GetComponent<OnlineMapsMarker3DManager>();
 		m_LocationService = _map.GetComponent<OnlineMapsLocationService>();
@@ -142,7 +143,7 @@ public class TourMapView : BaseView
 				poiLocations.Add(new Vector2(poiLocation.lng, poiLocation.lat));
 				locatedPois.Add(poi);
 				m_PoisAndLocations.Add(poiLocation, poi);
-				mapInfo = poiLocation.GetMapByTransformation(WezitSourceTransformation.tiles);
+				mapInfo = poiLocation.GetMapByTransformation(WezitSourceTransformation.tilesZip);
 
 				OnlineMapsMarker3D marker3D = onlineMapsMarker3Ds.Create(poiLocation.lng, poiLocation.lat, _tourMapPinPrefab.gameObject);
 				TourMapPin tourMapPinInstance = marker3D.instance.GetComponent<TourMapPin>();
@@ -160,8 +161,7 @@ public class TourMapView : BaseView
 		// Display map
 		if(mapInfo != null)
         {
-			
-			string mapMetadataJsonString = await FileUtils.RequestTextContent(mapInfo.GetSource(), 5);
+			string mapMetadataJsonString = await FileUtils.RequestTextContent(mapInfo.GetSource() + "/metadata.json", 5);
 			Wezit.MapMetadata mapMetadata = JsonUtility.FromJson<Wezit.MapMetadata>(mapMetadataJsonString);
 			Vector4 bounds = mapMetadata.GetBounds();
 
@@ -312,6 +312,15 @@ public class TourMapView : BaseView
         }
 		else
         {
+#if UNITY_ANDROID
+			if(!Permission.HasUserAuthorizedPermission(Permission.FineLocation))
+            {
+				Permission.RequestUserPermission(Permission.FineLocation);
+            }
+#elif UNITY_IOS
+			Input.location.Start();
+			Input.location.Stop();
+#endif
 			_map.SetPositionAndZoom(m_CenteredPostion.x, m_CenteredPostion.y, m_CenteredPostion.z);
         }
 	}
@@ -386,13 +395,13 @@ public class TourMapView : BaseView
     {
 
     }
-	#endregion Private
+#endregion Private
 
-	#region Internals
+#region Internals
 	protected override void OnFadeEndView()
 	{
 
 	}
-	#endregion Internals
-	#endregion Methods
+#endregion Internals
+#endregion Methods
 }

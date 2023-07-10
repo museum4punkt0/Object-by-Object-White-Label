@@ -55,6 +55,30 @@ namespace Wezit
 				pid, language, title, subject, description, tags, identifier, format, contributor, author, creator, rights, type, date, source, spatial, location, extent
 			);
 		}
+
+		public string CleanedTitle
+		{
+			get
+			{
+				return StringUtils.CleanFromWezit(title);
+			}
+		}
+
+		public string CleanedSubject
+		{
+			get
+			{
+				return StringUtils.CleanFromWezit(subject);
+			}
+		}
+
+		public string CleanedDescription
+		{
+			get
+			{
+				return StringUtils.CleanFromWezit(description);
+			}
+		}
 	}
 
 }

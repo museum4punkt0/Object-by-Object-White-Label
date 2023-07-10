@@ -21,7 +21,6 @@ public class ZipFile
             {
                 #if UNITY_EDITOR
                 Debug.LogFormat("Entry Name: {0}", theEntry.Name);
-                Debug.LogError("Entry Name: " + theEntry.Name);
                 #endif
 
                 string directoryName = Path.GetDirectoryName(theEntry.Name);

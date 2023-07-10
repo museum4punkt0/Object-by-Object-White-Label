@@ -217,7 +217,7 @@ namespace Wezit
             List<WezitAssets.File> filesToUpdate = new List<WezitAssets.File>();
             foreach (WezitAssets.Asset asset in m_Assets)
             {
-                string assetTransformation = asset.usages.Contains("maps") ? "tiles" : transformation;
+                string assetTransformation = asset.usages.Contains("maps") ? "tiles-zip" : transformation;
 
                 foreach (WezitAssets.File file in asset.files)
                 {
@@ -259,7 +259,7 @@ namespace Wezit
             List<WezitAssets.File> filesToUpdate = new List<WezitAssets.File>();
             foreach (WezitAssets.Asset asset in assets)
             {
-                string assetTransformation = asset.usages.Contains("maps") ? "tiles" : transformation;
+                string assetTransformation = asset.usages.Contains("maps") ? "tiles-zip" : transformation;
 
                 foreach (WezitAssets.File file in asset.files)
                 {
@@ -325,7 +325,7 @@ namespace Wezit
             bool hasTransformation = false;
             if (asset.usages.Contains("maps"))
             {
-                transformation = "tiles";
+                transformation = "tiles-zip";
             }
             foreach (WezitAssets.File file in asset.files)
             {
@@ -335,7 +335,7 @@ namespace Wezit
                     int downloaded = file.size;
                     if (CheckDownloadNecessity(file))
                     {
-                        if(transformation == "tiles")
+                        if(transformation == "tiles-zip")
                         {
                             downloaded = await DownloadMapTiles(file);
                         }
@@ -388,12 +388,11 @@ namespace Wezit
 
         private async UniTask<int> DownloadMapTiles(WezitAssets.File file)
         {
-            Debug.LogError("DOWNLOADING MAP");
-            if (!Directory.Exists(Path.Combine(ImagesFolderPath, Path.GetDirectoryName(file.path.Replace("metadata.json", "")))))
+            if (!Directory.Exists(Path.Combine(ImagesFolderPath, Path.GetDirectoryName(file.path))))
             {
-                Directory.CreateDirectory(Path.Combine(ImagesFolderPath, Path.GetDirectoryName(file.path.Replace("metadata.json", ""))));
+                Directory.CreateDirectory(Path.Combine(ImagesFolderPath, Path.GetDirectoryName(file.path)));
             }
-            await UniRxZipDownloader.DownloadAndUnzip(file.uri.Replace("metadata.json", "original.zip"), Path.Combine(ImagesFolderPath, file.path.Replace("metadata.json", "")));
+            await UniRxZipDownloader.DownloadAndUnzip(file.uri, Path.Combine(ImagesFolderPath, file.path));
 
             DownloadedImagesMd5Dict.Add(new ImageAndMd5(file.path, file.md5));
             return file.size;

@@ -17,11 +17,8 @@ public static class UniRxZipDownloader
 				{
 					byte[] bytes = webRequest.downloadHandler.data;
 					Debug.Log("ZipDownloadManager - Download successfully completed");
-					Debug.LogError("DOWNLOADED MAP ZIP");
 
 					ZipFile.UnZip(path, bytes);
-
-					Debug.LogError("UNZIPPED MAP");
 					return true;
 				}
 				else

@@ -30,7 +30,7 @@ namespace Wezit
 #if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
 			fullPath = "file://" + fullPath;
 #endif
-            return File.Exists(fullPath.Replace("file://", "")) ? fullPath : url;
+            return File.Exists(fullPath.Replace("file://", "")) || Directory.Exists(fullPath.Replace("file://", "")) ? fullPath : url;
 		}
 
 		public string GetMimeType()

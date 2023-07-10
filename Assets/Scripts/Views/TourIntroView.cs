@@ -143,8 +143,8 @@ public class TourIntroView : BaseView
 		_challengeButton.gameObject.SetActive(!tourProgressionData.IsModeSet);
 		_normalButton.gameObject.SetActive(!tourProgressionData.IsModeSet);
 
-		_title.text = m_TourData.title;
-        _description.text = m_TourData.description;
+		_title.text = m_TourData.CleanedTitle;
+        _description.text = m_TourData.CleanedDescription;
         string[] paragraphs = { _description.text };
 		_explanationWindow.Inflate(_title.text, paragraphs, _contrastPanelRoot);
 

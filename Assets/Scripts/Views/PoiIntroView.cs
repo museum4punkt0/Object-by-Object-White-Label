@@ -108,8 +108,8 @@ public class PoiIntroView : BaseView
 
 		ImageUtils.LoadImage(_background, this, m_PoiData);
 
-		_title.text = StringUtils.CleanFromWezit(m_PoiData.title);
-        _description.text = StringUtils.CleanFromWezit(m_PoiData.description);
+		_title.text = m_PoiData.CleanedTitle;
+        _description.text = m_PoiData.CleanedDescription;
 		StartCoroutine(LayoutGroupRebuilder.Rebuild(_textContainer));
 		string[] paragraphs = { _description.text };
 		_explanationWindow.Inflate(_title.text, paragraphs, _contrastPanelRoot);

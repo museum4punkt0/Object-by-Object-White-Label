@@ -7,6 +7,7 @@ public static class WezitSourceTransformation
 	public static string default2kpx { get { return "default2kpx"; } }
 	public static string thumbnail { get { return "thumbnail"; } }
 	public static string tiles { get { return "tiles"; } }
+	public static string tilesZip { get { return "tiles-zip"; } }
 
 	public static string all { get { return "all"; } }
 }
