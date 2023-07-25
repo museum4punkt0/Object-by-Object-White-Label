@@ -131,7 +131,7 @@ public class MapListItem : MonoBehaviour
 
     private void SetProgression(TourProgressionData tourProgressionData, Tour tour)
     {
-        if(tourProgressionData.MaxProgression == 0)
+        if(tourProgressionData.MaxProgression != tour.childs.Count - 2)
         {
             tourProgressionData.SetTourMaxProgression(tour.childs.Count - 2);
         }
@@ -140,7 +140,7 @@ public class MapListItem : MonoBehaviour
 
     private void SetProgression(PoiProgressionData poiProgressionData, Poi poi)
     {
-        if (poiProgressionData.GetPoiMaxProgression() == 0)
+        if (poiProgressionData.GetPoiMaxProgression() != poi.childs.Count)
         {
             poiProgressionData.SetPoiMaxProgression(poi.childs.Count);
         }

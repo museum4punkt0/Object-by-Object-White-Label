@@ -45,31 +45,17 @@ public class Manipulation3D : MonoBehaviour
     #endregion
 
     #region Methods
-    #region Public
-    public void SetFocusObject(GameObject gameObject)
-    {
-        _focusObject = gameObject;
-    }
-    #endregion
-
-    #region Private
+    #region Monobehaviours
     // Start is called before the first frame update
     void Start()
     {
-        _isFirstManipulation = true;
-        _verticalPivot = transform.GetChild(0);
-        _cameraTransform = transform.GetChild(0).GetChild(0);
-        _initialPivotPosition = _pivot.position;
-        _initialPivotRotation = _pivot.rotation;
-        _initialCameraPosition = _cameraTransform.localPosition;
-        _initialCameraRotation = _cameraTransform.rotation;
-        _initialGODistance = Vector3.Distance(_focusObject.transform.position, _initialCameraPosition);
+        Init();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(_focusObject == null)
+        if (_focusObject == null)
         {
             return;
         }
@@ -81,7 +67,7 @@ public class Manipulation3D : MonoBehaviour
             {
                 Zoom(Input.GetAxis("Mouse ScrollWheel") > 0);
             }
-            if(Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0))
             {
                 _lastPosition = Input.mousePosition;
             }
@@ -94,13 +80,13 @@ public class Manipulation3D : MonoBehaviour
 
         #region TouchControl
         #region Rotation
-        if(Input.touchCount != 1)
+        if (Input.touchCount != 1)
         {
             _isRotating = false;
         }
-        if(Input.touchCount == 1)
+        if (Input.touchCount == 1)
         {
-            if(_isRotating)
+            if (_isRotating)
             {
                 Rotation(Input.GetTouch(0).position);
             }
@@ -108,20 +94,20 @@ public class Manipulation3D : MonoBehaviour
             _isRotating = true;
         }
         #endregion Rotation
-        
+
         #region Zoom
         //zoom
-        if(Input.touchCount != 2)
+        if (Input.touchCount != 2)
         {
             _isZooming = false;
-        } 
-        if(Input.touchCount == 2)
+        }
+        if (Input.touchCount == 2)
         {
             Vector2 firstTouch = Input.GetTouch(0).position;
             Vector2 secondTouch = Input.GetTouch(1).position;
             float touchDelta = Vector2.Distance(firstTouch, secondTouch);
 
-            if(!_isZooming)
+            if (!_isZooming)
             {
                 _isZooming = true;
                 _lastTouchDelta = touchDelta;
@@ -133,6 +119,37 @@ public class Manipulation3D : MonoBehaviour
         #endregion Zoom
         #endregion TouchControl
     }
+    #endregion
+    #region Public
+    public void Init()
+    {
+        _cameraTransform = transform.GetChild(0).GetChild(0);
+        _cameraTransform.localPosition = new Vector3(_cameraTransform.localPosition.x,
+                                                     _cameraTransform.localPosition.y,
+                                                     (_zoomMax + _zoomMin) / 2);
+
+        _isFirstManipulation = true;
+        _verticalPivot = transform.GetChild(0);
+        _initialPivotPosition = _pivot.position;
+        _initialPivotRotation = _pivot.rotation;
+        _initialCameraPosition = _cameraTransform.localPosition;
+        _initialCameraRotation = _cameraTransform.rotation;
+        _initialGODistance = Vector3.Distance(_focusObject.transform.position, _initialCameraPosition);
+    }
+
+    public void SetFocusObject(GameObject gameObject)
+    {
+        _focusObject = gameObject;
+    }
+
+    public void SetZoomMinMax(float minZoom, float maxZoom)
+    {
+        _zoomMin = minZoom;
+        _zoomMax = maxZoom;
+    }
+    #endregion
+
+    #region Private
     private void Rotation (Vector2 position)
     {
         if (_isFirstManipulation)

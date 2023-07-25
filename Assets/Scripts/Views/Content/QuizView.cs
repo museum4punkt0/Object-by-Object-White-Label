@@ -19,7 +19,6 @@ public class QuizView : BaseView
 	[SerializeField] private Transform _pointsPanelContrastPanelRoot;
 	[SerializeField] private TextMeshProUGUI _pointsTitle;
 	[SerializeField] private TextMeshProUGUI _pointsDescription;
-	[SerializeField] private TextMeshProUGUI _pointsEarned;
 	[Space]
 	[SerializeField] private Button _continueButton;
 	[SerializeField] private Image _continueButtonBG;
@@ -150,14 +149,8 @@ public class QuizView : BaseView
 
 		_pointsTitle.text = hasWon ? Wezit.Settings.Instance.GetSettingAsCleanedText(m_SuccessTitleSettingKey) : Wezit.Settings.Instance.GetSettingAsCleanedText(m_FailureTitleSettingKey);
 		_pointsDescription.text = hasWon ? Wezit.Settings.Instance.GetSettingAsCleanedText(m_SuccessDescriptionSettingKey) : Wezit.Settings.Instance.GetSettingAsCleanedText(m_FailureDescriptionSettingKey);
-		_pointsEarned.gameObject.SetActive(hasWon);
-		//if(hasWon)
-		//{
-		//	string pointsEarned = Wezit.Settings.Instance.GetSettingAsCleanedText(m_PointsEarnedSettingKey);
-		//	_pointsEarned.text = string.Format(pointsEarned, GlobalSettingsManager.Instance.PointsEarnedSecret);
-		//}
 
-		string[] paragraphs = { _pointsDescription.text, _pointsEarned.text };
+		string[] paragraphs = { _pointsDescription.text };
 		_pointsPanelContrastButton.Inflate(_pointsTitle.text, paragraphs, _pointsPanelContrastPanelRoot);
 
 		_pointsPanelRoot.SetActive(true);

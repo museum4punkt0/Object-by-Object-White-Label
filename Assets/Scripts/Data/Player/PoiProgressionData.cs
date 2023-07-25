@@ -86,12 +86,13 @@ public class PoiProgressionData
 
     public int GetPoiMaxProgression()
     {
-        if(m_MaxProgression != 0) return m_MaxProgression;
+        if (m_MaxProgression != 0) return m_MaxProgression;
         else
         {
             m_MaxProgression = ContentsProgression.Count;
             return m_MaxProgression;
         }
+        return ContentsProgression.Count;
     }
 
     public void SetPoiMaxProgression(int contentCount)

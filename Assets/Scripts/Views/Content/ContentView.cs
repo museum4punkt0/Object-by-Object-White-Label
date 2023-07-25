@@ -112,11 +112,6 @@ public class ContentView : BaseView
 		MenuManager.Instance.SetMenuStatus(status);
 		MenuManager.Instance.SetBackButtonState(ViewManager.Instance.PreviousKioskState);
 
-		int progress = m_PoiProgressionData.GetPoiCurrentProgression();
-		string remainingText = progress > 1 ? Wezit.Settings.Instance.GetSettingAsCleanedText(m_RemainingItemsPluralTextSettingKey) :
-			Wezit.Settings.Instance.GetSettingAsCleanedText(m_RemainingItemsSingularTextSettingKey);
-		_remainingItems.text = string.Format(remainingText, m_PoiProgressionData.GetPoiMaxProgression() - progress);
-
 		_remainingItems.color = _uIBackground.color = _3DManipulationInstruction.color = _continueButtonBG.color = _title.color = GlobalSettingsManager.Instance.AppColor;
 
 		_pinchableScrollRect.Init(true);
@@ -151,6 +146,11 @@ public class ContentView : BaseView
 		_explanationWindow.Inflate(_title.text, paragraphs, _contrastPanelRoot);
 		await StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_textContainer));
 		await StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_textContainer));
+
+		int progress = m_PoiProgressionData.GetPoiCurrentProgression();
+		string remainingText = progress > 1 ? Wezit.Settings.Instance.GetSettingAsCleanedText(m_RemainingItemsPluralTextSettingKey) :
+			Wezit.Settings.Instance.GetSettingAsCleanedText(m_RemainingItemsSingularTextSettingKey);
+		_remainingItems.text = string.Format(remainingText, m_PoiProgressionData.GetPoiMaxProgression() - progress);
 	}
 
 	private void ResetViewContent()
@@ -211,6 +211,11 @@ public class ContentView : BaseView
 			}
 			contentProgressionData.SetCompleted();
 			PlayerManager.Instance.Player.Save();
+
+			int progress = m_PoiProgressionData.GetPoiCurrentProgression();
+			string remainingText = progress > 1 ? Wezit.Settings.Instance.GetSettingAsCleanedText(m_RemainingItemsPluralTextSettingKey) :
+				Wezit.Settings.Instance.GetSettingAsCleanedText(m_RemainingItemsSingularTextSettingKey);
+			_remainingItems.text = string.Format(remainingText, m_PoiProgressionData.GetPoiMaxProgression() - progress);
 		}
 	}
 	#endregion Private

@@ -134,16 +134,23 @@ public class TourMapView : BaseView
 		List<Wezit.Poi> locatedPois = new List<Wezit.Poi>();
 
 		// Instantiate map markers and look for a map
-		Wezit.AssetInfo mapInfo = null;
+		Wezit.PoiLocation poiLocation = null;
+		string mapSource = "";
+
 		foreach(Wezit.Poi poi in m_Tour.childs)
         {
-			Wezit.PoiLocation poiLocation = PoiLocationStore.GetPoiLocationById(poi.pid);
+			poiLocation = PoiLocationStore.GetPoiLocationById(poi.pid);
 			if (poiLocation != null)
             {
 				poiLocations.Add(new Vector2(poiLocation.lng, poiLocation.lat));
 				locatedPois.Add(poi);
 				m_PoisAndLocations.Add(poiLocation, poi);
-				mapInfo = poiLocation.GetMapByTransformation(WezitSourceTransformation.tilesZip);
+
+				if(string.IsNullOrEmpty(mapSource))
+                {
+					mapSource = poiLocation.GetMapSourceByTransformation(WezitSourceTransformation.tilesZip).Replace("metadata.json", "");
+					Debug.LogError("The map source is: " + mapSource);
+                }
 
 				OnlineMapsMarker3D marker3D = onlineMapsMarker3Ds.Create(poiLocation.lng, poiLocation.lat, _tourMapPinPrefab.gameObject);
 				TourMapPin tourMapPinInstance = marker3D.instance.GetComponent<TourMapPin>();
@@ -159,9 +166,9 @@ public class TourMapView : BaseView
         }
 
 		// Display map
-		if(mapInfo != null)
+		if(!string.IsNullOrEmpty(mapSource))
         {
-			string mapMetadataJsonString = await FileUtils.RequestTextContent(mapInfo.GetSource() + "/metadata.json", 5);
+			string mapMetadataJsonString = await FileUtils.RequestTextContent(mapSource + "/metadata.json", 5);
 			Wezit.MapMetadata mapMetadata = JsonUtility.FromJson<Wezit.MapMetadata>(mapMetadataJsonString);
 			Vector4 bounds = mapMetadata.GetBounds();
 
@@ -181,8 +188,8 @@ public class TourMapView : BaseView
 			limits.useZoomRange = true;
 			limits.ApplySetings();
 
-			_map.customProviderURL = mapInfo.GetSource().Replace("metadata.json", "{zoom}/{x}/{y}.jpg");
-		}
+			_map.customProviderURL = mapSource + "/{zoom}/{x}/{y}.jpg";
+        }
 		else
 		{
 			m_mapProviderUrl = Wezit.Settings.Instance.GetSettingAsCleanedText(m_mapProviderSettingKey);
@@ -300,7 +307,7 @@ public class TourMapView : BaseView
 	private (bool isInRange, float distance) IsInRange(Vector2 location, Wezit.PoiLocation poiLocation)
     {
 		float distance = MapUtils.CalculateDistance(location, new Vector2(poiLocation.lng, poiLocation.lat));
-		return ((distance < poiLocation.radius, distance));
+		return ((distance < (poiLocation.radius == 0 ? 15 : poiLocation.radius), distance));
     }
 
 	private void CenterOnUser()

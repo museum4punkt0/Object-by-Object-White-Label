@@ -22,13 +22,26 @@ namespace Wezit
 
 		public AssetInfo GetMapByTransformation(string transformation)
 		{
-			return this.maps.Find((info) => info.label == transformation);
+			return maps.Find((info) => info.label == transformation);
 		}
 
 		public string GetMapSourceByTransformation(string transformation)
 		{
-			AssetInfo assetInfo = this.maps.Find((info) => info.label == transformation);
-			return ((assetInfo != null) ? assetInfo.GetSource() : "");
+			AssetInfo assetInfo = maps.Find((info) => info.label == transformation);
+
+			string source = "";
+
+			if(assetInfo != null)
+            {
+				source = assetInfo.GetSource();
+				if(transformation == WezitSourceTransformation.tilesZip && source.Contains("http"))
+                {
+					assetInfo = maps.Find((info) => info.label == WezitSourceTransformation.tiles);
+					source = assetInfo.GetSource();
+                }
+            }
+
+			return source;
 		}
 	}
 

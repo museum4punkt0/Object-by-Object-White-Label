@@ -115,7 +115,7 @@ public class PoiIntroView : BaseView
 		_explanationWindow.Inflate(_title.text, paragraphs, _contrastPanelRoot);
 
 		_goButton.gameObject.SetActive(m_PoiData != PlayerManager.Instance.LastPOIInRange && PlayerManager.Instance.IsGPSOn);
-		_scanButton.gameObject.SetActive(m_PoiData == PlayerManager.Instance.LastPOIInRange || !PlayerManager.Instance.IsGPSOn);
+		_scanButton.gameObject.SetActive(true);
 	}
 
 	private void ResetViewContent()

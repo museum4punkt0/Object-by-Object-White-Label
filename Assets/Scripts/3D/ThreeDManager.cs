@@ -38,12 +38,21 @@ public class ThreeDManager : MonoBehaviour
 		SetLayerOfChildren.SetLayerAllChildren(model.transform, 7);
 
 		MeshRenderer[] meshRenderers = model.GetComponentsInChildren<MeshRenderer>();
+		Vector3 sizeVector = Vector3.negativeInfinity;
+
         foreach (MeshRenderer meshRenderer in meshRenderers)
         {
 			meshRenderer.material.SetFloat("metallicFactor", 0.3f);
+			sizeVector.x = Mathf.Max(sizeVector.x, meshRenderer.bounds.size.x);
+			sizeVector.y = Mathf.Max(sizeVector.y, meshRenderer.bounds.size.y);
+			sizeVector.z = Mathf.Max(sizeVector.z, meshRenderer.bounds.size.z);
         }
 
+        float size = Mathf.Max((sizeVector.x), (sizeVector.y), (sizeVector.z));
+
+		_manipulation3D.SetZoomMinMax(size / 3.375f * -15, size / 3.375f * -3);
 		_manipulation3D.SetFocusObject(model);
+		_manipulation3D.Init();
 		_manipulation3D.FirstManipulated.RemoveAllListeners();
 		_manipulation3D.FirstManipulated.AddListener(OnItemManipulated);
 	}

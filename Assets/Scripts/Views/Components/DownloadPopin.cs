@@ -12,6 +12,7 @@ public class DownloadPopin : Popin
     [SerializeField] private GameObject _progressRoot;
     [SerializeField] private Image _progressBar = null;
     [SerializeField] private Image _progressBarColor = null;
+    [SerializeField] private TextMeshProUGUI _downloadText;
     #endregion
     #region Private
     private string m_downloadTextSettingKey = "template.spk.tours.download.progress.text";
@@ -35,6 +36,8 @@ public class DownloadPopin : Popin
         base.Inflate(title, description, buttonText, "", iconType);
         _popinButton.gameObject.SetActive(true);
         _closeButton.gameObject.SetActive(true);
+        _description.gameObject.SetActive(true);
+        _downloadText.gameObject.SetActive(false);
 
         _progressRoot.SetActive(false);
         _progressBarColor.color = GlobalSettingsManager.Instance.AppColor;
@@ -55,6 +58,8 @@ public class DownloadPopin : Popin
         base.OnPopinButton();
         _popinButton.gameObject.SetActive(false);
         _closeButton.gameObject.SetActive(false);
+        _description.gameObject.SetActive(false);
+        _downloadText.gameObject.SetActive(true);
 
         Wezit.DataGrabber.Instance.DownloadProgress.RemoveAllListeners();
         Wezit.DataGrabber.Instance.DownloadProgress.AddListener(UpdateProgress);
@@ -70,7 +75,7 @@ public class DownloadPopin : Popin
         {
             if (!_progressRoot.activeSelf) _progressRoot.SetActive(true);
             _progressBar.fillAmount = progress / (float)m_downloadSize;
-            _description.text = m_downloadText + string.Format("{0:0.00}", progress / 1024f / 1024f) + "/" + string.Format("{0:0.00}Mo", m_downloadSize / 1024f / 1024f);
+            _downloadText.text = m_downloadText + string.Format("{0:0.00}", progress / 1024f / 1024f) + "/" + string.Format("{0:0.00}Mo", m_downloadSize / 1024f / 1024f);
         }
     }
 

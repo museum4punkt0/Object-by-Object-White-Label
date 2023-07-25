@@ -206,48 +206,6 @@ namespace Wezit
         }
 
         // Update size
-        public int GetUpdateSize(string transformation = "")
-        {
-            Load();
-            if (string.IsNullOrEmpty(transformation))
-            {
-                transformation = AppDefaultTransformation;
-            }
-
-            List<WezitAssets.File> filesToUpdate = new List<WezitAssets.File>();
-            foreach (WezitAssets.Asset asset in m_Assets)
-            {
-                string assetTransformation = asset.usages.Contains("maps") ? "tiles-zip" : transformation;
-
-                foreach (WezitAssets.File file in asset.files)
-                {
-                    if(file.label != assetTransformation && assetTransformation != "all")
-                    {
-                        continue;
-                    }
-
-                    ImageAndMd5 imageMd5 = DownloadedImagesMd5Dict.Find(x => x.path == file.path);
-                    if (imageMd5 != null)
-                    {
-                        if (imageMd5.md5 != file.md5)
-                        {
-                            Debug.Log("There is a file to update \n" + asset.ToString());
-                            filesToUpdate.Add(file);
-                        }
-                    }
-                    else
-                    {
-                        filesToUpdate.Add(file);
-                        Debug.Log("There is a new file \n" + asset.ToString());
-                    }
-                }
-            }
-            int downloadSize = 0;
-            int counter = filesToUpdate.Count;
-            downloadSize = filesToUpdate.Sum(x => x.size);
-            return downloadSize;
-        }
-
         public int GetUpdateSizeForAssets(List<WezitAssets.Asset> assets, string transformation = "")
         {
             Load();
@@ -257,7 +215,7 @@ namespace Wezit
             }
 
             List<WezitAssets.File> filesToUpdate = new List<WezitAssets.File>();
-            foreach (WezitAssets.Asset asset in assets)
+            foreach (WezitAssets.Asset asset in (assets == null ? m_Assets : assets))
             {
                 string assetTransformation = asset.usages.Contains("maps") ? "tiles-zip" : transformation;
 
@@ -299,6 +257,11 @@ namespace Wezit
             }
 
             return (GetUpdateSizeForAssets(tourAssets, transformation));
+        }
+
+        public int GetUpdateSize(string transformation = "")
+        {
+            return GetUpdateSizeForAssets(null, transformation);
         }
 
         public bool CheckDownloadNecessity(WezitAssets.File file)

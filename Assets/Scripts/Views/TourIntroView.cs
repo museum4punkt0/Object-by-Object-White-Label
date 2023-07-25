@@ -218,7 +218,7 @@ public class TourIntroView : BaseView
 	private void OnDownloadOpen()
     {
 		_downloadPopin.Inflate(Wezit.Settings.Instance.GetSettingAsCleanedText(m_downloadPopinTitleSettingKey),
-			String.Format(Wezit.Settings.Instance.GetSettingAsCleanedText(m_downloadPopinDescriptionSettingKey), string.Format("{0:0.00}Mo", m_downloadSize / 1024f / 1024f)),
+			string.Format(Wezit.Settings.Instance.GetSettingAsCleanedText(m_downloadPopinDescriptionSettingKey), string.Format(" {0:0.00}Mo", m_downloadSize / 1024f / 1024f)),
 			Wezit.Settings.Instance.GetSettingAsCleanedText(m_downloadPopinButtonSettingKey), m_TourData.pid, m_downloadSize);
     }
 
