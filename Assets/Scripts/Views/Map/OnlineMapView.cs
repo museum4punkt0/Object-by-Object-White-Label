@@ -32,6 +32,7 @@ public class OnlineMapView : BaseView
 	#region Private m_Variables
 	private List<Wezit.Tour> m_Tours = new List<Wezit.Tour>();
 	private OnlineMapsLocationService m_LocationService;
+	private OnlineMapsCache m_cacheService;
 	private Vector3 m_CenteredPostion;
 	private List<GameObject> m_Pins = new List<GameObject>();
 
@@ -103,8 +104,12 @@ public class OnlineMapView : BaseView
 
 		_centerButtonBG.color = _zoomInButtonBG.color = _zoomOutButtonBG.color = GlobalSettingsManager.Instance.AppColor;
 
+		m_cacheService = _map.GetComponent<OnlineMapsCache>();
+		m_cacheService.useFileCache = true;
+		m_cacheService.fileCacheTilePath = "TileCache/Global_Map/OnlineMap/{lbs}/{lng}/{zoom}/{x}/{y}";
+
 		m_mapProviderUrl = Wezit.Settings.Instance.GetSettingAsCleanedText(m_mapProviderSettingKey);
-		if(!string.IsNullOrEmpty(m_mapProviderUrl))
+		if (!string.IsNullOrEmpty(m_mapProviderUrl))
         {
 			_map.customProviderURL = m_mapProviderUrl;
         }
@@ -167,6 +172,11 @@ public class OnlineMapView : BaseView
 		_mapList.ResetView();
 		_listRoot.SetActive(false);
 		_mapListToggle.Reset();
+		
+		if(m_cacheService != null)
+        {
+			m_cacheService.useFileCache = false;
+        }
 
 		foreach (GameObject mapPin in m_Pins)
         {

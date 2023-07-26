@@ -37,6 +37,7 @@ public class TourMapView : BaseView
 	#region Private m_Variables
 	private Wezit.Tour m_Tour;
 	private OnlineMapsLocationService m_LocationService;
+	private OnlineMapsCache m_cacheService;
 	private Vector3 m_CenteredPostion;
 	private List<GameObject> m_Pins = new List<GameObject>();
 	private Dictionary<Wezit.PoiLocation, Wezit.Poi> m_PoisAndLocations = new Dictionary<Wezit.PoiLocation, Wezit.Poi>();
@@ -149,7 +150,6 @@ public class TourMapView : BaseView
 				if(string.IsNullOrEmpty(mapSource))
                 {
 					mapSource = poiLocation.GetMapSourceByTransformation(WezitSourceTransformation.tilesZip).Replace("metadata.json", "");
-					Debug.LogError("The map source is: " + mapSource);
                 }
 
 				OnlineMapsMarker3D marker3D = onlineMapsMarker3Ds.Create(poiLocation.lng, poiLocation.lat, _tourMapPinPrefab.gameObject);
@@ -163,10 +163,14 @@ public class TourMapView : BaseView
             {
 				_secretPoiButton.Inflate(poi);
             }
-        }
+		}
+
+		m_cacheService = _map.GetComponent<OnlineMapsCache>();
+		m_cacheService.useFileCache = true;
+		m_cacheService.fileCacheTilePath = "TileCache/" + m_Tour.pid.Replace(":", "-") + "/{lbs}/{lng}/{zoom}/{x}/{y}";
 
 		// Display map
-		if(!string.IsNullOrEmpty(mapSource))
+		if (!string.IsNullOrEmpty(mapSource))
         {
 			string mapMetadataJsonString = await FileUtils.RequestTextContent(mapSource + "/metadata.json", 5);
 			Wezit.MapMetadata mapMetadata = JsonUtility.FromJson<Wezit.MapMetadata>(mapMetadataJsonString);
@@ -216,6 +220,11 @@ public class TourMapView : BaseView
 		_listVerticalRoot.SetActive(false);
 		_QRCodeNotification.gameObject.SetActive(false);
 		_mapListToggle.Reset();
+
+		if (m_cacheService != null)
+		{
+			m_cacheService.useFileCache = false;
+		}
 
 		foreach (GameObject mapPin in m_Pins)
 		{

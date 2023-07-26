@@ -28,10 +28,19 @@ public class SecretPoiButton : MonoBehaviour
 
     #region Methods
     #region Monobehaviour
+    private void Awake()
+    {
+        if(m_Poi == null)
+        {
+            _background.color = Settings.Instance.GetSettingAsColor(m_SecretLockedColorSettingKey);
+            Settings.Instance.SetImageFromSetting(_icon, m_SecretLockedImageSettingKey);
+        }
+    }
     #endregion
     #region Public
     public void Inflate(Poi poi)
     {
+        Debug.LogError("Coucou");
         m_Poi = poi;
         name = m_Poi.title;
         TourProgressionData tourProgressionData = PlayerManager.Instance.Player.GetTourProgression(StoreAccessor.State.SelectedTour.pid);

@@ -40,23 +40,26 @@ namespace Utils
 
 		public static Vector3 ZoomToArea(Vector2 boundsMin, Vector2 boundsMax, float paddingFactor)
 		{
-			double ry1 = Math.Log((Math.Sin(MathUtils.Deg2Rad(boundsMax.y)) + 1) /
-								   Math.Cos(MathUtils.Deg2Rad(boundsMax.y)));
+			double ry1 = Math.Log((Math.Sin(MathUtils.Deg2Rad(boundsMin.y)) + 1) /
+								   Math.Cos(MathUtils.Deg2Rad(boundsMin.y)));
 			double ry2 = Math.Log((Math.Sin(MathUtils.Deg2Rad(boundsMax.y)) + 1) /
 								   Math.Cos(MathUtils.Deg2Rad(boundsMax.y)));
+
 			double ryc = (ry1 + ry2) / 2f;
 			double centerY = MathUtils.Rad2Deg((float)Math.Atan(Math.Sinh(ryc)));
 
-			double resolutionHorizontal = (boundsMax.x - boundsMin.x) / Screen.width;
+			double resolutionHorizontal = Math.Abs(boundsMax.x - boundsMin.x) / Screen.width;
 
 			double vy0 = Math.Log(Math.Tan(Math.PI * (0.25 + centerY / 360)));
 			double vy1 = Math.Log(Math.Tan(Math.PI * (0.25 + boundsMax.y / 360)));
-			double viewHeightHalf = Screen.height / 2.0f;
+			double viewHeightHalf = Screen.height / 2f;
 			double zoomFactorPowered = viewHeightHalf / (40.7436654315252 * (vy1 - vy0));
+
 			double resolutionVertical = 360.0 / (zoomFactorPowered * 256);
 
 			double resolution = Math.Max(resolutionHorizontal, resolutionVertical) * paddingFactor;
 			double zoom = Math.Log(360 / (resolution * 256), 2);
+
 			double lon = (boundsMax.x + boundsMin.x) / 2;
 			double lat = centerY;
 

@@ -239,15 +239,18 @@ public class SelfieView : BaseView
 
 		m_WebCamTexture.Play();
 		while (!m_WebCamTexture.didUpdateThisFrame) yield return null;
+#if UNITY_IOS
+		_cameraImage.transform.localScale = new Vector3(-1, 1, 1);
+#endif
 		_cameraImage.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width * m_WebCamTexture.width / (float)m_WebCamTexture.height, Screen.width);
 	}
-	#endregion Private
+#endregion Private
 
-	#region Internals
+#region Internals
 	protected override void OnFadeEndView()
 	{
 
 	}
-	#endregion Internals
-	#endregion Methods
+#endregion Internals
+#endregion Methods
 }

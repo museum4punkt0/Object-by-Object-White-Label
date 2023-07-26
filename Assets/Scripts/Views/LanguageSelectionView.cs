@@ -80,10 +80,10 @@ public class LanguageSelectionView : BaseView
 	private void InitViewContent()
 	{
 		ResetViewContent();
-		_colorBackground.color = GlobalSettingsManager.Instance.AppColor;
-		string splashSource = Wezit.Settings.Instance.GetSettingAsAssetSourceByTransformation("template.spk.loading.splashscreen");
-		UniRx.Async.UniTask task = SpriteUtils.SaveTextureFromSource(splashSource, System.IO.Path.Combine(Application.dataPath, "Resources", "Images"), "splash");
-		m_StateOnLanguageButton = PlayerManager.Instance.Player.HasSeenHomeScreen ? KioskState.GLOBAL_MAP : KioskState.HOME;
+        _colorBackground.color = GlobalSettingsManager.Instance.AppColor;
+        m_StateOnLanguageButton = PlayerManager.Instance.Player.HasSeenHomeScreen ? KioskState.GLOBAL_MAP : KioskState.HOME;
+
+		//SplashUtils.DownloadSplashImages();
 
 		// If no language has previously been selected or if the user accesses the language selection screen through the menu, display the language selection screen
 		if ((ViewManager.Instance.PreviousKioskState != KioskState.NONE && ViewManager.Instance.PreviousKioskState != KioskState.SPLASH) || string.IsNullOrEmpty(PlayerManager.Instance.Player.Language))

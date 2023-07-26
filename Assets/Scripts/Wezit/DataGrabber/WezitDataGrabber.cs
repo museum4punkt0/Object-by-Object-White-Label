@@ -151,6 +151,7 @@ namespace Wezit
             DownloadOver?.Invoke();
         }
 
+        #region Download size
         // Download size
         public int GetDownloadSize(string transformation = "")
         {
@@ -204,7 +205,9 @@ namespace Wezit
             List<WezitAssets.Asset> tourAssets = AssetsLoader.GetAssetsForTour(tourId);
             return (GetDownloadSizeForAssets(tourAssets, transformation));
         }
+        #endregion
 
+        #region Update size
         // Update size
         public int GetUpdateSizeForAssets(List<WezitAssets.Asset> assets, string transformation = "")
         {
@@ -281,7 +284,9 @@ namespace Wezit
                 return !File.Exists(Path.Combine(ImagesFolderPath, file.path));
             }
         }
+        #endregion
 
+        #region Download
         // Download
         public async UniTask<(int currentDownloaded, int currentCounter)> DownloadAsset(WezitAssets.Asset asset, int currentDownloaded, int currentCounter, string transformation = "all")
         {
@@ -360,7 +365,9 @@ namespace Wezit
             DownloadedImagesMd5Dict.Add(new ImageAndMd5(file.path, file.md5));
             return file.size;
         }
+        #endregion
 
+        #region Delete
         // Delete
         public void DeleteImages()
         {
@@ -387,6 +394,7 @@ namespace Wezit
             DownloadedImagesMd5Dict.Clear();
             DeleteImages();
         }
+        #endregion
 
         #region Save/Load behavior
         const string CONST_FILE_NAME = "images.dat";

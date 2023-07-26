@@ -42,16 +42,16 @@ public class PopinPoints : MonoBehaviour
 
         switch (poi.type)
         {
-            case "picture":
+            case ARItemTypes.image:
                 _icon.sprite = _pictureSprite;
                 break;
-            case "audio":
+            case ARItemTypes.audio:
                 _icon.sprite = _audioSprite;
                 break;
-            case "video":
+            case ARItemTypes.video:
                 _icon.sprite = _videoSprite;
                 break;
-            case "_3D":
+            case ARItemTypes.threeD:
                 _icon.sprite = _3DSprite;
                 break;
         }
