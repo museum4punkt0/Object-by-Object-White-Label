@@ -32,6 +32,7 @@ namespace Wezit
         private int m_RevealedPixels;
         private float m_PixelsToReveal;
         private float m_CompletionRate;
+        private bool m_maskWasBad;
 
         public int m_Radius = 5;
         private Color m_Transparent = new Color(0, 0, 0, 0);
@@ -88,6 +89,10 @@ namespace Wezit
             {
                 if (Input.GetMouseButton(0))
                 {
+                    if (m_PixelsToReveal == 0)
+                    {
+                        m_PixelsToReveal = m_MaskTexture.width * m_MaskTexture.height;
+                    }
                     RectTransformUtility.ScreenPointToLocalPointInRectangle(m_RectTransform, Input.mousePosition, m_MainCamera, out Vector2 m_MousePos);
 
                     // Calculate distance from lower left corner of the rect
@@ -141,7 +146,10 @@ namespace Wezit
                     if (centerX + x < 0 || centerX + x > imageWidth || centerY + y < 0 || centerY + y > imageHeight) continue;
                     if(m_ForegroundTexture.GetPixel(centerX + x, centerY + y) != m_Transparent)
                     {
-                        if (m_MaskTexture.GetPixel(centerX + x, centerY + y) == Color.black) m_RevealedPixels++;
+                        if (m_MaskTexture.GetPixel(centerX + x, centerY + y) == Color.black || m_maskWasBad)
+                        {
+                            m_RevealedPixels++;
+                        }
                         m_ForegroundTexture.SetPixel(centerX + x, centerY + y, m_Transparent);
                     }
                 }
@@ -170,6 +178,7 @@ namespace Wezit
 
         private void ApplyMaskTexture(Texture2D texture)
         {
+            m_maskWasBad = false;
             m_MaskTexture = texture;
             if (texture == null)
             {
@@ -191,6 +200,11 @@ namespace Wezit
                         m_PixelsToReveal++;
                     }
                 }
+            }
+            if(m_PixelsToReveal == 0)
+            {
+                m_maskWasBad = true;
+                m_PixelsToReveal = m_ForegroundTexture.width * m_ForegroundTexture.height;
             }
         }
         #endregion

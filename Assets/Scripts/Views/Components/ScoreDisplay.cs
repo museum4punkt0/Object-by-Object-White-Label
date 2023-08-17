@@ -17,7 +17,10 @@ public class ScoreDisplay : Singleton<ScoreDisplay>
     #region Public
     public void Init()
     {
-        _colorBG.color = GlobalSettingsManager.Instance.AppColor;
+        if(GlobalSettingsManager.Instance != null && GlobalSettingsManager.Instance.AppColor != null)
+        { 
+            _colorBG.color = GlobalSettingsManager.Instance.AppColor;
+        }
     }
 
     public void SetScore(int score)

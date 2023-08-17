@@ -274,7 +274,6 @@ namespace Wezit
             {
                 if (imageMd5.md5 != file.md5)
                 {
-                    Debug.LogWarning(imageMd5.md5);
                     return true;
                 }
                 else return false;

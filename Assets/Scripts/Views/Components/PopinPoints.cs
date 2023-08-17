@@ -12,6 +12,7 @@ public class PopinPoints : MonoBehaviour
     [SerializeField] private TMPro.TextMeshProUGUI _title;
     [SerializeField] private TMPro.TextMeshProUGUI _poiName;
     [SerializeField] private TMPro.TextMeshProUGUI _description;
+    [SerializeField] private GameObject _panelRoot;
     [Space]
     [SerializeField] private Image _iconBG;
     [SerializeField] private Image _icon;
@@ -24,7 +25,7 @@ public class PopinPoints : MonoBehaviour
     [SerializeField] private Transform _contrastPanelRoot;
     #endregion
     #region Private
-    private string m_PointsEarnedSettingKey = "template.spk.pois.content.points.earned.description.text";
+    private string m_PointsEarnedSettingKey = "template.spk.pois.content.points.earned.title.text";
     private string m_PointsDescriptionSettingKey = "template.spk.pois.content.points.earned.description.text";
     #endregion
     #endregion
@@ -67,6 +68,11 @@ public class PopinPoints : MonoBehaviour
 
         _closeButton.onClick.RemoveAllListeners();
         _closeButton.onClick.AddListener(OnCloseButton);
+
+        if (gameObject.activeInHierarchy)
+        {
+            StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_panelRoot));
+        }
     }
     #endregion
 

@@ -98,8 +98,6 @@ public class OnlineMapView : BaseView
 		MenuManager.Instance.SetMenuStatus(MenuManager.MenuStatus.RightImage);
 		PlayerManager.Instance.ViewOnInventoryBackButton = KioskState.GLOBAL_MAP;
 
-		ScoreDisplay.Instance.Init();
-
 		StoreAccessor.State.SelectedTourBank = null;
 
 		_centerButtonBG.color = _zoomInButtonBG.color = _zoomOutButtonBG.color = GlobalSettingsManager.Instance.AppColor;

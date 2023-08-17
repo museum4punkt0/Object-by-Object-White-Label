@@ -189,7 +189,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 48
+  m_fontSize: 18
   m_fontSizeBase: 48
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -294,8 +294,12 @@ MonoBehaviour:
   _instruction: {fileID: 719160889812480253}
   _questionImage: {fileID: 3380905730904054067}
   _intermediateScreen: {fileID: 5565505265750922009}
+  _UIRoot: {fileID: 6788447490579282916}
   _contrastButton: {fileID: 8353211835765202473}
   _contrastPanelRoot: {fileID: 1768814540976275192}
+  QuizOver:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1768814541338378050
 GameObject:
   m_ObjectHideFlags: 0
@@ -1070,7 +1074,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_AspectMode: 3
-  m_AspectRatio: 0.91515154
+  m_AspectRatio: 1
 --- !u!114 &4170896044483481415
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1473,7 +1477,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 42
+  m_fontSize: 18
   m_fontSizeBase: 48
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1522,6 +1526,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1768814542090799822}
     m_Modifications:
+    - target: {fileID: 594721956665166713, guid: 62b5882ab0bc6d849b2136591e400c48,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 3727973897581412188, guid: 62b5882ab0bc6d849b2136591e400c48,
         type: 3}
       propertyPath: m_Pivot.x
@@ -1642,6 +1651,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1768814542090799822}
     m_Modifications:
+    - target: {fileID: 594721956665166713, guid: 62b5882ab0bc6d849b2136591e400c48,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 3727973897581412188, guid: 62b5882ab0bc6d849b2136591e400c48,
         type: 3}
       propertyPath: m_Pivot.x
@@ -1839,6 +1853,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1768814542090799822}
     m_Modifications:
+    - target: {fileID: 594721956665166713, guid: 62b5882ab0bc6d849b2136591e400c48,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 3727973897581412188, guid: 62b5882ab0bc6d849b2136591e400c48,
         type: 3}
       propertyPath: m_Pivot.x
@@ -1959,6 +1978,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1768814542090799822}
     m_Modifications:
+    - target: {fileID: 594721956665166713, guid: 62b5882ab0bc6d849b2136591e400c48,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 3727973897581412188, guid: 62b5882ab0bc6d849b2136591e400c48,
         type: 3}
       propertyPath: m_Pivot.x

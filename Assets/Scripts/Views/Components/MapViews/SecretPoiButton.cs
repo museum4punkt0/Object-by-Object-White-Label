@@ -40,7 +40,6 @@ public class SecretPoiButton : MonoBehaviour
     #region Public
     public void Inflate(Poi poi)
     {
-        Debug.LogError("Coucou");
         m_Poi = poi;
         name = m_Poi.title;
         TourProgressionData tourProgressionData = PlayerManager.Instance.Player.GetTourProgression(StoreAccessor.State.SelectedTour.pid);

@@ -19,6 +19,7 @@ namespace Wezit
         [SerializeField] private RawImage _questionImage;
         [SerializeField] private QuizIntermediateScreen _intermediateScreen;
         [Space]
+        [SerializeField] private GameObject _UIRoot;
         [SerializeField] private ContrastButton _contrastButton;
         [SerializeField] private Transform _contrastPanelRoot;
         #endregion
@@ -81,6 +82,7 @@ namespace Wezit
                 float winRate = m_CurrentWins / (float)m_Questions.Count;
                 ActivityOver?.Invoke();
                 QuizOver?.Invoke(winRate >= m_WinThreshold);
+                _UIRoot.SetActive(false);
             }
             else
             {

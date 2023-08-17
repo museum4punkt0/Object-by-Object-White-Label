@@ -145,7 +145,11 @@ public class QuizView : BaseView
 	private void OnActivityOver(bool hasWon)
 	{
 		m_PoiProgressionData.QuizCompleted = true;
-		m_TourProgressionData.TourScore += GlobalSettingsManager.Instance.PointsEarnedSecret;
+
+		if(hasWon)
+        {
+			m_TourProgressionData.TourScore += GlobalSettingsManager.Instance.PointsEarnedSecret;
+        }
 
 		_pointsTitle.text = hasWon ? Wezit.Settings.Instance.GetSettingAsCleanedText(m_SuccessTitleSettingKey) : Wezit.Settings.Instance.GetSettingAsCleanedText(m_FailureTitleSettingKey);
 		_pointsDescription.text = hasWon ? Wezit.Settings.Instance.GetSettingAsCleanedText(m_SuccessDescriptionSettingKey) : Wezit.Settings.Instance.GetSettingAsCleanedText(m_FailureDescriptionSettingKey);

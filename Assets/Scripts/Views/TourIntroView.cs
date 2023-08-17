@@ -115,7 +115,7 @@ public class TourIntroView : BaseView
 		m_Language = language;
 		MenuManager.Instance.SetMenuStatus(MenuManager.MenuStatus.BackButton);
 		MenuManager.Instance.SetBackButtonState(KioskState.GLOBAL_MAP);
-		MenuManager.Instance.SetTitle(StringUtils.CleanFromWezit(m_TourData.title));
+		MenuManager.Instance.SetTitle(m_TourData.CleanedTitle);
 
         foreach (Wezit.Poi child in m_TourData.childs)
         {
@@ -132,6 +132,11 @@ public class TourIntroView : BaseView
 		TourProgressionData tourProgressionData = PlayerManager.Instance.Player.GetTourProgression(m_TourData.pid);
 		if(tourProgressionData.IsModeSet)
         {
+			if(tourProgressionData.IsChallengeMode)
+            {
+				ScoreDisplay.Instance.Init();
+			}
+
 			_startButtonText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_startButtonTextSettingKey, language);
 		}
 		else

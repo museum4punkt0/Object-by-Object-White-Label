@@ -16,6 +16,7 @@ public class ARView : BaseView
 	[SerializeField] private ARManager _arManager = null;
 	[SerializeField] private ARSession _aRSession = null;
 	[SerializeField] private GameObject _qRCodeScannerRoot = null;
+	[SerializeField] private Image _panIcon = null;
 	[SerializeField] private ARItemRoot _arRootPrefab = null;
 	[SerializeField] private Transform _itemsRoot;
 	[SerializeField] private Camera _arCamera;
@@ -92,6 +93,8 @@ public class ARView : BaseView
 		MenuManager.Instance.SetMenuStatus(status);
 		MenuManager.Instance.SetBackButtonState(KioskState.TOUR_MAP);
 
+		_panIcon.color = GlobalSettingsManager.Instance.AppColor;
+
 		_quizManager.Inflate(isChallenge && !tourProgressionData.GetPoiProgression(m_PoiData.pid).QuizCompleted);
 
 		// Keep AR session going while the user did not go back to the map
@@ -127,6 +130,7 @@ public class ARView : BaseView
             Destroy(child.gameObject);
         }
         _qRCodeScannerRoot.SetActive(true);
+		_panIcon.gameObject.SetActive(false);
 		_aRSession.enabled = false;
 	}
 
@@ -146,6 +150,7 @@ public class ARView : BaseView
 	private void OnImageFound()
     {
 		_qRCodeScannerRoot.SetActive(false);
+		_panIcon.gameObject.SetActive(true);
 		PlayerManager.Instance.Player.SetPoiProgression(StoreAccessor.State.SelectedTour.pid, m_PoiData.pid);
     }
 

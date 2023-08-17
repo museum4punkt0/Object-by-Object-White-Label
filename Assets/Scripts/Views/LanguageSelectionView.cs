@@ -83,8 +83,6 @@ public class LanguageSelectionView : BaseView
         _colorBackground.color = GlobalSettingsManager.Instance.AppColor;
         m_StateOnLanguageButton = PlayerManager.Instance.Player.HasSeenHomeScreen ? KioskState.GLOBAL_MAP : KioskState.HOME;
 
-		//SplashUtils.DownloadSplashImages();
-
 		// If no language has previously been selected or if the user accesses the language selection screen through the menu, display the language selection screen
 		if ((ViewManager.Instance.PreviousKioskState != KioskState.NONE && ViewManager.Instance.PreviousKioskState != KioskState.SPLASH) || string.IsNullOrEmpty(PlayerManager.Instance.Player.Language))
         {

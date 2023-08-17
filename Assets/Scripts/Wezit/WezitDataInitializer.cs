@@ -34,6 +34,7 @@ namespace Wezit
                 {
 					await DataGrabber.Instance.GetSettingsAssets(downloadTransformation);
                 }
+				SplashUtils.DownloadSplashImages();
 			}
 #endif
 		}
