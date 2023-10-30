@@ -12,6 +12,7 @@ public class ARManager : MonoBehaviour
     #region SerializeFields
     [SerializeField] private ARTrackedImageManager _aRTrackedImageManager = null;
     [SerializeField] private ARItemRoot _arRootPrefab = null;
+    [SerializeField] private Transform _arRootRoot;
     [SerializeField] private Camera _arCamera = null;
     [SerializeField] private Light _light = null;
     #endregion
@@ -90,6 +91,14 @@ public class ARManager : MonoBehaviour
         _light.enabled = false;
 
     }
+
+    public void ToggleItemsRoot(bool isOn)
+    {
+        if(m_ItemRootInstance != null)
+        {
+            m_ItemRootInstance.Toggle(isOn);
+        }
+    }
     #endregion
     #region Private
     private void OnTrackedImageChanged(ARTrackedImagesChangedEventArgs trackedImageArgs)
@@ -97,8 +106,8 @@ public class ARManager : MonoBehaviour
         foreach (ARTrackedImage trackedImage in trackedImageArgs.added)
         {
             ImageFound?.Invoke();
-            m_ItemRootInstance = Instantiate(_arRootPrefab, trackedImage.transform);
-            m_ItemRootInstance.transform.localEulerAngles = new Vector3(m_QRCodeAngle, 0, 0);
+            m_ItemRootInstance = Instantiate(_arRootPrefab, _arRootRoot);
+            m_ItemRootInstance.transform.position = trackedImage.transform.position;
             m_ItemRootInstance.Inflate(m_PoiData, _arCamera);
             m_ItemRootInstance.ARItemClicked.AddListener(OnARItemClicked);
         }

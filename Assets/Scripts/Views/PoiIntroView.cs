@@ -91,7 +91,7 @@ public class PoiIntroView : BaseView
 	#endregion Public
 
 	#region Private
-	private void InitViewContentByLang(Language language)
+	private async void InitViewContentByLang(Language language)
 	{
 		ResetViewContent();
 
@@ -112,7 +112,7 @@ public class PoiIntroView : BaseView
         _description.text = m_PoiData.CleanedDescription;
 		StartCoroutine(LayoutGroupRebuilder.Rebuild(_textContainer));
 		string[] paragraphs = { _description.text };
-		_explanationWindow.Inflate(_title.text, paragraphs, _contrastPanelRoot);
+		_explanationWindow.Inflate(_title.text, paragraphs, _contrastPanelRoot, await AudioUtils.GetAudioSource(m_PoiData));
 
 		_goButton.gameObject.SetActive(m_PoiData != PlayerManager.Instance.LastPOIInRange && PlayerManager.Instance.IsGPSOn);
 		_scanButton.gameObject.SetActive(true);

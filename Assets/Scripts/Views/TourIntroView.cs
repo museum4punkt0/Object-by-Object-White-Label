@@ -107,7 +107,7 @@ public class TourIntroView : BaseView
 	#endregion Public
 
 	#region Private
-	private void InitViewContentByLang(Language language)
+	private async void InitViewContentByLang(Language language)
 	{
 		ResetViewContent();
 
@@ -151,7 +151,7 @@ public class TourIntroView : BaseView
 		_title.text = m_TourData.CleanedTitle;
         _description.text = m_TourData.CleanedDescription;
         string[] paragraphs = { _description.text };
-		_explanationWindow.Inflate(_title.text, paragraphs, _contrastPanelRoot);
+		_explanationWindow.Inflate(_title.text, paragraphs, _contrastPanelRoot, await AudioUtils.GetAudioSource(m_TourData));
 
 		// Check download necessity
 		if (PlayerManager.Instance.Player.GetTourProgression(m_TourData.pid).HasBeenDownloaded)

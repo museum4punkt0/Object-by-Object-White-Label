@@ -35,6 +35,7 @@ public class QuizView : BaseView
 	private string m_ContinueButtonTextSettingKey = "template.spk.pois.quiz.continue.button.text";
 	private string m_SuccessTitleSettingKey = "template.spk.pois.quiz.success.title";
 	private string m_SuccessDescriptionSettingKey = "template.spk.pois.quiz.success.description";
+	private string m_SuccessDescriptionPluralSettingKey = "template.spk.pois.quiz.success.description.plural";
 	private string m_FailureTitleSettingKey = "template.spk.pois.quiz.failure.title";
 	private string m_FailureDescriptionSettingKey = "template.spk.pois.quiz.failure.description";
 	private string m_PointsEarnedSettingKey = "template.spk.pois.content.points.earned.description.text";
@@ -142,17 +143,20 @@ public class QuizView : BaseView
         }
     }
 
-	private void OnActivityOver(bool hasWon)
+	private void OnActivityOver(int numberOfCorrect, int numberOfQuestions)
 	{
 		m_PoiProgressionData.QuizCompleted = true;
 
-		if(hasWon)
+		bool hasWon = false;
+
+		if(numberOfCorrect > 0)
         {
-			m_TourProgressionData.TourScore += GlobalSettingsManager.Instance.PointsEarnedSecret;
+			hasWon = true;
+			m_TourProgressionData.TourScore += GlobalSettingsManager.Instance.PointsEarnedSecret * numberOfCorrect;
         }
 
 		_pointsTitle.text = hasWon ? Wezit.Settings.Instance.GetSettingAsCleanedText(m_SuccessTitleSettingKey) : Wezit.Settings.Instance.GetSettingAsCleanedText(m_FailureTitleSettingKey);
-		_pointsDescription.text = hasWon ? Wezit.Settings.Instance.GetSettingAsCleanedText(m_SuccessDescriptionSettingKey) : Wezit.Settings.Instance.GetSettingAsCleanedText(m_FailureDescriptionSettingKey);
+		_pointsDescription.text = string.Format(Wezit.Settings.Instance.GetSettingAsCleanedText(hasWon ? (numberOfCorrect > 1 ? m_SuccessDescriptionPluralSettingKey : m_SuccessDescriptionSettingKey) : m_FailureDescriptionSettingKey), numberOfCorrect);
 
 		string[] paragraphs = { _pointsDescription.text };
 		_pointsPanelContrastButton.Inflate(_pointsTitle.text, paragraphs, _pointsPanelContrastPanelRoot);

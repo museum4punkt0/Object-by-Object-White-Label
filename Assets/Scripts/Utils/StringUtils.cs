@@ -20,8 +20,8 @@ public class StringUtils
 	public static string RemoveWezitLinefeed(string input)
 	{
 		string result = input;
-		result = result.Replace("<br />", "");
-		result = result.Replace("<BR />", "");
+		result = result.Replace("<br />", "\n");
+		result = result.Replace("<BR />", "\n");
 		return result;
 	}
 

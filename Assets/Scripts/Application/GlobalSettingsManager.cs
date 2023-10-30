@@ -30,6 +30,12 @@ public class GlobalSettingsManager : Singleton<GlobalSettingsManager>
     private Sprite m_ContentImageSprite;
     private string m_ContentVideoSpriteSettingKey = "template.spk.pois.AR.content.video.image";
     private Sprite m_ContentVideoSprite;
+    private string m_ContentAudioCompletedSpriteSettingKey = "template.spk.pois.AR.content.audio.completed.image";
+    private Sprite m_ContentAudioCompletedSprite;
+    private string m_ContentImageCompletedSpriteSettingKey = "template.spk.pois.AR.content.image.completed.image";
+    private Sprite m_ContentImageCompletedSprite;
+    private string m_ContentVideoCompletedSpriteSettingKey = "template.spk.pois.AR.content.video.completed.image";
+    private Sprite m_ContentVideoCompletedSprite;
     private string m_PointsEarnedContentSettingKey = "template.spk.pois.content.points.earned.content";
     private int m_PointsEarnedContent;
     private string m_PointsEarnedSecretSettingKey = "template.spk.pois.content.points.earned.secret";
@@ -79,14 +85,29 @@ public class GlobalSettingsManager : Singleton<GlobalSettingsManager>
         get => m_ContentAudioSprite;
     }
 
+    public Sprite ContentAudioCompletedSprite
+    {
+        get => m_ContentAudioCompletedSprite;
+    }
+
     public Sprite ContentVideoSprite
     {
         get => m_ContentVideoSprite;
     }
 
+    public Sprite ContentVideoCompletedSprite
+    {
+        get => m_ContentVideoCompletedSprite;
+    }
+
     public Sprite ContentImageSprite
     {
         get => m_ContentImageSprite;
+    }
+
+    public Sprite ContentImageCompletedSprite
+    {
+        get => m_ContentImageCompletedSprite;
     }
 
     public int PointsEarnedContent
@@ -157,6 +178,24 @@ public class GlobalSettingsManager : Singleton<GlobalSettingsManager>
             StartCoroutine(SpriteUtils.GetSpriteFromSource(contentVideoSpriteSource, OnContentVideoSpriteDownloaded, ""));
         }
 
+        string contentAudioCompletedSpriteSource = Settings.Instance.GetSettingAsAssetSourceByTransformation(m_ContentAudioCompletedSpriteSettingKey);
+        if (!string.IsNullOrEmpty(contentAudioCompletedSpriteSource))
+        {
+            StartCoroutine(SpriteUtils.GetSpriteFromSource(contentAudioCompletedSpriteSource, OnContentAudioCompletedSpriteDownloaded, ""));
+        }
+
+        string contentImageCompletedSpriteSource = Settings.Instance.GetSettingAsAssetSourceByTransformation(m_ContentImageCompletedSpriteSettingKey);
+        if (!string.IsNullOrEmpty(contentImageCompletedSpriteSource))
+        {
+            StartCoroutine(SpriteUtils.GetSpriteFromSource(contentImageCompletedSpriteSource, OnContentImageCompletedSpriteDownloaded, ""));
+        }
+
+        string contentVideoCompletedSpriteSource = Settings.Instance.GetSettingAsAssetSourceByTransformation(m_ContentVideoCompletedSpriteSettingKey);
+        if (!string.IsNullOrEmpty(contentVideoCompletedSpriteSource))
+        {
+            StartCoroutine(SpriteUtils.GetSpriteFromSource(contentVideoCompletedSpriteSource, OnContentVideoCompletedSpriteDownloaded, ""));
+        }
+
         m_PointsEarnedContent = (int)Settings.Instance.GetSettingAsFloat(m_PointsEarnedContentSettingKey);
         m_PointsEarnedSecret = (int)Settings.Instance.GetSettingAsFloat(m_PointsEarnedSecretSettingKey);
     }
@@ -202,6 +241,21 @@ public class GlobalSettingsManager : Singleton<GlobalSettingsManager>
     private void OnContentVideoSpriteDownloaded(Sprite sprite)
     {
         m_ContentVideoSprite = sprite;
+    }
+
+    private void OnContentAudioCompletedSpriteDownloaded(Sprite sprite)
+    {
+        m_ContentAudioCompletedSprite = sprite;
+    }
+
+    private void OnContentImageCompletedSpriteDownloaded(Sprite sprite)
+    {
+        m_ContentImageCompletedSprite = sprite;
+    }
+
+    private void OnContentVideoCompletedSpriteDownloaded(Sprite sprite)
+    {
+        m_ContentVideoCompletedSprite = sprite;
     }
     #endregion
     #endregion

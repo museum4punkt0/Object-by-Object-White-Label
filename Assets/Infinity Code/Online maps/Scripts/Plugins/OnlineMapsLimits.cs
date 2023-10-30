@@ -80,7 +80,7 @@ public class OnlineMapsLimits : MonoBehaviour, IOnlineMapsSavableComponent
         json.DeserializeObject(this);
     }
 
-    public void ApplySetings()
+    public void ApplySettings()
     {
         if (useZoomRange) map.zoomRange = new OnlineMapsRange(minZoom, maxZoom);
         if (usePositionRange) map.positionRange = new OnlineMapsPositionRange(minLatitude, minLongitude, maxLatitude, maxLongitude, positionRangeType);

@@ -91,7 +91,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainIcon: {fileID: 2259881447476494423}
   timeStep: 0.01
-  oneStepAngle: 10
+  oneStepAngle: -10
 --- !u!1 &1385668725368038681
 GameObject:
   m_ObjectHideFlags: 0

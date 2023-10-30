@@ -49,4 +49,9 @@ public class AudioUtils : MonoBehaviour
 		}
 		else return (DownloadHandlerAudioClip.GetContent(www));
 	}
+
+	public static async UniTask<bool> NodeHasAudioClip(Wezit.Node wezitData)
+    {
+		return !string.IsNullOrEmpty(await GetAudioSource(wezitData));
+    }
 }

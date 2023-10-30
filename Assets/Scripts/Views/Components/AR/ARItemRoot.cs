@@ -28,7 +28,8 @@ public class ARItemRoot : MonoBehaviour
     public void Inflate(Poi poi, Camera aRCamera)
     {
         m_PoiData = poi;
-        foreach(Poi child in m_PoiData.childs)
+
+        foreach (Poi child in m_PoiData.childs)
         {
             if(child.type == ARItemTypes.threeD)
             {
@@ -43,6 +44,11 @@ public class ARItemRoot : MonoBehaviour
                 instance.ARItemClicked.AddListener(OnARItemClicked);
             }
         }
+    }
+
+    public void Toggle(bool isOn)
+    {
+        _itemsRoot.gameObject.SetActive(isOn);
     }
     #endregion
     #region Private

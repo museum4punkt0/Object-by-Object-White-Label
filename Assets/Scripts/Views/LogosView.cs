@@ -4,21 +4,23 @@ using TMPro;
 using Utils;
 using SimpleJSON;
 
-public class CreditsView : BaseView
+public class LogosView : BaseView
 {
 	#region Fields
 	#region Serialize Fields
 	[SerializeField] private Image _colorBG;
-	[SerializeField] private TextMeshProUGUI _titleText;
-	[SerializeField] private TextMeshProUGUI _descriptionText;
+	[SerializeField] private CreditLogo _creditLogoPrefab;
+	[SerializeField] private Transform _creditLogoRoot;
 	#endregion Serialize Fields
 
 	#region Public Variables
 	#endregion Public Variables
 
 	#region Private m_Variables
-	private string m_titleSettingKey = "template.spk.credits.title.text";
-	private string m_creditsSettingKey = "template.spk.credits.credits.text";
+	private string m_logosArraySettingKey = "template.spk.credits.logos.array";
+
+	private int m_numberOfLogos;
+	private int m_resizedLogos;
 	#endregion Private m_Variables
 	#endregion Fields
 
@@ -29,7 +31,7 @@ public class CreditsView : BaseView
 	#region Public
 	public override KioskState GetKioskState()
 	{
-		return KioskState.CREDITS;
+		return KioskState.RGPD;
 	}
 
 	public override void InitView()
@@ -79,8 +81,13 @@ public class CreditsView : BaseView
 
 	private void ResetViewContent()
 	{
-		if (_titleText) _titleText.text = "";
-		if (_descriptionText) _descriptionText.text = "";
+        foreach (Transform child in _creditLogoRoot)
+        {
+            Destroy(child.gameObject);
+        }
+
+        m_numberOfLogos = 0;
+		m_resizedLogos = 0;
 	}
 
 	private void InitViewContentByLang(Language language)
@@ -90,9 +97,36 @@ public class CreditsView : BaseView
 		MenuManager.Instance.SetBackButtonState(ViewManager.Instance.PreviousKioskState);
 		MenuManager.Instance.SetMenuStatus(MenuManager.MenuStatus.BackButtonLogo);
 
-		if (_titleText) _titleText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_titleSettingKey, language);
-        _descriptionText.text = Wezit.Settings.Instance.GetSettingAsTaggedText(m_creditsSettingKey, language);
+		JSONNode logoArray = Wezit.Settings.Instance.GetSettingArray(m_logosArraySettingKey, language);
+        foreach (JSONNode logo in logoArray)
+        {
+			m_numberOfLogos++;
+
+			string assetId = logo["image"].ToString()?.Replace("wzasset://", "");
+			Wezit.WezitAssets.Asset asset = Wezit.AssetsLoader.GetAssetById(assetId.Replace("\"", ""));
+            string source = "";
+			if (asset != null)
+			{
+				source = asset.GetAssetSourceByTransformation("default");
+			}
+
+			CreditLogo instance = Instantiate(_creditLogoPrefab, _creditLogoRoot);
+			instance.Inflate(
+				source, 
+				logo["url"],
+				this);
+			instance.LogoResized.AddListener(OnLogoResized);
+        }
 	}
+
+	private void OnLogoResized()
+    {
+		m_resizedLogos++;
+        if (m_resizedLogos == m_numberOfLogos)
+        {
+			StartCoroutine(LayoutGroupRebuilder.Rebuild(_creditLogoRoot.gameObject));
+        }
+    }
 	#endregion Private
 	#region Internals
 	#endregion Internals

@@ -38,6 +38,7 @@ public class HomeView : BaseView
 	private string _introImageSettingKey = "template.spk.home.intro.image";
 	private string _introPart2SettingKey = "template.spk.home.intro.part2.text";
 	private string _continueButtonTextSettingKey = "template.spk.home.intro.continue.button.text";
+	private string m_introAudioDescSettingKey = "template.spk.home.intro.audiodescription.audio";
     #endregion Private m_Variables
     #endregion Fields
 
@@ -121,7 +122,7 @@ public class HomeView : BaseView
         _introPart1.text = Wezit.Settings.Instance.GetSettingAsCleanedText(_introPart1SettingKey, language);
         _introPart2.text = Wezit.Settings.Instance.GetSettingAsCleanedText(_introPart2SettingKey, language);
         string[] paragraphs = { _introPart1.text, _introPart2.text };
-		_explanationWindow.Inflate(_introTitle.text, paragraphs, _contrastPanelRoot);
+		_explanationWindow.Inflate(_introTitle.text, paragraphs, _contrastPanelRoot, Wezit.Settings.Instance.GetSettingAsAssetSourceByTransformation(m_introAudioDescSettingKey, language));
 	}
 
 	private void ResetViewContent()

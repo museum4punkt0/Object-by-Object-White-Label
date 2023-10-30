@@ -91,6 +91,11 @@ namespace Wezit
 			return StringUtils.CleanFromWezit(GetSetting(key, language));
         }
 
+		public string GetSettingAsTaggedText(string key, Language language = Language.none)
+        {
+			return StringUtils.AddCustomTagsFromWezit(GetSettingAsCleanedText(key, language));
+        }
+
 		public WezitAssets.Asset GetSettingAsAsset(string key, Language language = Language.none)
 		{
 			language = language == Language.none ? StoreAccessor.State.Language : language;
@@ -113,6 +118,12 @@ namespace Wezit
 		public void SetImageFromSetting(RawImage rawImage, string key, Language language = Language.none, string transformation = "default", bool envelopeParent = true)
         {
 			StartCoroutine(Utils.ImageUtils.SetImage(rawImage, GetSettingAsAssetSourceByTransformation(key, language, transformation), "", envelopeParent));
+        }
+
+		public async void SetAudioClipFromSetting(AudioSource audioSource, string key, Language language = Language.none, string transformation = "default", bool loop = false)
+        {
+			audioSource.clip = await AudioUtils.GetAudioClipFromSource(GetSettingAsAssetSourceByTransformation(key, language, transformation));
+			audioSource.loop = loop;
         }
 
 		/*************************************************************/

@@ -72,6 +72,7 @@ namespace Wezit
 			rights = otherPoi.rights;
 			spatial = otherPoi.spatial;
 			location = otherPoi.location;
+			extent = otherPoi.extent;
 		}
 	}
 

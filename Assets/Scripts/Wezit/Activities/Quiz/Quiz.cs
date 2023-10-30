@@ -34,7 +34,7 @@ namespace Wezit
         #endregion
 
         #region Properties
-        public UnityEvent<bool> QuizOver = new UnityEvent<bool>();
+        public UnityEvent<int, int> QuizOver = new UnityEvent<int, int>();
         #endregion
 
         #region Methods
@@ -81,7 +81,7 @@ namespace Wezit
             {
                 float winRate = m_CurrentWins / (float)m_Questions.Count;
                 ActivityOver?.Invoke();
-                QuizOver?.Invoke(winRate >= m_WinThreshold);
+                QuizOver?.Invoke(m_CurrentWins, m_Questions.Count);
                 _UIRoot.SetActive(false);
             }
             else

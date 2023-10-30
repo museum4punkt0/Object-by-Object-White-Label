@@ -143,14 +143,15 @@ public class ContentView : BaseView
 		_title.text = m_PoiData.CleanedTitle;
 		_description.text = m_PoiData.CleanedDescription;
         string[] paragraphs = { _description.text };
-		_explanationWindow.Inflate(_title.text, paragraphs, _contrastPanelRoot);
+		_explanationWindow.Inflate(_title.text, paragraphs, _contrastPanelRoot, await AudioUtils.GetAudioSource(m_PoiData));
 		await StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_textContainer));
 		await StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_textContainer));
 
 		int progress = m_PoiProgressionData.GetPoiCurrentProgression();
-		string remainingText = progress > 1 ? Wezit.Settings.Instance.GetSettingAsCleanedText(m_RemainingItemsPluralTextSettingKey) :
-			Wezit.Settings.Instance.GetSettingAsCleanedText(m_RemainingItemsSingularTextSettingKey);
-		_remainingItems.text = string.Format(remainingText, m_PoiProgressionData.GetPoiMaxProgression() - progress);
+		int numberofPois = m_PoiProgressionData.GetPoiMaxProgression();
+		string remainingText =  (numberofPois - progress) > 1 ? Wezit.Settings.Instance.GetSettingAsCleanedText(m_RemainingItemsPluralTextSettingKey) :
+																Wezit.Settings.Instance.GetSettingAsCleanedText(m_RemainingItemsSingularTextSettingKey);
+		_remainingItems.text = string.Format(remainingText, numberofPois - progress);
 	}
 
 	private void ResetViewContent()
@@ -213,9 +214,10 @@ public class ContentView : BaseView
 			PlayerManager.Instance.Player.Save();
 
 			int progress = m_PoiProgressionData.GetPoiCurrentProgression();
-			string remainingText = progress > 1 ? Wezit.Settings.Instance.GetSettingAsCleanedText(m_RemainingItemsPluralTextSettingKey) :
+			int numberofPois = m_PoiProgressionData.GetPoiMaxProgression();
+			string remainingText = (numberofPois - progress) > 1 ? Wezit.Settings.Instance.GetSettingAsCleanedText(m_RemainingItemsPluralTextSettingKey) :
 				Wezit.Settings.Instance.GetSettingAsCleanedText(m_RemainingItemsSingularTextSettingKey);
-			_remainingItems.text = string.Format(remainingText, m_PoiProgressionData.GetPoiMaxProgression() - progress);
+			_remainingItems.text = string.Format(remainingText, numberofPois - progress);
 		}
 	}
 	#endregion Private

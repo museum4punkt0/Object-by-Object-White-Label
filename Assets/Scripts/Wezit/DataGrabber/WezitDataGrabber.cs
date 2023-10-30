@@ -18,7 +18,7 @@ namespace Wezit
     {
         #region Saved data
         [Serializable]
-        public class ImageAndMd5
+        public class AssetAndMd5
         {
             [FormerlySerializedAs("path")]
             [SerializeField]
@@ -28,7 +28,7 @@ namespace Wezit
             [SerializeField]
             public string md5;
 
-            public ImageAndMd5(string a_path, string a_md5)
+            public AssetAndMd5(string a_path, string a_md5)
             {
                 this.path = a_path;
                 this.md5 = a_md5;
@@ -37,7 +37,7 @@ namespace Wezit
 
         [FormerlySerializedAs("DownloadedImagesMD5Dict")]
         [SerializeField]
-        public List<ImageAndMd5> DownloadedImagesMd5Dict = new List<ImageAndMd5>();
+        public List<AssetAndMd5> DownloadedAssetsMd5Dict = new List<AssetAndMd5>();
 
         [FormerlySerializedAs("HasDownloaded")]
         [SerializeField]
@@ -55,7 +55,7 @@ namespace Wezit
         private UnityWebRequest m_WebRequest;
 
         public static string ImagesFolderPath { get { return Path.Combine(UnityEngine.Application.persistentDataPath, "wezit"); } }
-        public List<WezitAssets.Asset> Assets {  get { return m_Assets; } }
+        public List<WezitAssets.Asset> Assets { get { return m_Assets; } }
         public string AppDefaultTransformation;
         #endregion
 
@@ -65,10 +65,10 @@ namespace Wezit
         #endregion
 
         #region Methods
-        public List<ImageAndMd5> GetImagesAndMd5Dict()
+        public List<AssetAndMd5> GetImagesAndMd5Dict()
         {
             Load();
-            return DownloadedImagesMd5Dict;
+            return DownloadedAssetsMd5Dict;
         }
 
         public async UniTask GetAllAssets(string transformation = "")
@@ -82,7 +82,7 @@ namespace Wezit
 
             if (m_Assets.Count == 0)
             {
-                if(AssetsLoader.Assets.Count == 0)
+                if (AssetsLoader.Assets.Count == 0)
                 {
                     await AssetsLoader.Init(true);
                 }
@@ -151,17 +151,16 @@ namespace Wezit
             DownloadOver?.Invoke();
         }
 
-        #region Download size
         // Download size
         public int GetDownloadSize(string transformation = "")
         {
             int downloadSize = 0;
-            if(string.IsNullOrEmpty(transformation))
+            if (string.IsNullOrEmpty(transformation))
             {
                 transformation = AppDefaultTransformation;
             }
 
-            foreach(WezitAssets.Asset asset in m_Assets)
+            foreach (WezitAssets.Asset asset in m_Assets)
             {
                 foreach (WezitAssets.File file in asset.files)
                 {
@@ -184,9 +183,23 @@ namespace Wezit
 
             foreach (WezitAssets.Asset asset in assets)
             {
+                string assetTransformation = asset.usages.Contains("maps") ? "tiles-zip" : transformation;
+                bool hasTransformation = false;
+
                 foreach (WezitAssets.File file in asset.files)
                 {
                     if (file.label == transformation || transformation == "all")
+                    {
+                        downloadSize += file.size;
+                        hasTransformation = true;
+                    }
+                }
+
+                if (!hasTransformation)
+                {
+                    WezitAssets.File file = asset.files.Find(x => x.label == "original");
+
+                    if (file != null)
                     {
                         downloadSize += file.size;
                     }
@@ -205,9 +218,7 @@ namespace Wezit
             List<WezitAssets.Asset> tourAssets = AssetsLoader.GetAssetsForTour(tourId);
             return (GetDownloadSizeForAssets(tourAssets, transformation));
         }
-        #endregion
 
-        #region Update size
         // Update size
         public int GetUpdateSizeForAssets(List<WezitAssets.Asset> assets, string transformation = "")
         {
@@ -222,32 +233,54 @@ namespace Wezit
             {
                 string assetTransformation = asset.usages.Contains("maps") ? "tiles-zip" : transformation;
 
+                bool hasTransformation = false;
                 foreach (WezitAssets.File file in asset.files)
                 {
-                    if (file.label != assetTransformation && assetTransformation != "all")
+                    if (file.label == assetTransformation || assetTransformation == "all")
                     {
-                        continue;
-                    }
-
-                    ImageAndMd5 imageMd5 = DownloadedImagesMd5Dict.Find(x => x.path == file.path);
-                    if (imageMd5 != null)
-                    {
-                        if (imageMd5.md5 != file.md5)
+                        hasTransformation = true;
+                        AssetAndMd5 assetMd5 = DownloadedAssetsMd5Dict.Find(x => x.path == file.path);
+                        if (assetMd5 != null)
                         {
-                            Debug.Log("There is a file to update \nAsset name: " + asset.title + "\nFile uri: " + file.uri);
+                            if (assetMd5.md5 != file.md5)
+                            {
+                                Debug.Log("There is a file to update \nAsset name: " + asset.title + "\nFile uri: " + file.uri);
+                                filesToUpdate.Add(file);
+                            }
+                        }
+                        else
+                        {
+                            Debug.Log("There is a new file \n" + asset.title);
                             filesToUpdate.Add(file);
                         }
                     }
-                    else
+                }
+
+                if (!hasTransformation)
+                {
+                    WezitAssets.File file = asset.files.Find(x => x.label == "original");
+
+                    if (file != null)
                     {
-                        filesToUpdate.Add(file);
-                        Debug.Log("There is a new file \n" + asset.title);
+                        AssetAndMd5 assetMd5 = DownloadedAssetsMd5Dict.Find(x => x.path == file.path);
+                        if (assetMd5 != null)
+                        {
+                            if (assetMd5.md5 != file.md5)
+                            {
+                                Debug.Log("There is a file to update \nAsset name: " + asset.title + "\nFile uri: " + file.uri);
+                                filesToUpdate.Add(file);
+                            }
+                        }
+                        else
+                        {
+                            Debug.Log("There is a new file \n" + asset.title);
+                            filesToUpdate.Add(file);
+                        }
                     }
                 }
             }
-            int downloadSize = 0;
-            int counter = filesToUpdate.Count;
-            downloadSize = filesToUpdate.Sum(x => x.size);
+
+            int downloadSize = filesToUpdate.Sum(x => x.size);
             return downloadSize;
         }
 
@@ -269,11 +302,12 @@ namespace Wezit
 
         public bool CheckDownloadNecessity(WezitAssets.File file)
         {
-            ImageAndMd5 imageMd5 = DownloadedImagesMd5Dict.Find(x => x.path == file.path);
+            AssetAndMd5 imageMd5 = DownloadedAssetsMd5Dict.Find(x => x.path == file.path);
             if (imageMd5 != null)
             {
                 if (imageMd5.md5 != file.md5)
                 {
+                    Debug.LogError(file.uri);
                     return true;
                 }
                 else return false;
@@ -283,9 +317,7 @@ namespace Wezit
                 return !File.Exists(Path.Combine(ImagesFolderPath, file.path));
             }
         }
-        #endregion
 
-        #region Download
         // Download
         public async UniTask<(int currentDownloaded, int currentCounter)> DownloadAsset(WezitAssets.Asset asset, int currentDownloaded, int currentCounter, string transformation = "all")
         {
@@ -302,7 +334,7 @@ namespace Wezit
                     int downloaded = file.size;
                     if (CheckDownloadNecessity(file))
                     {
-                        if(transformation == "tiles-zip")
+                        if (transformation == "tiles-zip")
                         {
                             downloaded = await DownloadMapTiles(file);
                         }
@@ -310,19 +342,29 @@ namespace Wezit
                         {
                             downloaded = await DownloadFile(file);
                         }
-                    }
 
-                    currentDownloaded += downloaded;
-                    DownloadProgress?.Invoke(currentDownloaded);
-                    currentCounter++;
+                        currentDownloaded += downloaded;
+                        DownloadProgress?.Invoke(currentDownloaded);
+                        currentCounter++;
+                    }
                 }
             }
             if (!hasTransformation)
             {
                 WezitAssets.File file = asset.files.Find(x => x.label == "original");
-                if (file == null) return (currentDownloaded, currentCounter);
+
+                if (file == null)
+                {
+                    return (currentDownloaded, currentCounter);
+                }
+
                 int downloaded = file.size;
-                if (CheckDownloadNecessity(file)) downloaded = await DownloadFile(file);
+
+                if (CheckDownloadNecessity(file))
+                {
+                    downloaded = await DownloadFile(file);
+                }
+
                 currentDownloaded += downloaded;
                 DownloadProgress?.Invoke(currentDownloaded);
                 currentCounter++;
@@ -349,7 +391,7 @@ namespace Wezit
             byte[] imageBytes = m_WebRequest.downloadHandler.data;
             using FileStream fileStream = File.Create(Path.Combine(ImagesFolderPath, file.path));
             fileStream.Write(imageBytes);
-            DownloadedImagesMd5Dict.Add(new ImageAndMd5(file.path, file.md5));
+            DownloadedAssetsMd5Dict.Add(new AssetAndMd5(file.path, file.md5));
             return (int)m_WebRequest.downloadedBytes;
         }
 
@@ -361,12 +403,10 @@ namespace Wezit
             }
             await UniRxZipDownloader.DownloadAndUnzip(file.uri, Path.Combine(ImagesFolderPath, file.path));
 
-            DownloadedImagesMd5Dict.Add(new ImageAndMd5(file.path, file.md5));
+            DownloadedAssetsMd5Dict.Add(new AssetAndMd5(file.path, file.md5));
             return file.size;
         }
-        #endregion
 
-        #region Delete
         // Delete
         public void DeleteImages()
         {
@@ -390,10 +430,9 @@ namespace Wezit
             HasDownloaded = false;
             m_StopDownload = true;
             m_WebRequest.Abort();
-            DownloadedImagesMd5Dict.Clear();
+            DownloadedAssetsMd5Dict.Clear();
             DeleteImages();
         }
-        #endregion
 
         #region Save/Load behavior
         const string CONST_FILE_NAME = "images.dat";
@@ -421,11 +460,11 @@ namespace Wezit
                 file.Close();
                 JsonUtility.FromJsonOverwrite(data, this);
 
-                Debug.Log("Images data loaded");
+                Debug.Log("Asset data loaded");
             }
             else
             {
-                Debug.Log("There is no images data to load");
+                Debug.Log("There is no asset data to load");
             }
         }
 

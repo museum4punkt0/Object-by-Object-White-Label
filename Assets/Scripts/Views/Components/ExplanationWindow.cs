@@ -15,6 +15,7 @@ public class ExplanationWindow : MonoBehaviour, IBeginDragHandler
     [SerializeField] private RectTransform _transparentFiller;
     [SerializeField] private RectTransform _explanationPanel;
     [SerializeField] private ContrastButton _contrastButton;
+    [SerializeField] private AudioDescription _audiodescButton;
     [SerializeField] private ScrollRect _scrollRect;
     [SerializeField] private GameObject _bottom;
     #endregion
@@ -29,7 +30,7 @@ public class ExplanationWindow : MonoBehaviour, IBeginDragHandler
     #region Monobehaviours
     #endregion
     #region Public
-    public void Inflate(string contrastTitle, string[] contrastParagraphs, Transform contrastPanelRoot)
+    public void Inflate(string contrastTitle, string[] contrastParagraphs, Transform contrastPanelRoot, string audioDescriptionSource = "")
     {
         _explanationContent.localPosition = Vector3.zero;
         _openToggleBG.color = GlobalSettingsManager.Instance.AppColor;
@@ -40,6 +41,13 @@ public class ExplanationWindow : MonoBehaviour, IBeginDragHandler
         StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_explanationContent.gameObject));
         StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_explanationPanel.gameObject));
         StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_explanationPanel.gameObject));
+
+        bool hasAudioDesc = !string.IsNullOrEmpty(audioDescriptionSource);
+        _audiodescButton.gameObject.SetActive(hasAudioDesc);
+        if(hasAudioDesc)
+        {
+            _audiodescButton.Inflate(audioDescriptionSource);
+        }
 
         m_TopPos = Mathf.Min(_transparentFiller.sizeDelta.y, _transparentFiller.sizeDelta.y + _explanationPanel.sizeDelta.y - Screen.safeArea.height + 200);
         _openArrow.localEulerAngles = Vector3.zero;

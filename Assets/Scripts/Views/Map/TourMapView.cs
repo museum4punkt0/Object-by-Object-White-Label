@@ -10,24 +10,28 @@ using UnityEngine.Android;
 
 public class TourMapView : BaseView
 {
-	#region Fields
-	#region Serialize Fields
+    #region Fields
+    #region Serialize Fields
+    [Header("Map")]
 	[SerializeField] private OnlineMaps _map;
 	[SerializeField] private TourMapPin _tourMapPinPrefab;
-	[SerializeField] private GameObject _listVerticalRoot;
-	[SerializeField] private MapListVertical _mapListVertical;
-	[SerializeField] private GameObject _listHorizontalRoot;
-	[SerializeField] private MapListHorizontal _mapListHorizontal;
-	[SerializeField] private MapListToggle _mapListToggle;
 	[SerializeField] private Button _centerButton = null;
 	[SerializeField] private Image _centerButtonBG = null;
 	[SerializeField] private Button _zoomInButton = null;
 	[SerializeField] private Image _zoomInButtonBG = null;
 	[SerializeField] private Button _zoomOutButton = null;
 	[SerializeField] private Image _zoomOutButtonBG = null;
+    [Header("List")]
+	[SerializeField] private GameObject _listVerticalRoot;
+	[SerializeField] private MapListVertical _mapListVertical;
+	[SerializeField] private GameObject _listHorizontalRoot;
+	[SerializeField] private MapListHorizontal _mapListHorizontal;
+	[SerializeField] private MapListToggle _mapListToggle;
+    [Header("Popins")]
 	[SerializeField] private QRCodeNotification _QRCodeNotification;
 	[SerializeField] private SecretPoiButton _secretPoiButton;
 	[SerializeField] private SecretPoiNotification _secretPoiNotification;
+	[SerializeField] private SecretUnlockPopin _secretPoiUnlockedPopin;
 	[SerializeField] private LocationWarningNotification _locationWarningNotification;
 	#endregion Serialize Fields
 
@@ -119,7 +123,9 @@ public class TourMapView : BaseView
 
 		_map.emptyColor = _centerButtonBG.color = _zoomInButtonBG.color = _zoomOutButtonBG.color = GlobalSettingsManager.Instance.AppColor;
 
-		bool isChallenge = PlayerManager.Instance.Player.GetTourProgression(StoreAccessor.State.SelectedTour.pid).IsChallengeMode;
+		// Manage challenge mode
+		TourProgressionData tourProgressionData = PlayerManager.Instance.Player.GetTourProgression(StoreAccessor.State.SelectedTour.pid);
+		bool isChallenge = tourProgressionData.IsChallengeMode;
 		if(isChallenge)
         {
 			ScoreDisplay.Instance.UpdateScore();
@@ -190,7 +196,7 @@ public class TourMapView : BaseView
 			limits.positionRangeType = OnlineMapsPositionRangeType.center;
 			limits.usePositionRange = true;
 			limits.useZoomRange = true;
-			limits.ApplySetings();
+			limits.ApplySettings();
 
 			_map.customProviderURL = mapSource + "/{zoom}/{x}/{y}.jpg";
         }
@@ -211,6 +217,14 @@ public class TourMapView : BaseView
 
 		m_CenteredPostion = MapUtils.CenterMapOnPoints(poiLocations);
 		_map.SetPositionAndZoom(m_CenteredPostion.x, m_CenteredPostion.y, m_CenteredPostion.z);
+
+		// Display secret poi unlock popin if it just got unlocked
+		if(tourProgressionData.HasBeenCompleted && !tourProgressionData.SecretUnlockPopinShown)
+        {
+			_secretPoiUnlockedPopin.Inflate();
+			tourProgressionData.SecretUnlockPopinShown = true;
+			PlayerManager.Instance.Player.Save();
+        }
 	}
 
 	private void ResetViewContent()
@@ -230,6 +244,7 @@ public class TourMapView : BaseView
 		{
 			if (mapPin != null) Destroy(mapPin);
 		}
+
 		OnlineMapsMarker3DManager onlineMapsMarker3Ds = _map.GetComponent<OnlineMapsMarker3DManager>();
 		onlineMapsMarker3Ds.RemoveAll();
 		m_Pins.Clear();

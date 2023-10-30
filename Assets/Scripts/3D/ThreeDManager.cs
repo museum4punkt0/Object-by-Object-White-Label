@@ -9,11 +9,11 @@ public class ThreeDManager : MonoBehaviour
 {
     #region Fields
     #region SerializeFields
-    [SerializeField] private Manipulation3D _manipulation3D = null;
+    [SerializeField] private InteractiveObjectRotator _objectRotator = null;
 	[SerializeField] private Transform _itemRoot = null;
 	#endregion
 	#region Private
-	private Wezit.Poi m_PoiData;
+	private Wezit.Poi m_poiData;
 	#endregion
 	#endregion
 
@@ -30,11 +30,16 @@ public class ThreeDManager : MonoBehaviour
 	{
 		foreach(Transform child in _itemRoot)
         {
+			if(child.TryGetComponent<Light>(out Light light))
+            {
+				continue;
+            }
+
 			Destroy(child.gameObject);
         }
 
-		m_PoiData = poi;
-		GameObject model = await Utils.GLTFSpawner.SpawnGLTF(_itemRoot, m_PoiData);
+		m_poiData = poi;
+		GameObject model = await Utils.GLTFSpawner.SpawnGLTF(_itemRoot, m_poiData);
 		SetLayerOfChildren.SetLayerAllChildren(model.transform, 7);
 
 		MeshRenderer[] meshRenderers = model.GetComponentsInChildren<MeshRenderer>();
@@ -43,18 +48,18 @@ public class ThreeDManager : MonoBehaviour
         foreach (MeshRenderer meshRenderer in meshRenderers)
         {
 			meshRenderer.material.SetFloat("metallicFactor", 0.3f);
+
 			sizeVector.x = Mathf.Max(sizeVector.x, meshRenderer.bounds.size.x);
 			sizeVector.y = Mathf.Max(sizeVector.y, meshRenderer.bounds.size.y);
 			sizeVector.z = Mathf.Max(sizeVector.z, meshRenderer.bounds.size.z);
         }
 
-        float size = Mathf.Max((sizeVector.x), (sizeVector.y), (sizeVector.z));
+        float size = Mathf.Max(sizeVector.x, sizeVector.y, sizeVector.z);
 
-		_manipulation3D.SetZoomMinMax(size / 3.375f * -15, size / 3.375f * -3);
-		_manipulation3D.SetFocusObject(model);
-		_manipulation3D.Init();
-		_manipulation3D.FirstManipulated.RemoveAllListeners();
-		_manipulation3D.FirstManipulated.AddListener(OnItemManipulated);
+		_objectRotator.SetZoomLimits(6.013f / size * .4f, 6.013f / size * 1.7f);
+		_objectRotator.Init();
+		_objectRotator.ObjectHasBeenManipulated.RemoveAllListeners();
+		_objectRotator.ObjectHasBeenManipulated.AddListener(OnItemManipulated);
 	}
 	#endregion
 

@@ -86,7 +86,7 @@ public class SecretPoiView : BaseView
 	#endregion Public
 
 	#region Private
-	private void InitViewContentByLang(Language language)
+	private async void InitViewContentByLang(Language language)
 	{
 		ResetViewContent();
 
@@ -107,7 +107,7 @@ public class SecretPoiView : BaseView
 		_title.text = StringUtils.CleanFromWezit(m_PoiData.title);
         _description.text = StringUtils.CleanFromWezit(m_PoiData.description);
 		string[] paragraphs = { _description.text };
-		_explanationWindow.Inflate(_title.text, paragraphs, _contrastPanelRoot);
+		_explanationWindow.Inflate(_title.text, paragraphs, _contrastPanelRoot, await AudioUtils.GetAudioSource(m_PoiData));
 	}
 
 	private void ResetViewContent()

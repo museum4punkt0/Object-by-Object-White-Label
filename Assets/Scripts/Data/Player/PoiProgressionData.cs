@@ -20,7 +20,7 @@ public class PoiProgressionData
 
     #region Public API
     private bool m_HasBeenVisited = false;
-    private int m_MaxProgression = 0;
+    private int m_MaxProgression = -1;
 
     public bool HasBeenVisited
     {
@@ -86,13 +86,12 @@ public class PoiProgressionData
 
     public int GetPoiMaxProgression()
     {
-        if (m_MaxProgression != 0) return m_MaxProgression;
+        if (m_MaxProgression != -1) return m_MaxProgression;
         else
         {
             m_MaxProgression = ContentsProgression.Count;
             return m_MaxProgression;
         }
-        return ContentsProgression.Count;
     }
 
     public void SetPoiMaxProgression(int contentCount)

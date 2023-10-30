@@ -39,6 +39,7 @@ public class MenuManager : Singleton<MenuManager>
 	[SerializeField] private TextMeshProUGUI _appName = null;
 	[SerializeField] private RawImage _rightImage = null;
 	[SerializeField] private GameObject _darken = null;
+	[SerializeField] private GameObject _darkenTop = null;
 	[SerializeField] private Image _colorBG;
 	[SerializeField] private Image _topColorBG;
 
@@ -114,10 +115,12 @@ public class MenuManager : Singleton<MenuManager>
 		if(a_status == MenuStatus.Darken)
         {
 			_darken.SetActive(true);
+			_darkenTop.SetActive(true);
         }
 		else
         {
 			_darken.SetActive(false);
+			_darkenTop.SetActive(false);
 			_rightImage.gameObject.SetActive(a_status == MenuStatus.RightImage);
 			_logo.gameObject.SetActive(m_IsLogo && (a_status == MenuStatus.Default || a_status == MenuStatus.RightImage || a_status == MenuStatus.BackButtonLogo));
 			_appName.gameObject.SetActive(!m_IsLogo && (a_status == MenuStatus.Default || a_status == MenuStatus.RightImage || a_status == MenuStatus.BackButtonLogo));
