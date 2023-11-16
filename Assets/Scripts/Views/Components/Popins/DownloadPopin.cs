@@ -75,7 +75,7 @@ public class DownloadPopin : Popin
         {
             if (!_progressRoot.activeSelf) _progressRoot.SetActive(true);
             _progressBar.fillAmount = progress / (float)m_downloadSize;
-            _downloadText.text = m_downloadText + string.Format("{0:0.00}", progress / 1024f / 1024f) + "/" + string.Format("{0:0.00}Mo", m_downloadSize / 1024f / 1024f);
+            _downloadText.text = m_downloadText + string.Format(" {0:0.00}", progress / 1024f / 1024f) + "/" + string.Format("{0:0.00}Mo", m_downloadSize / 1024f / 1024f);
         }
     }
 

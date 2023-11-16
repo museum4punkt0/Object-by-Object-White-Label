@@ -20,7 +20,6 @@ public class ARManager : MonoBehaviour
     private Poi m_PoiData;
     private ARItemRoot m_ItemRootInstance;
 
-    private float m_QRCodeAngle;
     #endregion
     #endregion
 
@@ -119,10 +118,6 @@ public class ARManager : MonoBehaviour
                        System.Globalization.NumberStyles.AllowDecimalPoint,
                        new System.Globalization.CultureInfo("en-US"),
                        out float size);
-        float.TryParse(m_PoiData.location,
-                           System.Globalization.NumberStyles.AllowDecimalPoint,
-                           new System.Globalization.CultureInfo("en-US"),
-                           out m_QRCodeAngle);
 #if UNITY_IOS
         size = size == 0 ? 0.015f : size;
 #endif
@@ -132,7 +127,7 @@ public class ARManager : MonoBehaviour
     private IEnumerator AddImage(Texture2D imageToAdd, string title, float size)
     {
         yield return null;
-        var library = _aRTrackedImageManager.referenceLibrary;
+        IReferenceImageLibrary library = _aRTrackedImageManager.referenceLibrary;
 
         if (library is MutableRuntimeReferenceImageLibrary mutableLibrary)
         {

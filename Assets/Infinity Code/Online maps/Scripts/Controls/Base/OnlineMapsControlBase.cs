@@ -1260,7 +1260,7 @@ public abstract class OnlineMapsControlBase : MonoBehaviour, IOnlineMapsSavableC
         if (!allowUserControl || GetTouchCount() > 1) return;
 
         Vector2 inputPosition = GetInputPosition();
-        if (inputPosition.y > Screen.height) return;
+        //if (inputPosition.y > Screen.height) return;
 
         if (!mapDragStarted && (pressPoint - inputPosition).sqrMagnitude < startDragDistance * startDragDistance) return;
         if (!mapDragStarted)
@@ -1268,37 +1268,35 @@ public abstract class OnlineMapsControlBase : MonoBehaviour, IOnlineMapsSavableC
             OnlineMapsLog.Info("Start drag a map", OnlineMapsLog.Type.map);
             mapDragStarted = true;
         }
+        if (lastInputPosition == inputPosition) return;
 
         double lat, lng;
-        bool hit = GetCoordsInternal(out lng, out lat);
-
-        if (!hit || lastInputPosition == inputPosition) return;
+        if (!GetCoordsInternal(out lng, out lat)) return;
 
         double offsetX = lng - lastPositionLng;
         double offsetY = lat - lastPositionLat;
 
         if (offsetX > 270) offsetX -= 360;
         else if (offsetX < -270) offsetX += 360;
-            
-        if (Math.Abs(offsetX) > double.Epsilon || Math.Abs(offsetY) > double.Epsilon)
+
+        if (Math.Abs(offsetX) <= double.Epsilon && Math.Abs(offsetY) <= double.Epsilon) return;
+        
+        double px, py;
+        map.GetPosition(out px, out py);
+        px -= offsetX;
+        py -= offsetY;
+        map.SetPosition(px, py);
+
+        map.needRedraw = true;
+
+        StopLongPressCoroutine();
+
+        if (OnMapDrag != null)
         {
-            double px, py;
-            map.GetPosition(out px, out py);
-            px -= offsetX;
-            py -= offsetY;
-            map.SetPosition(px, py);
-
-            map.needRedraw = true;
-
-            StopLongPressCoroutine();
-
-            if (OnMapDrag != null)
-            {
-                OnlineMapsLog.Info("Map is being dragged", OnlineMapsLog.Type.map);
-                OnMapDrag();
-            }
+            OnlineMapsLog.Info("Map is being dragged", OnlineMapsLog.Type.map);
+            OnMapDrag();
         }
-
+        
         GetCoordsInternal(out lastPositionLng, out lastPositionLat);
     }
 

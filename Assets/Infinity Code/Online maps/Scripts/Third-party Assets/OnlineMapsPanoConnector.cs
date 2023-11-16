@@ -270,7 +270,7 @@ public class OnlineMapsPanoConnector : MonoBehaviour
         if (map == null)
         {
             map = GetComponent<OnlineMaps>();
-            if (map == null) map = FindObjectOfType<OnlineMaps>();
+            if (map == null) map = OnlineMapsUtils.FindObjectOfType<OnlineMaps>();
             if (map == null)
             {
                 Debug.Log("Cannot find the map");

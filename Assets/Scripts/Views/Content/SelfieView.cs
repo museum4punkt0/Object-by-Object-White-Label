@@ -51,6 +51,8 @@ public class SelfieView : BaseView
 	private string m_SharePopinButtonTextSettingKey = "template.spk.pois.secret.share.popin.confirm.button.text";
 
 	private string m_InventoryButtonTextSettingKey = "template.spk.pois.secret.inventory.button.text";
+
+	private Texture2D m_selfie;
 	#endregion Private m_Variables
 	#endregion Fields
 
@@ -175,12 +177,12 @@ public class SelfieView : BaseView
 		MenuManager.Instance.SetMenuStatus(MenuManager.MenuStatus.Hidden);
 		yield return new WaitForEndOfFrame();
 		ScreenCapture.CaptureScreenshot(System.IO.Path.Combine(PlayerManager.SelfiesScreenshotPath, StoreAccessor.State.SelectedTour.title + ".png"));
-		Texture2D screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
-		screenshot.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
-		screenshot.Apply();
+		m_selfie = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+		m_selfie.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+		m_selfie.Apply();
 		yield return null;
 		m_TourProgressionData.TourSelfiePath = System.IO.Path.Combine(PlayerManager.SelfiesPath, StoreAccessor.State.SelectedTour.title + ".png");
-        NativeGallery.SaveImageToGallery(screenshot, "spk", StoreAccessor.State.SelectedTour.title + ".png");
+        NativeGallery.SaveImageToGallery(m_selfie, "spk", StoreAccessor.State.SelectedTour.title + ".png");
         MenuManager.Instance.SetPreviousStatus();
 		_UIRoot.SetActive(true);
 
@@ -202,13 +204,14 @@ public class SelfieView : BaseView
 
 	private void OnShare()
 	{
-		_popin.Inflate(Wezit.Settings.Instance.GetSettingAsCleanedText(m_SharePopinTitleSettingKey),
-					   Wezit.Settings.Instance.GetSettingAsCleanedText(m_SharePopinDescriptionSettingKey),
-					   Wezit.Settings.Instance.GetSettingAsCleanedText(m_SharePopinButtonTextSettingKey),
-					   "", "main");
-		_popin.PopinButtonClicked.RemoveAllListeners();
-		_popin.PopinButtonClicked.AddListener(OnSharePopinConfirm);
-	}
+        new NativeShare().AddFile(m_selfie, StoreAccessor.State.SelectedTour.title + ".png").Share();
+        //_popin.Inflate(Wezit.Settings.Instance.GetSettingAsCleanedText(m_SharePopinTitleSettingKey),
+        //			   Wezit.Settings.Instance.GetSettingAsCleanedText(m_SharePopinDescriptionSettingKey),
+        //			   Wezit.Settings.Instance.GetSettingAsCleanedText(m_SharePopinButtonTextSettingKey),
+        //			   "", "main");
+        //_popin.PopinButtonClicked.RemoveAllListeners();
+        //_popin.PopinButtonClicked.AddListener(OnSharePopinConfirm);
+    }
 
 	private void OnSharePopinConfirm()
     {
@@ -242,7 +245,7 @@ public class SelfieView : BaseView
 #if UNITY_IOS
 		_cameraImage.transform.localScale = new Vector3(-1, 1, 1);
 #endif
-		_cameraImage.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width * m_WebCamTexture.width / (float)m_WebCamTexture.height, Screen.width);
+		_cameraImage.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.height, Screen.height * m_WebCamTexture.height / (float)m_WebCamTexture.width);
 	}
 #endregion Private
 

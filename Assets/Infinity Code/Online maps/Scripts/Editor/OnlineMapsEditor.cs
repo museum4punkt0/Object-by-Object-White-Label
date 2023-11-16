@@ -122,12 +122,22 @@ public class OnlineMapsEditor : Editor
                 ig >= 22 && ig <= 24 ||
                 ig == 26) continue;
 
+#if UNITY_2023_1_OR_NEWER
+            NamedBuildTarget buildTarget = UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(g);
+            string currentDefinitions = PlayerSettings.GetScriptingDefineSymbols(buildTarget);
+#else
             string currentDefinitions = PlayerSettings.GetScriptingDefineSymbolsForGroup(g);
+#endif
             List<string> directives = currentDefinitions.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Distinct().ToList();
             if (!directives.Contains(directive))
             {
                 directives.Add(directive);
-                PlayerSettings.SetScriptingDefineSymbolsForGroup(g, String.Join(";", directives.ToArray()));
+                currentDefinitions = String.Join(";", directives.ToArray());
+#if UNITY_2023_1_OR_NEWER
+                PlayerSettings.SetScriptingDefineSymbols(buildTarget, currentDefinitions);
+#else
+                PlayerSettings.SetScriptingDefineSymbolsForGroup(g, currentDefinitions);
+#endif
             }
         }
     }
@@ -529,6 +539,25 @@ public class OnlineMapsEditor : Editor
         EditorGUILayout.BeginHorizontal();
         EditorGUI.BeginChangeCheck();
         string helpMessage = "Tile provider.\nImportant: all tile presets are for testing purpose only. Before using the tile provider, make sure that it suits you by the terms of use and price.";
+
+        if (Application.isPlaying)
+        {
+            if (mapType != map.activeType)
+            {
+                string pid = map.activeType.provider.id;
+                for (int i = 0; i < providers.Length; i++)
+                {
+                    if (providers[i].id == pid)
+                    {
+                        providerIndex = i;
+                        break;
+                    }
+                }
+
+                mapType = map.activeType;
+            }
+        }
+        
         providerIndex = EditorGUILayout.Popup(new GUIContent("Provider", helpMessage), providerIndex, providersTitle);
         if (EditorGUI.EndChangeCheck())
         {

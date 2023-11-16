@@ -121,7 +121,6 @@ public abstract class OnlineMapsControlBaseUI<T> : OnlineMapsControlBase2D where
         else
         {
 #endif
-        //if (!RectTransformUtility.RectangleContainsScreenPoint(image.rectTransform, position, worldCamera)) return false;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(image.rectTransform, position, worldCamera, out point);
         if (point == Vector2.zero) return false;
 #if CURVEDUI

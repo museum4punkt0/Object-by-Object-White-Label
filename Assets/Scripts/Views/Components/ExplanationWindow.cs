@@ -23,6 +23,7 @@ public class ExplanationWindow : MonoBehaviour, IBeginDragHandler
     private Coroutine m_MovementCoroutine;
 
     private float m_TopPos;
+    private bool m_isOpen;
     #endregion
     #endregion
 
@@ -35,7 +36,7 @@ public class ExplanationWindow : MonoBehaviour, IBeginDragHandler
         _explanationContent.localPosition = Vector3.zero;
         _openToggleBG.color = GlobalSettingsManager.Instance.AppColor;
         _openToggle.onValueChanged.RemoveAllListeners();
-        _openToggle.onValueChanged.AddListener(OnOpenButton);
+        _openToggle.onValueChanged.AddListener(OnOpenToggle);
         _contrastButton.Inflate(contrastTitle, contrastParagraphs, contrastPanelRoot);
         StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_explanationContent.gameObject));
         StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_explanationContent.gameObject));
@@ -72,7 +73,7 @@ public class ExplanationWindow : MonoBehaviour, IBeginDragHandler
     #endregion
 
     #region Private
-    private void OnOpenButton(bool isOpen)
+    private void OnOpenToggle(bool isOpen)
     {
         m_TopPos = Mathf.Min(_transparentFiller.sizeDelta.y, _transparentFiller.sizeDelta.y + _explanationPanel.sizeDelta.y - Screen.safeArea.height + 200);
         m_MovementCoroutine = StartCoroutine(OpenExplanation(isOpen));
@@ -81,6 +82,7 @@ public class ExplanationWindow : MonoBehaviour, IBeginDragHandler
 
     private IEnumerator OpenExplanation(bool isOpen)
     {
+        isOpen = m_isOpen;
         float goalHeight = isOpen ? 0 : m_TopPos;
         Vector2 prevPos = _explanationContent.localPosition;
         Vector2 currentPos = Vector2.negativeInfinity;
@@ -91,7 +93,7 @@ public class ExplanationWindow : MonoBehaviour, IBeginDragHandler
             currentPos = _explanationContent.localPosition;
             yield return null;
         }
-        yield return null;
+        m_isOpen = _explanationContent.localPosition.y > 100;
         m_MovementCoroutine = null;
     }
 
@@ -103,6 +105,7 @@ public class ExplanationWindow : MonoBehaviour, IBeginDragHandler
         {
             if (isAtBottom)
             {
+                m_isOpen = false;
                 _openToggle.SetIsOnWithoutNotify(true);
                 _openArrow.localEulerAngles = Vector3.zero;
             }
@@ -110,6 +113,7 @@ public class ExplanationWindow : MonoBehaviour, IBeginDragHandler
             {
                 if (isAtTop)
                 {
+                    m_isOpen = true;
                     _openToggle.SetIsOnWithoutNotify(false);
                     _openArrow.localEulerAngles = 180f * Vector3.right;
                 }

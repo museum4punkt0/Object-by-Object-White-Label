@@ -31,10 +31,12 @@ public class Popin : MonoBehaviour
 
     #region Methods
     #region Public
-    public void Inflate(string title, string description, string buttonText, string settingKey = "", string iconType = "")
+    public void Inflate(string title, string description, string buttonText, string settingKey = "", string iconType = "", bool open = true)
     {
-        gameObject.SetActive(true);
-        MenuManager.Instance.SetMenuStatus(MenuManager.MenuStatus.Darken);
+        if(open)
+        {
+            Open();
+        }
 
         if (!string.IsNullOrEmpty(Wezit.Settings.Instance.GetSetting(settingKey)))
         {

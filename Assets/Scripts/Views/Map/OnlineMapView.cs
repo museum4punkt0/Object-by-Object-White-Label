@@ -100,7 +100,7 @@ public class OnlineMapView : BaseView
 
 		StoreAccessor.State.SelectedTourBank = null;
 
-		_centerButtonBG.color = _zoomInButtonBG.color = _zoomOutButtonBG.color = GlobalSettingsManager.Instance.AppColor;
+		_map.emptyColor = _centerButtonBG.color = _zoomInButtonBG.color = _zoomOutButtonBG.color = GlobalSettingsManager.Instance.AppColor;
 
 		m_cacheService = _map.GetComponent<OnlineMapsCache>();
 		m_cacheService.useFileCache = true;
@@ -113,7 +113,7 @@ public class OnlineMapView : BaseView
         }
 		else
         {
-			_map.customProviderURL = "https://tiles.stadiamaps.com/styles/stamen_watercolor/{z}/{x}/{y}.jpg";
+			_map.customProviderURL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 
 		}
 
@@ -212,6 +212,7 @@ public class OnlineMapView : BaseView
 		_centerButton.onClick.RemoveAllListeners();
 		_zoomInButton.onClick.RemoveAllListeners();
 		_zoomOutButton.onClick.RemoveAllListeners();
+		MenuManager.Instance.DataReset.RemoveAllListeners();
 	}
 
 	private void OnMapListToggle(bool isOn)

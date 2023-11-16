@@ -166,6 +166,25 @@ public class TourProgressionData
     {
         return TourScore;
     }
+
+    public void ResetProgression()
+    {
+        MaxProgression = 0;
+        foreach (PoiProgressionData poiProgression in PoisProgression)
+        {
+            poiProgression.ResetProgression();
+        }
+        PoisProgression = new List<PoiProgressionData>();
+        m_HasBeenVisited = false;
+        m_HasBeenCompleted = false;
+        IsModeSet = false;
+        IsChallengeMode = false;
+        m_TourScore = 0;
+        m_TourScratchImagePath = "";
+        m_TourSelfiePath = "";
+        HasBeenDownloaded = false;
+        SecretUnlockPopinShown = false;
+    }
     #endregion
 
 }

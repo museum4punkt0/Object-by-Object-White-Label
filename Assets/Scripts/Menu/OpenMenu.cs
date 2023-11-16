@@ -39,8 +39,12 @@ public class OpenMenu : MonoBehaviour
 	private string m_resetPopinConfirmSettingKey = "template.spk.menu.reset.button.confirm.text";
 	private RectTransform m_MenuRecttransform;
 	private RectTransform m_MenuBGRecttransform;
+	#endregion
+	#endregion Fields
+
+	#region Properties
+	public UnityEvent DataReset = new UnityEvent();
     #endregion
-    #endregion Fields
 
     #region Methods
     #region MonoBehaviour
@@ -189,8 +193,11 @@ public class OpenMenu : MonoBehaviour
 
 	private void OnResetConfirm()
     {
+		DataReset?.Invoke();
 		PlayerManager.Instance.DeleteSave();
 		_resetPopin.Close();
+		AppManager.Instance.GoToState(KioskState.HOME);
+		Close();
     }
 	#endregion Private
 	#endregion Methods

@@ -121,10 +121,10 @@ public abstract class OnlineMapsInteractiveElementManager<T, U>: MonoBehaviour, 
     /// </summary>
     public static void Init()
     {
-        _instance = FindObjectOfType<T>();
+        _instance = OnlineMapsUtils.FindObjectOfType<T>();
         if (_instance == null)
         {
-            OnlineMaps map = FindObjectOfType<OnlineMaps>();
+            OnlineMaps map = OnlineMapsUtils.FindObjectOfType<OnlineMaps>();
             if (map != null) map.gameObject.AddComponent<T>();
         }
     }

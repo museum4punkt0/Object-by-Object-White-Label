@@ -31,7 +31,7 @@ public class LogosView : BaseView
 	#region Public
 	public override KioskState GetKioskState()
 	{
-		return KioskState.RGPD;
+		return KioskState.LINKS;
 	}
 
 	public override void InitView()

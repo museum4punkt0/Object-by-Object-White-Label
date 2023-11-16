@@ -152,6 +152,7 @@ public class QuizView : BaseView
 		if(numberOfCorrect > 0)
         {
 			hasWon = true;
+			m_PoiProgressionData.QuizPoints = numberOfCorrect;
 			m_TourProgressionData.TourScore += GlobalSettingsManager.Instance.PointsEarnedSecret * numberOfCorrect;
         }
 

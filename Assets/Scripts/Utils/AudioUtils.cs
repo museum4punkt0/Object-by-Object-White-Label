@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 
 public class AudioUtils : MonoBehaviour
 {
-	public async static UniTask<string> GetAudioSource(Wezit.Node wezitData)
+	public async static UniTask<string> GetAudioSource(Wezit.Node wezitData, string tag = "")
 	{
 		string source = "";
 		if (wezitData != null)
@@ -16,7 +16,17 @@ public class AudioUtils : MonoBehaviour
 			{
 				if (relation.relation == Wezit.RelationName.PLAY_TRACK)
 				{
-					source = relation.GetAssetSourceByTransformation(WezitSourceTransformation.default_base);
+					if(!string.IsNullOrEmpty(tag))
+                    {
+						if(!string.IsNullOrEmpty(relation.tags) && relation.tags.Contains(tag))
+                        {
+							source = relation.GetAssetSourceByTransformation(WezitSourceTransformation.default_base);
+						}
+                    }
+					else
+                    {
+						source = relation.GetAssetSourceByTransformation(WezitSourceTransformation.default_base);
+                    }
 					break;
 				}
 			}
@@ -24,7 +34,7 @@ public class AudioUtils : MonoBehaviour
 		return source;
 	}
 
-	public static async UniTask<AudioClip> GetAudioClip(Wezit.Node wezitData)
+	public static async UniTask<AudioClip> GetAudioClip(Wezit.Node wezitData, string tag = "")
 	{
 		UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(await GetAudioSource(wezitData), AudioType.MPEG);
 		await www.SendWebRequest();

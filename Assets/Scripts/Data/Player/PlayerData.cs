@@ -106,7 +106,7 @@ public class PlayerData
         }
         else
         {
-            Debug.LogError("No player data file, creating one...");
+            Debug.LogWarning("No player data file, creating one...");
         }
     }
 
@@ -140,7 +140,18 @@ public class PlayerData
 
     public void Delete()
     {
-        if(File.Exists(FilePath))
+        foreach (TourProgressionData tourProgression in ToursProgression)
+        {
+            tourProgression.ResetProgression();
+        }
+
+        StoreAccessor.State.SelectedPoi = null;
+        StoreAccessor.State.SelectedTour = null;
+        StoreAccessor.State.SelectedTourBank = null;
+        StoreAccessor.State.ImageViewerImageSource = "";
+
+        ToursProgression = new List<TourProgressionData>();
+        if (File.Exists(FilePath))
         {
             File.Delete(FilePath);
         }

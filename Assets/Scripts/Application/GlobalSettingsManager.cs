@@ -50,7 +50,7 @@ public class GlobalSettingsManager : Singleton<GlobalSettingsManager>
 
     public Color AppColorLight
     {
-        get => new Color(AppColor.r, AppColor.g, AppColor.b, 0.588f);
+        get => new Color(AppColor.r, AppColor.g, AppColor.b, 0.4f);
     }
 
     // Map

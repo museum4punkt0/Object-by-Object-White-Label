@@ -42,5 +42,10 @@ public class ContentProgressionData
     {
         State = EContentProgressionState.Complete;
     }
+
+    public void ResetProgression()
+    {
+        State = EContentProgressionState.Untouched;
+    }
     #endregion
 }

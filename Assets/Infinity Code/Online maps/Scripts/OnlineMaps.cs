@@ -27,7 +27,7 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver, IOnline
     /// <summary>
     /// The current version of Online Maps
     /// </summary>
-    public const string version = "3.8.3.1";
+    public const string version = "3.9.1.1";
 
     /// <summary>
     /// The minimum zoom level
@@ -377,6 +377,7 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver, IOnline
 #endif
 
     private OnlineMapsControlBase _control;
+    private OnlineMapsControlBase3D _control3D;
     private bool _labels;
     private string _language;
     private string _mapType;
@@ -486,7 +487,7 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver, IOnline
     }
 
     /// <summary>
-    /// Display control script.
+    /// Gets the current control.
     /// </summary>
     public OnlineMapsControlBase control
     {
@@ -495,6 +496,26 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver, IOnline
             if (_control == null) _control = GetComponent<OnlineMapsControlBase>();
             return _control;
         }
+    }
+    
+    /// <summary>
+    /// Gets the current 3D control.
+    /// </summary>
+    public OnlineMapsControlBase3D control3D
+    {
+        get
+        {
+            if (_control3D == null) _control3D = GetComponent<OnlineMapsControlBase3D>();
+            return _control3D;
+        }
+    }
+    
+    /// <summary>
+    /// Gets the drawing element manager from control.
+    /// </summary>
+    public OnlineMapsDrawingElementManager drawingElementManager
+    {
+        get { return control.drawingElementManager; }
     }
 
     /// <summary>
@@ -520,6 +541,22 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver, IOnline
             needRedraw = true;
             DispatchEvent(OnlineMapsEvents.changedZoom);
         }
+    }
+    
+    /// <summary>
+    /// Gets the markers manager from control.
+    /// </summary>
+    public OnlineMapsMarkerManager markerManager
+    {
+        get { return control.markerManager; }
+    }
+    
+    /// <summary>
+    /// Gets the 3D markers manager from control.
+    /// </summary>
+    public OnlineMapsMarker3DManager marker3DManager
+    {
+        get { return control3D != null? control3D.marker3DManager: null; }
     }
 
     /// <summary>

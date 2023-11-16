@@ -69,6 +69,18 @@ public class PlayerManager : Singleton<PlayerManager>
         }
 
         Player.Delete();
+        ResetCurrentState();
         Player = new PlayerData();
+    }
+
+    public void ResetCurrentState()
+    {
+        IsChallenge = false;
+        Player = null;
+        CurrentTour = null;
+        CurrentPoi = null;
+        CurrentContent = null;
+        IsGPSOn = false;
+        LastPOIInRange = null;
     }
 }

@@ -36,6 +36,7 @@ public class TourIntroView : BaseView
     [Space]
 	[SerializeField] private Button _downloadButton = null;
 	[SerializeField] private Image _downloadButtonBG = null;
+	[SerializeField] private Image _downloadButtonPulse = null;
 	[SerializeField] private DownloadPopin _downloadPopin = null;
 	#endregion Serialize Fields
 
@@ -126,6 +127,7 @@ public class TourIntroView : BaseView
         }
 
 		_colorBackground.color = _startButtonBG.color = _challengeButtonBG.color = _normalButtonBG.color = _title.color = _downloadButtonBG .color = GlobalSettingsManager.Instance.AppColor;
+		_downloadButtonPulse.color = GlobalSettingsManager.Instance.AppColorLight;
 
 		ImageUtils.LoadImage(_background, this, m_TourData);
 

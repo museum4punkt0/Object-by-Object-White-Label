@@ -133,6 +133,7 @@ public class OnlineMapsProvider
         {
             MapType type = _types[l + i] = newTypes[i];
             type.provider = this;
+            type.index = l + i;
             type.fullID = id + "." + type.id;
         }
     }
@@ -151,6 +152,36 @@ public class OnlineMapsProvider
         providers[providers.Length - 1] = provider;
         return provider;
     }
+    
+    /// <summary>
+    /// Creates a new map type, with the specified id.
+    /// </summary>
+    /// <param name="id">Map type ID. Format: providerID.mapTypeID</param>
+    /// <returns>Instance of map type.</returns>
+    public static MapType CreateMapType(string id)
+    {
+        string[] parts = id.Split('.');
+        if (parts.Length != 2) throw new Exception($"Invalid map type ID: {id}. Expected format: providerID.mapTypeID");
+        OnlineMapsProvider provider = Get(parts[0]);
+        if (provider == null) provider = new OnlineMapsProvider(parts[0], parts[0]);
+        if (provider.types.Any(t => t.id == parts[1])) throw new Exception($"Map type with ID {id} already exists.");
+        MapType type = new MapType(parts[1], parts[1]);
+        provider.AppendTypes(type);
+        return type;
+    }
+
+    /// <summary>
+    /// Creates a new map type, with the specified id.
+    /// </summary>
+    /// <param name="id">Map type ID. Format: providerID.mapTypeID</param>
+    /// <param name="url">URL of the map type.</param>
+    /// <returns>Instance of map type.</returns>
+    public static MapType CreateMapType(string id, string url)
+    {
+        MapType type = CreateMapType(id);
+        type.urlWithLabels = url;
+        return type;
+    }
 
     /// <summary>
     /// Gets an instance of a map type by ID.<br/>
@@ -159,7 +190,7 @@ public class OnlineMapsProvider
     /// If the provider ID is not found, returns the first map type of the first provider.<br/>
     /// Example: nokia or google.satellite
     /// </summary>
-    /// <param name="mapTypeID">ID of map type</param>
+    /// <param name="mapTypeID">Map type ID.</param>
     /// <returns>Instance of map type</returns>
     public static MapType FindMapType(string mapTypeID)
     {
@@ -182,6 +213,17 @@ public class OnlineMapsProvider
             }
         }
         return providers[0].types[0];
+    }
+    
+    /// <summary>
+    /// Get provider by ID.
+    /// </summary>
+    /// <param name="id">Provider ID</param>
+    /// <returns>Provider or null</returns>
+    public static OnlineMapsProvider Get(string id)
+    {
+        if (providers == null) InitProviders();
+        return providers.FirstOrDefault(provider => provider.id == id);
     }
 
     /// <summary>
@@ -289,7 +331,7 @@ public class OnlineMapsProvider
                         urlWithoutLabels = "https://khm{rnd0-3}.googleapis.com/kh?v={version}&hl={lng}&x={x}&y={y}&z={zoom}",
                         extraFields = new []
                         {
-                            new ExtraField("Tile version", "version", "945")
+                            new ExtraField("Tile version", "version", "953")
                         }
                     },
                     new MapType(RELIEF)
@@ -985,7 +1027,7 @@ public class OnlineMapsProvider
         /// <summary>
         /// Gets the URL to download the tile texture
         /// </summary>
-        /// <param name="tile">Instence of tile</param>
+        /// <param name="tile">Instance of tile</param>
         /// <returns>URL to tile texture</returns>
         public string GetURL(OnlineMapsTile tile)
         {
@@ -1111,6 +1153,58 @@ public class OnlineMapsProvider
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Gets or sets the value of the extra field.
+        /// </summary>
+        /// <param name="token">Token (ID) of the extra field.</param>
+        public string this[string token]
+        {
+            get
+            {
+                if (extraFields != null)
+                {
+                    foreach (IExtraField f in extraFields)
+                    {
+                        ExtraField field = f as ExtraField;
+                        if (field != null && field.token == token) return field.value;
+                    }
+                }
+
+                if (provider.extraFields != null)
+                {
+                    foreach (IExtraField f in provider.extraFields)
+                    {
+                        ExtraField field = f as ExtraField;
+                        if (field != null && field.token == token) return field.value;
+                    }
+                }
+
+                return null;
+            }
+            set
+            {
+                foreach (IExtraField f in extraFields)
+                {
+                    ExtraField field = f as ExtraField;
+                    if (field != null && field.token == token)
+                    {
+                        field.value = value;
+                        return;
+                    }
+                }
+                
+                foreach (IExtraField f in provider.extraFields)
+                {
+                    ExtraField field = f as ExtraField;
+                    if (field != null && field.token == token)
+                    {
+                        field.value = value;
+                        return;
+                    }
+                }
+            }
         }
     }
 

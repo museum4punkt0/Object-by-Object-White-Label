@@ -32,6 +32,7 @@ public class ScratchView : BaseView
 
 	private string m_SelfieButtonTextSettingKey = "template.spk.pois.secret.selfie.button.text";
 	private string m_InventoryButtonTextSettingKey = "template.spk.pois.secret.inventory.button.text";
+	private string m_scratchInstructionSettingKey = "template.spk.pois.scratch.instruction.text";
 	#endregion Private m_Variables
 	#endregion Fields
 
@@ -104,7 +105,7 @@ public class ScratchView : BaseView
 		_selfieButtonText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_SelfieButtonTextSettingKey, language);
 		_inventoryButtonText.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_InventoryButtonTextSettingKey, language);
 
-		_title.text = StringUtils.CleanFromWezit(m_PoiData.title);
+		_title.text = Wezit.Settings.Instance.GetSettingAsCleanedText(m_scratchInstructionSettingKey);
 	}
 
 	private void ResetViewContent()

@@ -16,6 +16,7 @@ public class ARView : BaseView
 	[SerializeField] private RawImage _background;
 	[SerializeField] private GameObject _qRCodeScannerRoot;
 	[SerializeField] private Image _panIcon;
+	[SerializeField] private TextMeshProUGUI _panText;
 	[SerializeField] private GraphicFader _instructionGraphicFader;
 	[SerializeField] private GameObject _flashOoooh;
 	[SerializeField] private AudioSource _audio;
@@ -105,14 +106,14 @@ public class ARView : BaseView
 		MenuManager.Instance.SetMenuStatus(status);
 		MenuManager.Instance.SetBackButtonState(KioskState.TOUR_MAP);
 
-		_panIcon.color = GlobalSettingsManager.Instance.AppColor;
+		_panIcon.color = _panText.outlineColor = GlobalSettingsManager.Instance.AppColor;
 		m_instructionLifetime = Wezit.Settings.Instance.GetSettingAsFloat(m_instructionLifetimeSettingKey);
 		_instructionGraphicFader.FadeDelay = m_instructionLifetime;
 		Wezit.Settings.Instance.SetAudioClipFromSetting(_audio, m_audioSettingKey);
 
 		_quizManager.Inflate(isChallenge && !tourProgressionData.GetPoiProgression(m_poiData.pid).QuizCompleted);
 
-		// Keep AR session going while the user did not go back to the map
+		// Keep AR session going as long as the user did not go back to the map
 		KioskState previousKioskState = ViewManager.Instance.PreviousKioskState;
 		if (previousKioskState == KioskState.CONTENT || previousKioskState == KioskState.QUIZ)
 		{

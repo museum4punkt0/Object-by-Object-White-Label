@@ -595,6 +595,20 @@ public static class OnlineMapsUtils
     {
         return lx * rx + ly * ry;
     }
+    
+    /// <summary>
+    /// Returns the first active loaded object of Type type.
+    /// </summary>
+    /// <typeparam name="T">The type of object to find.</typeparam>
+    /// <returns>The first active loaded object that matches the specified type. It returns null if no Object matches the type.</returns>
+    public static T FindObjectOfType<T>() where T : Object
+    {
+#if UNITY_2023_1_OR_NEWER
+        return Object.FindFirstObjectByType<T>();
+#else
+        return Object.FindObjectOfType<T>();
+#endif
+    }
 
     /// <summary>
     /// Fix geographic coordinates.
@@ -1640,7 +1654,7 @@ public static class OnlineMapsUtils
     /// Triangulates points
     /// </summary>
     /// <param name="points">An array of points containing the values [x, y, x, y...]</param>
-    /// <param name="countVertices"><Number of vertices to be triangulated/param>
+    /// <param name="countVertices">Number of vertices to be triangulated/param>
     /// <param name="indices">List where vertex indices will be written</param>
     /// <returns>Indices</returns>
     public static IEnumerable<int> Triangulate(float[] points, int countVertices, List<int> indices)

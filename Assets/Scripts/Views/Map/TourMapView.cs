@@ -144,6 +144,7 @@ public class TourMapView : BaseView
 		Wezit.PoiLocation poiLocation = null;
 		string mapSource = "";
 
+		bool hasHighlightedFirstPOI = false;
 		foreach(Wezit.Poi poi in m_Tour.childs)
         {
 			poiLocation = PoiLocationStore.GetPoiLocationById(poi.pid);
@@ -164,11 +165,17 @@ public class TourMapView : BaseView
 				tourMapPinInstance.Inflate(poi);
 				tourMapPinInstance.TourMapPinClicked.AddListener(OnMapPinClicked);
 				m_PoisAndPins.Add(poi, tourMapPinInstance);
+
+				if(!hasHighlightedFirstPOI)
+                {
+					OnItemSelected(new Vector2(poiLocation.lng, poiLocation.lat), poi);
+				}
 			}
 			else if(poi.type == "secret")
             {
 				_secretPoiButton.Inflate(poi);
-            }
+				_secretPoiUnlockedPopin.Inflate(poi);
+			}
 		}
 
 		m_cacheService = _map.GetComponent<OnlineMapsCache>();
@@ -216,12 +223,12 @@ public class TourMapView : BaseView
         _mapListHorizontal.Inflate(locatedPois, this);
 
 		m_CenteredPostion = MapUtils.CenterMapOnPoints(poiLocations);
-		_map.SetPositionAndZoom(m_CenteredPostion.x, m_CenteredPostion.y, m_CenteredPostion.z);
+		_map.SetPositionAndZoom(m_CenteredPostion.x, m_CenteredPostion.y, m_CenteredPostion.z + 1);
 
 		// Display secret poi unlock popin if it just got unlocked
 		if(tourProgressionData.HasBeenCompleted && !tourProgressionData.SecretUnlockPopinShown)
         {
-			_secretPoiUnlockedPopin.Inflate();
+			_secretPoiUnlockedPopin.Open();
 			tourProgressionData.SecretUnlockPopinShown = true;
 			PlayerManager.Instance.Player.Save();
         }

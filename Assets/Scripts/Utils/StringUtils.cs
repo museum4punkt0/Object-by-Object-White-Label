@@ -106,8 +106,11 @@ public class StringUtils
 
 	public static string AddCustomTagsFromWezit(string input)
 	{
-		string result = input;
-		result = result.Replace('[', '<').Replace(']', '>');
+		string result = "";
+		if (!string.IsNullOrEmpty(input))
+        {
+			result = input.Replace('[', '<').Replace(']', '>');
+        }
 
 		return result;
 	}

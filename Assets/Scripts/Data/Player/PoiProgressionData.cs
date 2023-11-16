@@ -18,6 +18,9 @@ public class PoiProgressionData
     [FormerlySerializedAs("QuizCompleted")]
     public bool QuizCompleted = false;
 
+    [FormerlySerializedAs("QuizPoints")]
+    public int QuizPoints = 0;
+
     #region Public API
     private bool m_HasBeenVisited = false;
     private int m_MaxProgression = -1;
@@ -81,6 +84,8 @@ public class PoiProgressionData
             }
         }
 
+        count += QuizPoints;
+
         return count;
     }
 
@@ -105,6 +110,17 @@ public class PoiProgressionData
         return GetPoiCurrentProgression() / (float)GetPoiMaxProgression() * 100f;
     }
 
-
+    public void ResetProgression()
+    {
+        foreach  (ContentProgressionData contentProgression in ContentsProgression)
+        {
+            contentProgression.ResetProgression();
+        }
+        ContentsProgression = new List<ContentProgressionData>();
+        QuizCompleted = false;
+        QuizPoints = 0;
+        m_HasBeenVisited = false;
+        m_MaxProgression = -1;
+    }
     #endregion
 }

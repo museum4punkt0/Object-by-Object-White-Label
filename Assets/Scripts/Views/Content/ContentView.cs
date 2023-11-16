@@ -143,9 +143,9 @@ public class ContentView : BaseView
 		_title.text = m_PoiData.CleanedTitle;
 		_description.text = m_PoiData.CleanedDescription;
         string[] paragraphs = { _description.text };
-		_explanationWindow.Inflate(_title.text, paragraphs, _contrastPanelRoot, await AudioUtils.GetAudioSource(m_PoiData));
-		await StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_textContainer));
-		await StartCoroutine(Utils.LayoutGroupRebuilder.Rebuild(_textContainer));
+		_explanationWindow.Inflate(_title.text, paragraphs, _contrastPanelRoot, m_PoiData.type.Contains(ARItemTypes.audio) ? "" : await AudioUtils.GetAudioSource(m_PoiData));
+		await StartCoroutine(LayoutGroupRebuilder.Rebuild(_textContainer));
+		await StartCoroutine(LayoutGroupRebuilder.Rebuild(_textContainer));
 
 		int progress = m_PoiProgressionData.GetPoiCurrentProgression();
 		int numberofPois = m_PoiProgressionData.GetPoiMaxProgression();

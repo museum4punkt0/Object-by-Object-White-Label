@@ -888,63 +888,68 @@ namespace Wezit
 
 		private IEnumerator FetchText(IDataReader a_reader, IDbConnection a_connection, IObserver<string> observer, IProgress<float> reportProgress, CancellationToken cancel, bool log = false)
 		{
+			StringBuilder stringBuilder = new StringBuilder();
+
 			connectionOpen = true;
 			// Content has to be formatted into a json-compliant format
-			string result = "{\"status\":1,\"message\":\"success\",\"data\":[";
+			stringBuilder.Append("{\"status\":1,\"message\":\"success\",\"data\":[");
+
 			int fieldCount = a_reader.FieldCount;
 			bool hasRead = false;
 			while (a_reader.Read())
 			{
-				result += '{';
+				stringBuilder.Append('{');
 				for (int i = 0; i < fieldCount; i++)
 				{
 					hasRead = true;
-					result += '"';
-					result += a_reader.GetName(i).Replace("n.", "").Replace("NODE.", "").Replace("node.", "").Replace("ra.", "");
-					result += '"';
-					result += ':';
+					stringBuilder.Append('"');
+					stringBuilder.Append(a_reader.GetName(i).Replace("n.", "").Replace("NODE.", "").Replace("node.", "").Replace("ra.", ""));
+					stringBuilder.Append('"');
+					stringBuilder.Append(':');
 					if (string.IsNullOrEmpty(a_reader.GetValue(i).ToString()))
 					{
-						result += "null";
+						stringBuilder.Append("null");
 					}
 					else
 					{
 						if (a_reader.GetName(i).Contains("relationList") || a_reader.GetName(i).Contains("assets") || a_reader.GetName(i).Contains("maps"))
 						{
-							result += a_reader.GetValue(i).ToString().Replace("<br />", "<br />\\n").Replace("\n", "").Replace("\"{", "{").Replace("}\"", "}");
+							stringBuilder.Append(a_reader.GetValue(i).ToString().Replace("<br />", "<br />\\n").Replace("\n", "").Replace("\"{", "{").Replace("}\"", "}"));
 						}
 						else if (typeof(float).Equals(a_reader.GetValue(i).GetType()))
 						{
-							result += a_reader.GetFloat(i).ToString(CultureInfo.CreateSpecificCulture("en-GB"));
+							stringBuilder.Append(a_reader.GetFloat(i).ToString(CultureInfo.CreateSpecificCulture("en-GB")));
 						}
 						else if (typeof(int).Equals(a_reader.GetValue(i).GetType()))
 						{
-							result += a_reader.GetInt32(i).ToString(CultureInfo.CreateSpecificCulture("en-GB"));
+							stringBuilder.Append(a_reader.GetInt32(i).ToString(CultureInfo.CreateSpecificCulture("en-GB")));
 						}
 						else
 						{
-							result += '"';
-							result += a_reader.GetValue(i).ToString().Replace("<br />", "<br />\\n").Replace("\n", "").Replace("\"", "\\\"");
-							result += '"';
+							stringBuilder.Append('"');
+							stringBuilder.Append(a_reader.GetValue(i).ToString().Replace("<br />", "<br />\\n").Replace("\n", "").Replace("\"", "\\\""));
+							stringBuilder.Append('"');
 						}
 					}
 
-					if (i < fieldCount - 1) result += ",";
+					if (i < fieldCount - 1) stringBuilder.Append(",");
+
 				}
-				result += "},";
-				yield return null;
+				stringBuilder.Append("},");
+				//yield return null;
 			}
-			result = result.Remove(result.Length - 1);
-			result += "]}";
+			stringBuilder.Remove(stringBuilder.Length - 1, 1);
+			stringBuilder.Append("]}");
 			yield return null;
 			if (!hasRead)
 			{
-				result = "{\"status\":1,\"message\":\"success / empty result\",\"data\":[]}";
+				stringBuilder.Clear();
+				stringBuilder.Append("{\"status\":1,\"message\":\"success / empty result\",\"data\":[]}");
 			}
 			a_connection.Close();
 			a_connection.Dispose();
 			connectionOpen = false;
-			observer.OnNext(result);
+			observer.OnNext(stringBuilder.ToString());
 			observer.OnCompleted();
 		}
 

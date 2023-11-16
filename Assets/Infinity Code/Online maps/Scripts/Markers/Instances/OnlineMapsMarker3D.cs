@@ -305,7 +305,7 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
         if (control.meshFilter == null) return;
         double ttlx, ttly, tbrx, tbry;
         map.GetTileCorners(out ttlx, out ttly, out tbrx, out tbry, zoom);
-        float bestYScale = OnlineMapsElevationManagerBase.GetBestElevationYScale(tlx, tly, brx, bry);
+        float bestYScale = OnlineMapsElevationManagerBase.GetBestElevationYScale(control.elevationManager, tlx, tly, brx, bry);
         Update(control.meshFilter.sharedMesh.bounds, tlx, tly, brx, bry, zoom, ttlx, ttly, tbrx, tbry, bestYScale);
     }
 
@@ -395,7 +395,7 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
 
         if (altitude.HasValue)
         {
-            float yScale = OnlineMapsElevationManagerBase.GetBestElevationYScale(tlx, tly, brx, bry);
+            float yScale = OnlineMapsElevationManagerBase.GetBestElevationYScale(control.elevationManager, tlx, tly, brx, bry);
             y = altitude.Value;
             if (altitudeType == OnlineMapsAltitudeType.relative && tsControl != null && elevationActive) y += elevationManager.GetUnscaledElevationValue(px, pz, tlx, tly, brx, bry);
             y *= yScale;

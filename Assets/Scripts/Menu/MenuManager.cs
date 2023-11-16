@@ -5,9 +5,6 @@ using UnityEngine.Events;
 using TMPro;
 using UniRx;
 
-[System.Serializable]
-public class UnityEventMenu : UnityEvent { };
-
 public class MenuManager : Singleton<MenuManager>
 {
 	public enum MenuStatus
@@ -57,9 +54,13 @@ public class MenuManager : Singleton<MenuManager>
 	private bool m_IsLogo = false;
 	#endregion Fields
 
-	#region Methods
-	#region MonoBehaviour
-	private new void Awake()
+	#region Properties
+	public UnityEvent DataReset = new UnityEvent();
+    #endregion
+
+    #region Methods
+    #region MonoBehaviour
+    private new void Awake()
 	{
 		base.Awake();
 		SetMenuStatus(MenuStatus.Hidden);
@@ -83,6 +84,7 @@ public class MenuManager : Singleton<MenuManager>
 		_backButton.onClick.AddListener(OnBackButton);
 		_inventoryButton.onClick.AddListener(OnInventoryButton);
 		_scoreCounter.onClick.AddListener(OnInventoryButton);
+		_openMenu.DataReset.AddListener(OnDataReset);
 
 		m_currentLanguage = StoreAccessor.State.Language;
 
@@ -101,6 +103,7 @@ public class MenuManager : Singleton<MenuManager>
 		_menuButton.onClick.RemoveAllListeners();
 		_backButton.onClick.RemoveAllListeners();
 		_inventoryButton.onClick.RemoveAllListeners();
+		_openMenu.DataReset.RemoveAllListeners();
 	}
 
 	public void SetMenuStatus(MenuStatus a_status)
@@ -211,6 +214,11 @@ public class MenuManager : Singleton<MenuManager>
 	private void OnInventoryButton()
     {
 		AppManager.Instance.GoToState(KioskState.INVENTORY);
+    }
+
+	private void OnDataReset()
+    {
+		DataReset?.Invoke();
     }
 	#endregion Private
 	#endregion Methods
